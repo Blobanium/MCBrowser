@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "id": "mcbrowser",
+  "version": "${version}",
+  "name": "MCBrowser",
+  "description": "",
+  "authors": [],
+  "contact": {
+    "repo": "https://github.com/15099/MCBrowser"
+  },
+  "license": "All-Rights-Reserved",
+  "icon": "assets/mcbrowser/icon.png",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "io.github.blobanium.mcbrowser.client.MCBrowserClient"
+    ],
+    "main": [
+      "io.github.blobanium.mcbrowser.MCBrowser"
+    ]
+  },
+  "mixins": [
+    "mcbrowser.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric": "*",
+    "minecraft": "${minecraft_version}"
+  }
+}
