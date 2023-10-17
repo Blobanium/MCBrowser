@@ -12,9 +12,6 @@
   "icon": "assets/mcbrowser/icon.png",
   "environment": "client",
   "entrypoints": {
-    "client": [
-      "io.github.blobanium.mcbrowser.client.MCBrowserClient"
-    ],
     "main": [
       "io.github.blobanium.mcbrowser.MCBrowser"
     ]
