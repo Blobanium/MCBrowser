@@ -15,6 +15,10 @@ repositories {
     flatDir {
         dirs 'dependencies'
     }
+    maven {
+        url = uri('https://mcef-download.cinemamod.com/repositories/releases')
+    }
+    //MCEF's Maven isn't working yet, will change when they have their maven properly set up
 }
 
 dependencies {
@@ -25,7 +29,7 @@ dependencies {
 
     // Fabric API. This is technically optional, but you probably want it anyway.
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-    modImplementation include("com.cinemamod:mcef-fabric:2.0.0-1.20.1-SNAPSHOT")
+    implementation 'com.cinemamod:mcef:2.0.1-1.20.1'
 }
 
 processResources {
