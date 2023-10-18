@@ -77,8 +77,7 @@ public class BrowserScreen extends Screen {
     public void render(DrawContext guiGraphics, int i, int j, float f) {
         super.render(guiGraphics, i, j, f);
         RenderSystem.disableDepthTest();
-        Supplier<ShaderProgram> shader = () -> GameRenderer.getPositionTexColorProgram();
-        RenderSystem.setShader(shader);
+        RenderSystem.setShader(GameRenderer::getPositionTexColorProgram);
         RenderSystem.setShaderTexture(0, browser.getRenderer().getTextureID());
         Tessellator t = Tessellator.getInstance();
         BufferBuilder buffer = t.getBuffer();
