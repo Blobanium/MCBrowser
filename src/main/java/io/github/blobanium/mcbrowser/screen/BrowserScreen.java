@@ -31,6 +31,8 @@ public class BrowserScreen extends Screen {
 
 
     private TextFieldWidget urlBox;
+
+    private String currentUrl;
     public BrowserScreen(Text title) {
         super(title);
     }
@@ -45,7 +47,8 @@ public class BrowserScreen extends Screen {
             browser = MCEF.createBrowser(url, transparent);
             resizeBrowser();
             this.urlBox = new TextFieldWidget(minecraft.textRenderer, BROWSER_DRAW_OFFSET,BROWSER_DRAW_OFFSET-20,width-(BROWSER_DRAW_OFFSET*2),15, Text.of("TEST1234"));
-            this.urlBox.setEditable(true);
+            urlBox.setText(Text.of("").getString());
+            addSelectableChild(urlBox);
         }
     }
 
@@ -108,7 +111,6 @@ public class BrowserScreen extends Screen {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        urlBox.onClick(mouseX, mouseY);
         browser.sendMousePress(mouseX(mouseX), mouseY(mouseY), button);
         browser.setFocus(true);
         return super.mouseClicked(mouseX, mouseY, button);
@@ -116,7 +118,6 @@ public class BrowserScreen extends Screen {
 
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
-        urlBox.onRelease(mouseX, mouseY);
         browser.sendMouseRelease(mouseX(mouseX), mouseY(mouseY), button);
         browser.setFocus(true);
         return super.mouseReleased(mouseX, mouseY, button);
@@ -124,14 +125,12 @@ public class BrowserScreen extends Screen {
 
     @Override
     public void mouseMoved(double mouseX, double mouseY) {
-        urlBox.mouseMoved(mouseX, mouseY);
         browser.sendMouseMove(mouseX(mouseX), mouseY(mouseY));
         super.mouseMoved(mouseX, mouseY);
     }
 
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
-        urlBox.mouseDragged(mouseX, mouseY, button, dragX, dragY);
         return super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
     }
 
@@ -143,7 +142,6 @@ public class BrowserScreen extends Screen {
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        urlBox.keyPressed(keyCode, scanCode, modifiers);
         browser.sendKeyPress(keyCode, scanCode, modifiers);
         browser.setFocus(true);
         return super.keyPressed(keyCode, scanCode, modifiers);
@@ -151,7 +149,6 @@ public class BrowserScreen extends Screen {
 
     @Override
     public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
-        urlBox.keyReleased(keyCode, scanCode, modifiers);
         browser.sendKeyRelease(keyCode, scanCode, modifiers);
         browser.setFocus(true);
         return super.keyReleased(keyCode, scanCode, modifiers);
@@ -160,9 +157,16 @@ public class BrowserScreen extends Screen {
     @Override
     public boolean charTyped(char codePoint, int modifiers) {
         if (codePoint == (char) 0) return false;
-        urlBox.charTyped(codePoint, modifiers);
         browser.sendKeyTyped(codePoint, modifiers);
         browser.setFocus(true);
         return super.charTyped(codePoint, modifiers);
+    }
+
+    @Override
+    public void tick(){
+        if(currentUrl != browser.getURL()){
+            currentUrl = browser.getURL();
+            urlBox.setText(Text.of(currentUrl).getString());
+        }
     }
 }
