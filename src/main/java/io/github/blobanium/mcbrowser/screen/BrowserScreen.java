@@ -23,7 +23,7 @@ import java.util.function.Supplier;
 public class BrowserScreen extends Screen {
     private static final int BROWSER_DRAW_OFFSET = 50;
     private static final int Z_SHIFT = -1;
-    private static final int URL_GAP = 20;
+    private static final int ENTER_KEY_CODE = 257;
 
     private MCEFBrowser browser;
 
@@ -33,6 +33,9 @@ public class BrowserScreen extends Screen {
     private TextFieldWidget urlBox;
 
     private String currentUrl;
+
+    private double lastMouseX;
+    private double lastMouseY;
     public BrowserScreen(Text title) {
         super(title);
     }
@@ -46,7 +49,19 @@ public class BrowserScreen extends Screen {
             boolean transparent = true;
             browser = MCEF.createBrowser(url, transparent);
             resizeBrowser();
-            this.urlBox = new TextFieldWidget(minecraft.textRenderer, BROWSER_DRAW_OFFSET,BROWSER_DRAW_OFFSET-20,width-(BROWSER_DRAW_OFFSET*2),15, Text.of("TEST1234"));
+            this.urlBox = new TextFieldWidget(minecraft.textRenderer, BROWSER_DRAW_OFFSET,BROWSER_DRAW_OFFSET-20,width-(BROWSER_DRAW_OFFSET*2),15, Text.of("TEST1234")){
+                @Override
+                public boolean keyPressed(int keyCode, int scanCode, int modifiers){
+                    if(isFocused()) {
+                        browser.setFocus(false);
+                        if(keyCode == ENTER_KEY_CODE){
+                            browser.loadURL(getText());
+                        }
+                    }
+                    return super.keyPressed(keyCode, scanCode, modifiers);
+                }
+            };
+            urlBox.setMaxLength(2048); //Most browsers have a max length of 2048
             urlBox.setText(Text.of("").getString());
             addSelectableChild(urlBox);
         }
@@ -112,45 +127,50 @@ public class BrowserScreen extends Screen {
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         browser.sendMousePress(mouseX(mouseX), mouseY(mouseY), button);
-        browser.setFocus(true);
+        updateMouseLocation(mouseX, mouseY);
+        setFocus();
         return super.mouseClicked(mouseX, mouseY, button);
     }
 
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
         browser.sendMouseRelease(mouseX(mouseX), mouseY(mouseY), button);
-        browser.setFocus(true);
+        updateMouseLocation(mouseX, mouseY);
+        setFocus();
         return super.mouseReleased(mouseX, mouseY, button);
     }
 
     @Override
     public void mouseMoved(double mouseX, double mouseY) {
         browser.sendMouseMove(mouseX(mouseX), mouseY(mouseY));
+        updateMouseLocation(mouseX, mouseY);
         super.mouseMoved(mouseX, mouseY);
     }
 
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
+        updateMouseLocation(mouseX, mouseY);
         return super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
     }
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
         browser.sendMouseWheel(mouseX(mouseX), mouseY(mouseY), delta, 0);
+        updateMouseLocation(mouseX, mouseY);
         return super.mouseScrolled(mouseX, mouseY, delta);
     }
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         browser.sendKeyPress(keyCode, scanCode, modifiers);
-        browser.setFocus(true);
+        setFocus();
         return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
     @Override
     public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
         browser.sendKeyRelease(keyCode, scanCode, modifiers);
-        browser.setFocus(true);
+        setFocus();
         return super.keyReleased(keyCode, scanCode, modifiers);
     }
 
@@ -158,7 +178,7 @@ public class BrowserScreen extends Screen {
     public boolean charTyped(char codePoint, int modifiers) {
         if (codePoint == (char) 0) return false;
         browser.sendKeyTyped(codePoint, modifiers);
-        browser.setFocus(true);
+        setFocus();
         return super.charTyped(codePoint, modifiers);
     }
 
@@ -166,7 +186,31 @@ public class BrowserScreen extends Screen {
     public void tick(){
         if(currentUrl != browser.getURL()){
             currentUrl = browser.getURL();
-            urlBox.setText(Text.of(currentUrl).getString());
+            if(!urlBox.isFocused()) {
+                urlBox.setText(Text.of(currentUrl).getString());
+            }
         }
+    }
+
+    private void updateMouseLocation(double mouseX, double mouseY){
+        lastMouseX = mouseX;
+        lastMouseY = mouseY;
+    }
+
+    public void setFocus(){
+        if(isOverWidgets()){
+            browser.setFocus(false);
+            urlBox.setFocused(urlBox.isMouseOver(lastMouseX, lastMouseY));
+        }else{
+            unfocusAllWidgets();
+            browser.setFocus(true);
+        }
+    }
+    private boolean isOverWidgets(){
+        return urlBox.isMouseOver(lastMouseX, lastMouseY);
+    }
+
+    private void unfocusAllWidgets(){
+        urlBox.setFocused(false);
     }
 }
