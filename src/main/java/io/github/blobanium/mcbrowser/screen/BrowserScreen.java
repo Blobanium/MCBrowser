@@ -33,6 +33,7 @@ public class BrowserScreen extends Screen {
     private TextFieldWidget urlBox;
     private ButtonWidget forwardButton;
     private ButtonWidget backButton;
+    private ButtonWidget reloadButton;
 
     private double lastMouseX;
     private double lastMouseY;
@@ -50,7 +51,7 @@ public class BrowserScreen extends Screen {
             browser = MCEF.createBrowser(url, transparent);
             resizeBrowser();
 
-            this.urlBox = new TextFieldWidget(minecraft.textRenderer, BROWSER_DRAW_OFFSET + 40,BROWSER_DRAW_OFFSET-20,(width-(BROWSER_DRAW_OFFSET*2))-40,15, Text.of("TEST1234")){
+            this.urlBox = new TextFieldWidget(minecraft.textRenderer, BROWSER_DRAW_OFFSET + 60,BROWSER_DRAW_OFFSET-20,(width-(BROWSER_DRAW_OFFSET*2))-60,15, Text.of("TEST1234")){
                 @Override
                 public boolean keyPressed(int keyCode, int scanCode, int modifiers){
                     if(isFocused()) {
@@ -76,6 +77,17 @@ public class BrowserScreen extends Screen {
                     .dimensions(BROWSER_DRAW_OFFSET + 20, BROWSER_DRAW_OFFSET-20, 15, 15)
                     .build();
             addSelectableChild(forwardButton);
+
+            reloadButton = ButtonWidget.builder(Text.of("\u27F3"), button -> {
+                        if(browser.isLoading()){
+                            browser.stopLoad();
+                        }else{
+                            browser.reload();
+                        }
+                    })
+                    .dimensions(BROWSER_DRAW_OFFSET + 40, BROWSER_DRAW_OFFSET-20, 15, 15)
+                    .build();
+            addSelectableChild(reloadButton);
         }
     }
 
@@ -100,7 +112,7 @@ public class BrowserScreen extends Screen {
             browser.resize(scaleX(width), scaleY(height));
         }
         if(this.urlBox != null) {
-            urlBox.setWidth(width - (BROWSER_DRAW_OFFSET * 2) - 40);
+            urlBox.setWidth(width - (BROWSER_DRAW_OFFSET * 2) - 60);
         }
     }
 
@@ -137,6 +149,7 @@ public class BrowserScreen extends Screen {
         urlBox.renderButton(context, mouseX, mouseY, delta);
         backButton.render(context, mouseX, mouseY, delta);
         forwardButton.render(context, mouseX, mouseY, delta);
+        reloadButton.render(context, mouseX, mouseY, delta);
     }
 
     @Override
@@ -208,6 +221,12 @@ public class BrowserScreen extends Screen {
 
         forwardButton.active = browser.canGoForward();
         backButton.active = browser.canGoBack();
+
+        if(browser.isLoading()){
+            reloadButton.setMessage(Text.of("\u274C"));
+        } else {
+            reloadButton.setMessage(Text.of("\u27F3"));
+        }
     }
 
     private void updateMouseLocation(double mouseX, double mouseY){
@@ -241,6 +260,9 @@ public class BrowserScreen extends Screen {
         }
         if(!children().contains(backButton)){
             addSelectableChild(backButton);
+        }
+        if(!children().contains(reloadButton)){
+            addSelectableChild(reloadButton);
         }
     }
 }
