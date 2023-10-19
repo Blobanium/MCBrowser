@@ -216,6 +216,7 @@ public class BrowserScreen extends Screen {
             currentUrl = browser.getURL();
             if(!urlBox.isFocused()) {
                 urlBox.setText(Text.of(currentUrl).getString());
+                urlBox.setCursorToStart();
             }
         }
 
