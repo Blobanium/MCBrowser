@@ -4,6 +4,7 @@ import com.cinemamod.mcef.MCEF;
 import com.cinemamod.mcef.MCEFBrowser;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import io.github.blobanium.mcbrowser.BrowserUtil;
 import io.github.blobanium.mcbrowser.MCBrowser;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.ShaderProgram;
@@ -55,7 +56,8 @@ public class BrowserScreen extends Screen {
                     if(isFocused()) {
                         browser.setFocus(false);
                         if(keyCode == ENTER_KEY_CODE){
-                            browser.loadURL(getText());
+                            browser.loadURL(BrowserUtil.prediffyURL(getText()));
+                            setFocused(false);
                         }
                     }
                     return super.keyPressed(keyCode, scanCode, modifiers);
