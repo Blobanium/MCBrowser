@@ -108,6 +108,7 @@ public class BrowserScreen extends Screen {
     public void resize(MinecraftClient minecraft, int i, int j) {
         super.resize(minecraft, i, j);
         resizeBrowser();
+        reloadAllChildren();
     }
 
     @Override
@@ -229,5 +230,17 @@ public class BrowserScreen extends Screen {
 
     private void unfocusAllWidgets(){
         urlBox.setFocused(false);
+    }
+
+    private void reloadAllChildren(){
+        if(!children().contains(urlBox)){
+            addSelectableChild(urlBox);
+        }
+        if(!children().contains(forwardButton)){
+            addSelectableChild(forwardButton);
+        }
+        if(!children().contains(backButton)){
+            addSelectableChild(backButton);
+        }
     }
 }
