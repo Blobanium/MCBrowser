@@ -13,7 +13,7 @@ import org.lwjgl.glfw.GLFW;
 
 
 public class MCBrowser implements ClientModInitializer {
-    private static boolean requestOpen = false;
+    public static boolean requestOpen = false;
 
     @Override
     public void onInitializeClient() {
@@ -40,6 +40,7 @@ public class MCBrowser implements ClientModInitializer {
         // Check if our key was pressed
         if ((KEY_MAPPING.wasPressed() || requestOpen) && !(minecraft.currentScreen instanceof BrowserScreen)) {
             //Display the web browser UI.
+
             minecraft.setScreen(new BrowserScreen(
                     Text.literal("Basic Browser")
             ));
