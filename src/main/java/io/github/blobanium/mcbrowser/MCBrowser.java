@@ -27,6 +27,15 @@ public class MCBrowser implements ClientModInitializer {
                     })
             );
         }));
+
+        ClientCommandRegistrationCallback.EVENT.register(((dispatcher, registryAccess) -> {
+            dispatcher.register(ClientCommandManager.literal("br")
+                    .executes(context -> {
+                        requestOpen = true;
+                        return 0;
+                    })
+            );
+        }));
     }
     private static final MinecraftClient minecraft = MinecraftClient.getInstance();
 

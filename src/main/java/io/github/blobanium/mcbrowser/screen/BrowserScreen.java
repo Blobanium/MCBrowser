@@ -7,11 +7,9 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.blobanium.mcbrowser.BrowserUtil;
 import io.github.blobanium.mcbrowser.MCBrowser;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gl.ShaderProgram;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.gui.widget.TextWidget;
+import net.minecraft.client.gui.widget.*;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.Tessellator;
@@ -19,7 +17,6 @@ import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.text.Text;
 
-import java.util.function.Supplier;
 
 public class BrowserScreen extends Screen {
     private static final int BROWSER_DRAW_OFFSET = 50;
@@ -30,10 +27,12 @@ public class BrowserScreen extends Screen {
 
     private MinecraftClient minecraft = MinecraftClient.getInstance();
 
-
-    private TextFieldWidget urlBox;
-
     private String currentUrl;
+
+    //Ui
+    private TextFieldWidget urlBox;
+    private ButtonWidget forwardButton;
+    private ButtonWidget backButton;
 
     private double lastMouseX;
     private double lastMouseY;
@@ -50,7 +49,8 @@ public class BrowserScreen extends Screen {
             boolean transparent = true;
             browser = MCEF.createBrowser(url, transparent);
             resizeBrowser();
-            this.urlBox = new TextFieldWidget(minecraft.textRenderer, BROWSER_DRAW_OFFSET,BROWSER_DRAW_OFFSET-20,width-(BROWSER_DRAW_OFFSET*2),15, Text.of("TEST1234")){
+
+            this.urlBox = new TextFieldWidget(minecraft.textRenderer, BROWSER_DRAW_OFFSET + 40,BROWSER_DRAW_OFFSET-20,(width-(BROWSER_DRAW_OFFSET*2))-40,15, Text.of("TEST1234")){
                 @Override
                 public boolean keyPressed(int keyCode, int scanCode, int modifiers){
                     if(isFocused()) {
@@ -66,6 +66,16 @@ public class BrowserScreen extends Screen {
             urlBox.setMaxLength(2048); //Most browsers have a max length of 2048
             urlBox.setText(Text.of("").getString());
             addSelectableChild(urlBox);
+
+            backButton = new ButtonWidget.Builder(Text.of("\u25C0"), button -> browser.goBack())
+                    .dimensions(BROWSER_DRAW_OFFSET, BROWSER_DRAW_OFFSET-20, 15, 15)
+                    .build();
+            addSelectableChild(backButton);
+
+            forwardButton = ButtonWidget.builder(Text.of("\u25B6"), button -> browser.goForward())
+                    .dimensions(BROWSER_DRAW_OFFSET + 20, BROWSER_DRAW_OFFSET-20, 15, 15)
+                    .build();
+            addSelectableChild(forwardButton);
         }
     }
 
@@ -90,7 +100,7 @@ public class BrowserScreen extends Screen {
             browser.resize(scaleX(width), scaleY(height));
         }
         if(this.urlBox != null) {
-            urlBox.setWidth(width - (BROWSER_DRAW_OFFSET * 2));
+            urlBox.setWidth(width - (BROWSER_DRAW_OFFSET * 2) - 40);
         }
     }
 
@@ -110,7 +120,6 @@ public class BrowserScreen extends Screen {
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
         super.render(context, mouseX, mouseY, delta);
-        urlBox.renderButton(context, mouseX, mouseY, delta);
         RenderSystem.disableDepthTest();
         RenderSystem.setShader(GameRenderer::getPositionTexColorProgram);
         RenderSystem.setShaderTexture(0, browser.getRenderer().getTextureID());
@@ -124,6 +133,9 @@ public class BrowserScreen extends Screen {
         t.draw();
         RenderSystem.setShaderTexture(0, 0);
         RenderSystem.enableDepthTest();
+        urlBox.renderButton(context, mouseX, mouseY, delta);
+        backButton.render(context, mouseX, mouseY, delta);
+        forwardButton.render(context, mouseX, mouseY, delta);
     }
 
     @Override
@@ -192,6 +204,9 @@ public class BrowserScreen extends Screen {
                 urlBox.setText(Text.of(currentUrl).getString());
             }
         }
+
+        forwardButton.active = browser.canGoForward();
+        backButton.active = browser.canGoBack();
     }
 
     private void updateMouseLocation(double mouseX, double mouseY){
