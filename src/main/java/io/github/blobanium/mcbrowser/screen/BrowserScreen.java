@@ -37,6 +37,7 @@ public class BrowserScreen extends Screen {
     private ButtonWidget forwardButton;
     private ButtonWidget backButton;
     private ButtonWidget reloadButton;
+    private ButtonWidget homeButton;
 
     //Mouse Position
     private double lastMouseX;
@@ -56,7 +57,7 @@ public class BrowserScreen extends Screen {
             browser = MCEF.createBrowser(this.initURL, transparent);
             resizeBrowser();
 
-            this.urlBox = new TextFieldWidget(minecraft.textRenderer, BROWSER_DRAW_OFFSET + 60,BROWSER_DRAW_OFFSET-20,getUrlBoxWidth(),15, Text.of("TEST1234")){
+            this.urlBox = new TextFieldWidget(minecraft.textRenderer, BROWSER_DRAW_OFFSET + 80,BROWSER_DRAW_OFFSET-20,getUrlBoxWidth(),15, Text.of("TEST1234")){
                 @Override
                 public boolean keyPressed(int keyCode, int scanCode, int modifiers){
                     if(isFocused()) {
@@ -93,6 +94,11 @@ public class BrowserScreen extends Screen {
                     .dimensions(BROWSER_DRAW_OFFSET + 40, BROWSER_DRAW_OFFSET-20, 15, 15)
                     .build();
             addSelectableChild(reloadButton);
+
+            homeButton = ButtonWidget.builder(Text.of("\u2302"), button -> browser.loadURL("https://www.google.com"))
+                    .dimensions(BROWSER_DRAW_OFFSET + 60, BROWSER_DRAW_OFFSET-20, 15, 15)
+                    .build();
+            addSelectableChild(homeButton);
         }
     }
 
@@ -155,6 +161,7 @@ public class BrowserScreen extends Screen {
         backButton.render(context, mouseX, mouseY, delta);
         forwardButton.render(context, mouseX, mouseY, delta);
         reloadButton.render(context, mouseX, mouseY, delta);
+        homeButton.render(context, mouseX, mouseY, delta);
     }
 
     @Override
@@ -270,9 +277,12 @@ public class BrowserScreen extends Screen {
         if(!children().contains(reloadButton)){
             addSelectableChild(reloadButton);
         }
+        if(!children().contains(homeButton)){
+            addSelectableChild(homeButton);
+        }
     }
 
     private int getUrlBoxWidth(){
-        return width - (BROWSER_DRAW_OFFSET * 2) - 60;
+        return width - (BROWSER_DRAW_OFFSET * 2) - 80;
     }
 }
