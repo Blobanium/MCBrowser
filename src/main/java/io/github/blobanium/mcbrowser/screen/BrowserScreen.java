@@ -56,7 +56,7 @@ public class BrowserScreen extends Screen {
             browser = MCEF.createBrowser(this.initURL, transparent);
             resizeBrowser();
 
-            this.urlBox = new TextFieldWidget(minecraft.textRenderer, BROWSER_DRAW_OFFSET + 60,BROWSER_DRAW_OFFSET-20,(width-(BROWSER_DRAW_OFFSET*2))-60,15, Text.of("TEST1234")){
+            this.urlBox = new TextFieldWidget(minecraft.textRenderer, BROWSER_DRAW_OFFSET + 60,BROWSER_DRAW_OFFSET-20,getUrlBoxWidth(),15, Text.of("TEST1234")){
                 @Override
                 public boolean keyPressed(int keyCode, int scanCode, int modifiers){
                     if(isFocused()) {
@@ -117,7 +117,7 @@ public class BrowserScreen extends Screen {
             browser.resize(scaleX(width), scaleY(height));
         }
         if(this.urlBox != null) {
-            urlBox.setWidth(width - (BROWSER_DRAW_OFFSET * 2) - 60);
+            urlBox.setWidth(getUrlBoxWidth());
         }
     }
 
@@ -270,5 +270,9 @@ public class BrowserScreen extends Screen {
         if(!children().contains(reloadButton)){
             addSelectableChild(reloadButton);
         }
+    }
+
+    private int getUrlBoxWidth(){
+        return width - (BROWSER_DRAW_OFFSET * 2) - 60;
     }
 }
