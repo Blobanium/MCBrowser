@@ -11,6 +11,7 @@ import net.minecraft.text.Text;
 
 public class MCBrowser implements ClientModInitializer {
     public static boolean requestOpen = false;
+    private static String url = "https://www.google.com";
 
     @Override
     public void onInitializeClient() {
@@ -19,7 +20,7 @@ public class MCBrowser implements ClientModInitializer {
         ClientCommandRegistrationCallback.EVENT.register(((dispatcher, registryAccess) -> {
             dispatcher.register(ClientCommandManager.literal("browser")
                     .executes(context -> {
-                        requestOpen = true;
+                        openBrowser("https://www.google.com");
                         return 0;
                     })
             );
@@ -28,7 +29,7 @@ public class MCBrowser implements ClientModInitializer {
         ClientCommandRegistrationCallback.EVENT.register(((dispatcher, registryAccess) -> {
             dispatcher.register(ClientCommandManager.literal("br")
                     .executes(context -> {
-                        requestOpen = true;
+                        openBrowser("https://www.google.com");
                         return 0;
                     })
             );
@@ -43,8 +44,14 @@ public class MCBrowser implements ClientModInitializer {
             //Display the web browser UI.
 
             minecraft.setScreen(new BrowserScreen(
-                    Text.literal("Basic Browser")
+                    Text.literal("Basic Browser"),
+                    url
             ));
         }
+    }
+
+    public static void openBrowser(String targetUrl){
+        url = targetUrl;
+        requestOpen = true;
     }
 }

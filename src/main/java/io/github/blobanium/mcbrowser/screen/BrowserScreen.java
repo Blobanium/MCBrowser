@@ -27,7 +27,10 @@ public class BrowserScreen extends Screen {
 
     private MinecraftClient minecraft = MinecraftClient.getInstance();
 
+    //URL
+    private String initURL;
     private String currentUrl;
+
 
     //Ui
     private TextFieldWidget urlBox;
@@ -35,10 +38,13 @@ public class BrowserScreen extends Screen {
     private ButtonWidget backButton;
     private ButtonWidget reloadButton;
 
+    //Mouse Position
     private double lastMouseX;
     private double lastMouseY;
-    public BrowserScreen(Text title) {
+
+    public BrowserScreen(Text title, String url) {
         super(title);
+        this.initURL = url;
     }
 
 
@@ -46,9 +52,8 @@ public class BrowserScreen extends Screen {
     protected void init() {
         super.init();
         if (browser == null) {
-            String url = "https://www.google.com";
             boolean transparent = true;
-            browser = MCEF.createBrowser(url, transparent);
+            browser = MCEF.createBrowser(this.initURL, transparent);
             resizeBrowser();
 
             this.urlBox = new TextFieldWidget(minecraft.textRenderer, BROWSER_DRAW_OFFSET + 60,BROWSER_DRAW_OFFSET-20,(width-(BROWSER_DRAW_OFFSET*2))-60,15, Text.of("TEST1234")){
