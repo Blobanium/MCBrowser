@@ -83,15 +83,6 @@ public class BrowserScreen extends Screen {
             forwardButton = initButton(Text.of("\u25B6"), button -> browser.goForward(), BROWSER_DRAW_OFFSET + 20);
             addSelectableChild(forwardButton);
 
-            reloadButton = ButtonWidget.builder(Text.of("\u27F3"), button -> {
-                        if(browser.isLoading()){
-                            browser.stopLoad();
-                        }else{
-                            browser.reload();
-                        }
-                    })
-                    .dimensions(BROWSER_DRAW_OFFSET + 40, BROWSER_DRAW_OFFSET-20, 15, 15)
-                    .build();
             reloadButton = initButton(Text.of("\u27F3"), button -> {
                 if(browser.isLoading()){
                     browser.stopLoad();
