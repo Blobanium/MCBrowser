@@ -59,45 +59,48 @@ public class BrowserScreen extends Screen {
             boolean transparent = true;
             browser = MCEF.createBrowser(this.initURL, transparent);
             resizeBrowser();
-
-            this.urlBox = new TextFieldWidget(minecraft.textRenderer, BROWSER_DRAW_OFFSET + 80,BROWSER_DRAW_OFFSET-20,getUrlBoxWidth(),15, Text.of("TEST1234")){
-                @Override
-                public boolean keyPressed(int keyCode, int scanCode, int modifiers){
-                    if(isFocused()) {
-                        browser.setFocus(false);
-                        if(keyCode == ENTER_KEY_CODE){
-                            browser.loadURL(BrowserUtil.prediffyURL(getText()));
-                            setFocused(false);
-                        }
-                    }
-                    return super.keyPressed(keyCode, scanCode, modifiers);
-                }
-            };
-            urlBox.setMaxLength(2048); //Most browsers have a max length of 2048
-            urlBox.setText(Text.of("").getString());
-            addSelectableChild(urlBox);
-
-            backButton = initButton(Text.of("\u25C0"), button -> browser.goBack(), BROWSER_DRAW_OFFSET);
-            addSelectableChild(backButton);
-
-            forwardButton = initButton(Text.of("\u25B6"), button -> browser.goForward(), BROWSER_DRAW_OFFSET + 20);
-            addSelectableChild(forwardButton);
-
-            reloadButton = initButton(Text.of("\u27F3"), button -> {
-                if(browser.isLoading()){
-                    browser.stopLoad();
-                }else{
-                    browser.reload();
-                }
-            },
-                    BROWSER_DRAW_OFFSET + 40);
-            addSelectableChild(reloadButton);
-
-            homeButton = initButton(Text.of("\u2302"), button -> browser.loadURL(MCBrowser.getConfig().homePage), BROWSER_DRAW_OFFSET + 60);
-            addSelectableChild(homeButton);
-
-            navigationButtons = new ButtonWidget[]{forwardButton, backButton, reloadButton, homeButton};
+            initButtons();
         }
+    }
+
+    private void initButtons(){
+        this.urlBox = new TextFieldWidget(minecraft.textRenderer, BROWSER_DRAW_OFFSET + 80,BROWSER_DRAW_OFFSET-20,getUrlBoxWidth(),15, Text.of("TEST1234")){
+            @Override
+            public boolean keyPressed(int keyCode, int scanCode, int modifiers){
+                if(isFocused()) {
+                    browser.setFocus(false);
+                    if(keyCode == ENTER_KEY_CODE){
+                        browser.loadURL(BrowserUtil.prediffyURL(getText()));
+                        setFocused(false);
+                    }
+                }
+                return super.keyPressed(keyCode, scanCode, modifiers);
+            }
+        };
+        urlBox.setMaxLength(2048); //Most browsers have a max length of 2048
+        urlBox.setText(Text.of("").getString());
+        addSelectableChild(urlBox);
+
+        backButton = initButton(Text.of("\u25C0"), button -> browser.goBack(), BROWSER_DRAW_OFFSET);
+        addSelectableChild(backButton);
+
+        forwardButton = initButton(Text.of("\u25B6"), button -> browser.goForward(), BROWSER_DRAW_OFFSET + 20);
+        addSelectableChild(forwardButton);
+
+        reloadButton = initButton(Text.of("\u27F3"), button -> {
+                    if(browser.isLoading()){
+                        browser.stopLoad();
+                    }else{
+                        browser.reload();
+                    }
+                },
+                BROWSER_DRAW_OFFSET + 40);
+        addSelectableChild(reloadButton);
+
+        homeButton = initButton(Text.of("\u2302"), button -> browser.loadURL(MCBrowser.getConfig().homePage), BROWSER_DRAW_OFFSET + 60);
+        addSelectableChild(homeButton);
+
+        navigationButtons = new ButtonWidget[]{forwardButton, backButton, reloadButton, homeButton};
     }
 
     private ButtonWidget initButton(Text message, ButtonWidget.PressAction onPress, int positionX){
