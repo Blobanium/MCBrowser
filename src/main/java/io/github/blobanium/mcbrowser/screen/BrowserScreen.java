@@ -4,7 +4,7 @@ import com.cinemamod.mcef.MCEF;
 import com.cinemamod.mcef.MCEFBrowser;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import io.github.blobanium.mcbrowser.BrowserUtil;
+import io.github.blobanium.mcbrowser.feature.BrowserUtil;
 import io.github.blobanium.mcbrowser.MCBrowser;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
@@ -16,7 +16,6 @@ import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.text.Text;
-import org.lwjgl.glfw.GLFW;
 
 
 public class BrowserScreen extends Screen {

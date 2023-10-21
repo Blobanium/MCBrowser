@@ -1,4 +1,4 @@
-package io.github.blobanium.mcbrowser;
+package io.github.blobanium.mcbrowser.feature;
 
 public class BrowserUtil {
     public static String prediffyURL(String url){
