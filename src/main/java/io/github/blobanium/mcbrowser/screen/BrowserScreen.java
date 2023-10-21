@@ -17,6 +17,8 @@ import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.text.Text;
 
+import java.awt.*;
+
 
 public class BrowserScreen extends Screen {
     private static final int BROWSER_DRAW_OFFSET = 50;
@@ -75,14 +77,10 @@ public class BrowserScreen extends Screen {
             urlBox.setText(Text.of("").getString());
             addSelectableChild(urlBox);
 
-            backButton = new ButtonWidget.Builder(Text.of("\u25C0"), button -> browser.goBack())
-                    .dimensions(BROWSER_DRAW_OFFSET, BROWSER_DRAW_OFFSET-20, 15, 15)
-                    .build();
+            backButton = initButton(Text.of("\u25C0"), button -> browser.goBack(), BROWSER_DRAW_OFFSET);
             addSelectableChild(backButton);
 
-            forwardButton = ButtonWidget.builder(Text.of("\u25B6"), button -> browser.goForward())
-                    .dimensions(BROWSER_DRAW_OFFSET + 20, BROWSER_DRAW_OFFSET-20, 15, 15)
-                    .build();
+            forwardButton = initButton(Text.of("\u25B6"), button -> browser.goForward(), BROWSER_DRAW_OFFSET + 20);
             addSelectableChild(forwardButton);
 
             reloadButton = ButtonWidget.builder(Text.of("\u27F3"), button -> {
@@ -94,15 +92,27 @@ public class BrowserScreen extends Screen {
                     })
                     .dimensions(BROWSER_DRAW_OFFSET + 40, BROWSER_DRAW_OFFSET-20, 15, 15)
                     .build();
+            reloadButton = initButton(Text.of("\u27F3"), button -> {
+                if(browser.isLoading()){
+                    browser.stopLoad();
+                }else{
+                    browser.reload();
+                }
+            },
+                    BROWSER_DRAW_OFFSET + 40);
             addSelectableChild(reloadButton);
 
-            homeButton = ButtonWidget.builder(Text.of("\u2302"), button -> browser.loadURL("https://www.google.com"))
-                    .dimensions(BROWSER_DRAW_OFFSET + 60, BROWSER_DRAW_OFFSET-20, 15, 15)
-                    .build();
+            homeButton = initButton(Text.of("\u2302"), button -> browser.loadURL(MCBrowser.getConfig().homePage), BROWSER_DRAW_OFFSET + 60);
             addSelectableChild(homeButton);
 
             navigationButtons = new ButtonWidget[]{forwardButton, backButton, reloadButton, homeButton};
         }
+    }
+
+    private ButtonWidget initButton(Text message, ButtonWidget.PressAction onPress, int positionX){
+        return ButtonWidget.builder(message, onPress)
+                .dimensions(positionX, BROWSER_DRAW_OFFSET-20, 15, 15)
+                .build();
     }
 
     private int mouseX(double x) {
@@ -134,7 +144,15 @@ public class BrowserScreen extends Screen {
     public void resize(MinecraftClient minecraft, int i, int j) {
         super.resize(minecraft, i, j);
         resizeBrowser();
-        reloadAllChildren();
+
+        if(!children().contains(urlBox)){
+            addSelectableChild(urlBox);
+        }
+        for(ButtonWidget button : navigationButtons){
+            if(!children().contains(button)){
+                addSelectableChild(button);
+            }
+        }
     }
 
     @Override
@@ -259,7 +277,10 @@ public class BrowserScreen extends Screen {
                 button.setFocused(button.isMouseOver(lastMouseX, lastMouseY));
             }
         }else{
-            unfocusAllWidgets();
+            urlBox.setFocused(false);
+            for(ButtonWidget button : navigationButtons){
+                button.setFocused(false);
+            }
             browser.setFocus(true);
         }
     }
@@ -273,24 +294,6 @@ public class BrowserScreen extends Screen {
             }
         }
         return false;
-    }
-
-    private void unfocusAllWidgets(){
-        urlBox.setFocused(false);
-        for(ButtonWidget button : navigationButtons){
-            button.setFocused(false);
-        }
-    }
-
-    private void reloadAllChildren(){
-        if(!children().contains(urlBox)){
-            addSelectableChild(urlBox);
-        }
-        for(ButtonWidget button : navigationButtons){
-            if(!children().contains(button)){
-                addSelectableChild(button);
-            }
-        }
     }
 
     private int getUrlBoxWidth(){
