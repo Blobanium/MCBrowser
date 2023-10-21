@@ -227,8 +227,10 @@ public class BrowserScreen extends Screen {
 
     @Override
     public void tick(){
-        if(currentUrl != browser.getURL()){
-            currentUrl = browser.getURL();
+        String getURL = browser.getURL();
+
+        if(currentUrl != getURL){
+            currentUrl = getURL;
             if(!urlBox.isFocused()) {
                 urlBox.setText(Text.of(currentUrl).getString());
                 urlBox.setCursorToStart();
