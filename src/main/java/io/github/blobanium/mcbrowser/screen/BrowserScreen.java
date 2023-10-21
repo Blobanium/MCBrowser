@@ -16,6 +16,7 @@ import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.text.Text;
+import org.lwjgl.glfw.GLFW;
 
 
 public class BrowserScreen extends Screen {
@@ -38,6 +39,7 @@ public class BrowserScreen extends Screen {
     private ButtonWidget backButton;
     private ButtonWidget reloadButton;
     private ButtonWidget homeButton;
+    private ButtonWidget[] navigationButtons;
 
     //Mouse Position
     private double lastMouseX;
@@ -99,6 +101,8 @@ public class BrowserScreen extends Screen {
                     .dimensions(BROWSER_DRAW_OFFSET + 60, BROWSER_DRAW_OFFSET-20, 15, 15)
                     .build();
             addSelectableChild(homeButton);
+
+            navigationButtons = new ButtonWidget[]{forwardButton, backButton, reloadButton, homeButton};
         }
     }
 
@@ -158,10 +162,9 @@ public class BrowserScreen extends Screen {
         RenderSystem.setShaderTexture(0, 0);
         RenderSystem.enableDepthTest();
         urlBox.renderButton(context, mouseX, mouseY, delta);
-        backButton.render(context, mouseX, mouseY, delta);
-        forwardButton.render(context, mouseX, mouseY, delta);
-        reloadButton.render(context, mouseX, mouseY, delta);
-        homeButton.render(context, mouseX, mouseY, delta);
+        for(ButtonWidget button : navigationButtons){
+            button.render(context, mouseX, mouseY, delta);
+        }
     }
 
     @Override
@@ -251,34 +254,41 @@ public class BrowserScreen extends Screen {
         if(isOverWidgets()){
             browser.setFocus(false);
             urlBox.setFocused(urlBox.isMouseOver(lastMouseX, lastMouseY));
+            for(ButtonWidget button : navigationButtons){
+                button.setFocused(button.isMouseOver(lastMouseX, lastMouseY));
+            }
         }else{
             unfocusAllWidgets();
             browser.setFocus(true);
         }
     }
     private boolean isOverWidgets(){
-        return urlBox.isMouseOver(lastMouseX, lastMouseY);
+        if(urlBox.isMouseOver(lastMouseX, lastMouseY)){
+            return true;
+        }
+        for(ButtonWidget button : navigationButtons){
+            if(button.isMouseOver(lastMouseX, lastMouseY)){
+                return true;
+            }
+        }
+        return false;
     }
 
     private void unfocusAllWidgets(){
         urlBox.setFocused(false);
+        for(ButtonWidget button : navigationButtons){
+            button.setFocused(false);
+        }
     }
 
     private void reloadAllChildren(){
         if(!children().contains(urlBox)){
             addSelectableChild(urlBox);
         }
-        if(!children().contains(forwardButton)){
-            addSelectableChild(forwardButton);
-        }
-        if(!children().contains(backButton)){
-            addSelectableChild(backButton);
-        }
-        if(!children().contains(reloadButton)){
-            addSelectableChild(reloadButton);
-        }
-        if(!children().contains(homeButton)){
-            addSelectableChild(homeButton);
+        for(ButtonWidget button : navigationButtons){
+            if(!children().contains(button)){
+                addSelectableChild(button);
+            }
         }
     }
 
