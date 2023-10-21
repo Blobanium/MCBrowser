@@ -26,6 +26,7 @@
     "fabricloader": ">=${loader_version}",
     "fabric": "*",
     "minecraft": "${minecraft_version}",
-    "mcef": "*"
+    "mcef": "*",
+    "cloth-config": "11.*.*"
   }
 }
