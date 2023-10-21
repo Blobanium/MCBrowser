@@ -14,22 +14,18 @@ import net.minecraft.text.Text;
 
 public class MCBrowser implements ClientModInitializer {
     public static boolean requestOpen = false;
-    private static String url = "https://www.google.com";
-
-    public static BrowserAutoConfig config;
+    private static String url;
 
     @Override
     public void onInitializeClient() {
         AutoConfig.register(BrowserAutoConfig.class, GsonConfigSerializer::new);
-
-        config = AutoConfig.getConfigHolder(BrowserAutoConfig.class).getConfig();
 
         ClientTickEvents.START_CLIENT_TICK.register((client) -> onTick());
 
         ClientCommandRegistrationCallback.EVENT.register(((dispatcher, registryAccess) -> {
             dispatcher.register(ClientCommandManager.literal("browser")
                     .executes(context -> {
-                        openBrowser("https://www.google.com");
+                        openBrowser(getConfig().homePage);
                         return 0;
                     })
             );
@@ -38,7 +34,7 @@ public class MCBrowser implements ClientModInitializer {
         ClientCommandRegistrationCallback.EVENT.register(((dispatcher, registryAccess) -> {
             dispatcher.register(ClientCommandManager.literal("br")
                     .executes(context -> {
-                        openBrowser("https://www.google.com");
+                        openBrowser(getConfig().homePage);
                         return 0;
                     })
             );
@@ -62,5 +58,9 @@ public class MCBrowser implements ClientModInitializer {
     public static void openBrowser(String targetUrl){
         url = targetUrl;
         requestOpen = true;
+    }
+
+    public static BrowserAutoConfig getConfig(){
+        return AutoConfig.getConfigHolder(BrowserAutoConfig.class).getConfig();
     }
 }
