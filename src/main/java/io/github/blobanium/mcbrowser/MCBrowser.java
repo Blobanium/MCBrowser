@@ -1,6 +1,9 @@
 package io.github.blobanium.mcbrowser;
 
+import io.github.blobanium.mcbrowser.config.BrowserAutoConfig;
 import io.github.blobanium.mcbrowser.screen.BrowserScreen;
+import me.shedaniel.autoconfig.AutoConfig;
+import me.shedaniel.autoconfig.serializer.GsonConfigSerializer;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
@@ -13,8 +16,14 @@ public class MCBrowser implements ClientModInitializer {
     public static boolean requestOpen = false;
     private static String url = "https://www.google.com";
 
+    public static BrowserAutoConfig config;
+
     @Override
     public void onInitializeClient() {
+        AutoConfig.register(BrowserAutoConfig.class, GsonConfigSerializer::new);
+
+        config = AutoConfig.getConfigHolder(BrowserAutoConfig.class).getConfig();
+
         ClientTickEvents.START_CLIENT_TICK.register((client) -> onTick());
 
         ClientCommandRegistrationCallback.EVENT.register(((dispatcher, registryAccess) -> {

@@ -14,6 +14,9 @@
   "entrypoints": {
     "client": [
       "io.github.blobanium.mcbrowser.MCBrowser"
+    ],
+    "modmenu": [
+      "io.github.blobanium.mcbrowser.config.ModMenuIntegration"
     ]
   },
   "mixins": [
