@@ -22,6 +22,9 @@
   "mixins": [
     "mcbrowser.mixins.json"
   ],
+  "suggests": {
+    "modmenu":"*"
+  },
   "recommends": {
     "fabric": "*"
   },
