@@ -202,11 +202,30 @@ public class BrowserScreen extends Screen {
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         System.out.println("mod=" + modifiers + " keycode="+ keyCode);
-        if(!(keyCode == GLFW.GLFW_KEY_A && modifiers == GLFW.GLFW_MOD_CONTROL && urlBox.isFocused())) {
+        if(!urlBox.isFocused()) {
             browser.sendKeyPress(keyCode, scanCode, modifiers);
         }
+
+        //Set Focus
         setFocus();
+
+        // Make sure screen isn't sending the enter key if the buttons aren't focused.
+        if(!isButtonsFocused() && keyCode == GLFW.GLFW_KEY_ENTER){
+            return true;
+        }
         return super.keyPressed(keyCode, scanCode, modifiers);
+    }
+
+    private boolean isButtonsFocused(){
+        if(urlBox.isFocused()){
+            return true;
+        }
+        for(ButtonWidget button : navigationButtons){
+            if(button.isFocused()){
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
