@@ -17,6 +17,7 @@ import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.text.Text;
+import org.lwjgl.glfw.GLFW;
 
 import java.awt.*;
 
@@ -200,7 +201,10 @@ public class BrowserScreen extends Screen {
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        browser.sendKeyPress(keyCode, scanCode, modifiers);
+        System.out.println("mod=" + modifiers + " keycode="+ keyCode);
+        if(!(keyCode == GLFW.GLFW_KEY_A && modifiers == GLFW.GLFW_MOD_CONTROL && urlBox.isFocused())) {
+            browser.sendKeyPress(keyCode, scanCode, modifiers);
+        }
         setFocus();
         return super.keyPressed(keyCode, scanCode, modifiers);
     }
