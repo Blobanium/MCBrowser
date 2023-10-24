@@ -73,32 +73,27 @@ public class BrowserScreen extends Screen {
         urlBox.setText(Text.of("").getString());
         addSelectableChild(urlBox);
 
-        backButton = initButton(Text.of("\u25C0"), button -> browser.goBack(), BROWSER_DRAW_OFFSET);
+        backButton = BrowserScreenHelper.initButton(Text.of("\u25C0"), button -> browser.goBack(), BROWSER_DRAW_OFFSET, BROWSER_DRAW_OFFSET);
         addSelectableChild(backButton);
 
-        forwardButton = initButton(Text.of("\u25B6"), button -> browser.goForward(), BROWSER_DRAW_OFFSET + 20);
+        forwardButton = BrowserScreenHelper.initButton(Text.of("\u25B6"), button -> browser.goForward(), BROWSER_DRAW_OFFSET + 20, BROWSER_DRAW_OFFSET);
         addSelectableChild(forwardButton);
 
-        reloadButton = initButton(Text.of("\u27F3"), button -> {
+        reloadButton = BrowserScreenHelper.initButton(Text.of("\u27F3"), button -> {
                     if(browser.isLoading()){
                         browser.stopLoad();
                     }else{
                         browser.reload();
                     }
                 },
-                BROWSER_DRAW_OFFSET + 40);
+                BROWSER_DRAW_OFFSET + 40,
+                BROWSER_DRAW_OFFSET);
         addSelectableChild(reloadButton);
 
-        homeButton = initButton(Text.of("\u2302"), button -> browser.loadURL(MCBrowser.getConfig().homePage), BROWSER_DRAW_OFFSET + 60);
+        homeButton = BrowserScreenHelper.initButton(Text.of("\u2302"), button -> browser.loadURL(MCBrowser.getConfig().homePage), BROWSER_DRAW_OFFSET + 60, BROWSER_DRAW_OFFSET);
         addSelectableChild(homeButton);
 
         navigationButtons = new ButtonWidget[]{forwardButton, backButton, reloadButton, homeButton};
-    }
-
-    private ButtonWidget initButton(Text message, ButtonWidget.PressAction onPress, int positionX){
-        return ButtonWidget.builder(message, onPress)
-                .dimensions(positionX, BROWSER_DRAW_OFFSET-20, 15, 15)
-                .build();
     }
 
     private void resizeBrowser() {

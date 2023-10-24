@@ -2,11 +2,13 @@ package io.github.blobanium.mcbrowser.util;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
+import net.minecraft.text.Text;
 
 public class BrowserScreenHelper {
     private static final int Z_SHIFT = -1;
@@ -26,6 +28,13 @@ public class BrowserScreenHelper {
         RenderSystem.setShaderTexture(0, 0);
         RenderSystem.enableDepthTest();
     }
+
+    public static ButtonWidget initButton(Text message, ButtonWidget.PressAction onPress, int positionX, int offset){
+        return ButtonWidget.builder(message, onPress)
+                .dimensions(positionX, offset-20, 15, 15)
+                .build();
+    }
+
     public static int mouseX(double x, int offset) {
         return (int) ((x - offset) * MinecraftClient.getInstance().getWindow().getScaleFactor());
     }
