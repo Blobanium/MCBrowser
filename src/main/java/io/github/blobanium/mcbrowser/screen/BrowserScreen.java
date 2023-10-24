@@ -3,28 +3,19 @@ package io.github.blobanium.mcbrowser.screen;
 import com.cinemamod.mcef.MCEF;
 import com.cinemamod.mcef.MCEFBrowser;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.blobanium.mcbrowser.feature.BrowserUtil;
 import io.github.blobanium.mcbrowser.MCBrowser;
-import io.github.blobanium.mcbrowser.util.BrowserMatrixHelper;
+import io.github.blobanium.mcbrowser.util.BrowserScreenHelper;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.*;
-import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.GameRenderer;
-import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexFormat;
-import net.minecraft.client.render.VertexFormats;
 import net.minecraft.text.Text;
 import org.lwjgl.glfw.GLFW;
-
-import java.awt.*;
 
 
 public class BrowserScreen extends Screen {
     private static final int BROWSER_DRAW_OFFSET = 50;
-    private static final int Z_SHIFT = -1;
     private static final int ENTER_KEY_CODE = 257;
 
     private MCEFBrowser browser;
@@ -112,7 +103,7 @@ public class BrowserScreen extends Screen {
 
     private void resizeBrowser() {
         if (width > 100 && height > 100) {
-            browser.resize(BrowserMatrixHelper.scaleX(width, BROWSER_DRAW_OFFSET), BrowserMatrixHelper.scaleY(height, BROWSER_DRAW_OFFSET));
+            browser.resize(BrowserScreenHelper.scaleX(width, BROWSER_DRAW_OFFSET), BrowserScreenHelper.scaleY(height, BROWSER_DRAW_OFFSET));
         }
         if(this.urlBox != null) {
             urlBox.setWidth(getUrlBoxWidth());
@@ -144,19 +135,7 @@ public class BrowserScreen extends Screen {
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
         super.render(context, mouseX, mouseY, delta);
-        RenderSystem.disableDepthTest();
-        RenderSystem.setShader(GameRenderer::getPositionTexColorProgram);
-        RenderSystem.setShaderTexture(0, browser.getRenderer().getTextureID());
-        Tessellator t = Tessellator.getInstance();
-        BufferBuilder buffer = t.getBuffer();
-        buffer.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR);
-        buffer.vertex(BROWSER_DRAW_OFFSET, height - BROWSER_DRAW_OFFSET, Z_SHIFT).texture(0.0f, 1.0f).color(255, 255, 255, 255).next();
-        buffer.vertex(width - BROWSER_DRAW_OFFSET, height - BROWSER_DRAW_OFFSET, Z_SHIFT).texture(1.0f, 1.0f).color(255, 255, 255, 255).next();
-        buffer.vertex(width - BROWSER_DRAW_OFFSET, BROWSER_DRAW_OFFSET, Z_SHIFT).texture(1.0f, 0.0f).color(255, 255, 255, 255).next();
-        buffer.vertex(BROWSER_DRAW_OFFSET, BROWSER_DRAW_OFFSET, Z_SHIFT).texture(0.0f, 0.0f).color(255, 255, 255, 255).next();
-        t.draw();
-        RenderSystem.setShaderTexture(0, 0);
-        RenderSystem.enableDepthTest();
+        BrowserScreenHelper.renderBrowser(BROWSER_DRAW_OFFSET, width, height, browser.getRenderer().getTextureID());
         urlBox.renderButton(context, mouseX, mouseY, delta);
         for(ButtonWidget button : navigationButtons){
             button.render(context, mouseX, mouseY, delta);
@@ -165,7 +144,7 @@ public class BrowserScreen extends Screen {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-    browser.sendMousePress(BrowserMatrixHelper.mouseX(mouseX, BROWSER_DRAW_OFFSET), BrowserMatrixHelper.mouseY(mouseY, BROWSER_DRAW_OFFSET), button);
+    browser.sendMousePress(BrowserScreenHelper.mouseX(mouseX, BROWSER_DRAW_OFFSET), BrowserScreenHelper.mouseY(mouseY, BROWSER_DRAW_OFFSET), button);
         updateMouseLocation(mouseX, mouseY);
         setFocus();
         return super.mouseClicked(mouseX, mouseY, button);
@@ -173,7 +152,7 @@ public class BrowserScreen extends Screen {
 
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
-        browser.sendMouseRelease(BrowserMatrixHelper.mouseX(mouseX, BROWSER_DRAW_OFFSET), BrowserMatrixHelper.mouseY(mouseY, BROWSER_DRAW_OFFSET), button);
+        browser.sendMouseRelease(BrowserScreenHelper.mouseX(mouseX, BROWSER_DRAW_OFFSET), BrowserScreenHelper.mouseY(mouseY, BROWSER_DRAW_OFFSET), button);
         updateMouseLocation(mouseX, mouseY);
         setFocus();
         return super.mouseReleased(mouseX, mouseY, button);
@@ -181,7 +160,7 @@ public class BrowserScreen extends Screen {
 
     @Override
     public void mouseMoved(double mouseX, double mouseY) {
-        browser.sendMouseMove(BrowserMatrixHelper.mouseX(mouseX, BROWSER_DRAW_OFFSET), BrowserMatrixHelper.mouseY(mouseY, BROWSER_DRAW_OFFSET));
+        browser.sendMouseMove(BrowserScreenHelper.mouseX(mouseX, BROWSER_DRAW_OFFSET), BrowserScreenHelper.mouseY(mouseY, BROWSER_DRAW_OFFSET));
         updateMouseLocation(mouseX, mouseY);
         super.mouseMoved(mouseX, mouseY);
     }
@@ -194,7 +173,7 @@ public class BrowserScreen extends Screen {
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
-        browser.sendMouseWheel(BrowserMatrixHelper.mouseX(mouseX, BROWSER_DRAW_OFFSET), BrowserMatrixHelper.mouseY(mouseY, BROWSER_DRAW_OFFSET), delta, 0);
+        browser.sendMouseWheel(BrowserScreenHelper.mouseX(mouseX, BROWSER_DRAW_OFFSET), BrowserScreenHelper.mouseY(mouseY, BROWSER_DRAW_OFFSET), delta, 0);
         updateMouseLocation(mouseX, mouseY);
         return super.mouseScrolled(mouseX, mouseY, delta);
     }

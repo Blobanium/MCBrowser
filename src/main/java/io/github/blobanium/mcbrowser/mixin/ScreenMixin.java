@@ -1,8 +1,7 @@
 package io.github.blobanium.mcbrowser.mixin;
 
 import io.github.blobanium.mcbrowser.MCBrowser;
-import io.github.blobanium.mcbrowser.config.BrowserAutoConfig;
-import me.shedaniel.autoconfig.AutoConfig;
+
 import net.minecraft.client.gui.screen.Screen;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
