@@ -75,15 +75,7 @@ public class BrowserScreen extends Screen {
 
         backButton = BrowserScreenHelper.initButton(Text.of("\u25C0"), button -> browser.goBack(), BROWSER_DRAW_OFFSET, BROWSER_DRAW_OFFSET);
         forwardButton = BrowserScreenHelper.initButton(Text.of("\u25B6"), button -> browser.goForward(), BROWSER_DRAW_OFFSET + 20, BROWSER_DRAW_OFFSET);
-        reloadButton = BrowserScreenHelper.initButton(Text.of("\u27F3"), button -> {
-                    if(browser.isLoading()){
-                        browser.stopLoad();
-                    }else{
-                        browser.reload();
-                    }
-                },
-                BROWSER_DRAW_OFFSET + 40,
-                BROWSER_DRAW_OFFSET);
+        reloadButton = BrowserScreenHelper.initButton(Text.of("\u27F3"), button -> { if(browser.isLoading()) {browser.stopLoad();} else {browser.reload();} }, BROWSER_DRAW_OFFSET + 40, BROWSER_DRAW_OFFSET);
         homeButton = BrowserScreenHelper.initButton(Text.of("\u2302"), button -> browser.loadURL(MCBrowser.getConfig().homePage), BROWSER_DRAW_OFFSET + 60, BROWSER_DRAW_OFFSET);
 
         navigationButtons = new ButtonWidget[]{forwardButton, backButton, reloadButton, homeButton};
