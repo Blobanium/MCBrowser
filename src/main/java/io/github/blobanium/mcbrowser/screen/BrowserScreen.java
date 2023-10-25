@@ -16,7 +16,6 @@ import org.lwjgl.glfw.GLFW;
 
 public class BrowserScreen extends Screen {
     private static final int BROWSER_DRAW_OFFSET = 50;
-    private static final int ENTER_KEY_CODE = 257;
 
     private MCEFBrowser browser;
 
@@ -61,7 +60,7 @@ public class BrowserScreen extends Screen {
             public boolean keyPressed(int keyCode, int scanCode, int modifiers){
                 if(isFocused()) {
                     browser.setFocus(false);
-                    if(keyCode == ENTER_KEY_CODE){
+                    if(keyCode == GLFW.GLFW_KEY_ENTER){
                         browser.loadURL(BrowserUtil.prediffyURL(getText()));
                         setFocused(false);
                     }
