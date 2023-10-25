@@ -1,8 +1,10 @@
 package io.github.blobanium.mcbrowser.util;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import io.github.blobanium.mcbrowser.feature.BrowserUtil;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.Tessellator;
@@ -13,6 +15,7 @@ import net.minecraft.text.Text;
 public class BrowserScreenHelper {
     private static final int Z_SHIFT = -1;
 
+    //Rendering
     public static void renderBrowser(int offset, int width, int height, int textureID){
         RenderSystem.disableDepthTest();
         RenderSystem.setShader(GameRenderer::getPositionTexColorProgram);
@@ -29,11 +32,15 @@ public class BrowserScreenHelper {
         RenderSystem.enableDepthTest();
     }
 
+    //Navigation initialization methods
+
     public static ButtonWidget initButton(Text message, ButtonWidget.PressAction onPress, int positionX, int offset){
         return ButtonWidget.builder(message, onPress)
                 .dimensions(positionX, offset-20, 15, 15)
                 .build();
     }
+
+    //Matrix related commands
 
     public static int mouseX(double x, int offset) {
         return (int) ((x - offset) * MinecraftClient.getInstance().getWindow().getScaleFactor());

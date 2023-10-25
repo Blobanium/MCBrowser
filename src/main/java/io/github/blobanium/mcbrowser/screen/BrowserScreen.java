@@ -48,7 +48,7 @@ public class BrowserScreen extends Screen {
     protected void init() {
         super.init();
         if (browser == null) {
-            boolean transparent = true;
+            boolean transparent = false;
             browser = MCEF.createBrowser(this.initURL, transparent);
             resizeBrowser();
             initButtons();
