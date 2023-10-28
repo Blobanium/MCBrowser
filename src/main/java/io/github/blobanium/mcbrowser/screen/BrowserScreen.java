@@ -19,8 +19,6 @@ public class BrowserScreen extends Screen {
 
     private MCEFBrowser browser;
 
-    private MinecraftClient minecraft = MinecraftClient.getInstance();
-
     //URL
     private String initURL;
     private String currentUrl;
@@ -55,7 +53,7 @@ public class BrowserScreen extends Screen {
     }
 
     private void initButtons(){
-        this.urlBox = new TextFieldWidget(minecraft.textRenderer, BROWSER_DRAW_OFFSET + 80,BROWSER_DRAW_OFFSET-20,getUrlBoxWidth(),15, Text.of("TEST1234")){
+        this.urlBox = new TextFieldWidget(MinecraftClient.getInstance().textRenderer, BROWSER_DRAW_OFFSET + 80,BROWSER_DRAW_OFFSET-20,getUrlBoxWidth(),15, Text.of("TEST1234")){
             @Override
             public boolean keyPressed(int keyCode, int scanCode, int modifiers){
                 if(isFocused()) {
