@@ -5,6 +5,8 @@ import com.cinemamod.mcef.MCEFBrowser;
 
 import io.github.blobanium.mcbrowser.feature.BrowserUtil;
 import io.github.blobanium.mcbrowser.MCBrowser;
+import io.github.blobanium.mcbrowser.feature.specialbutton.SpecialButtonActions;
+import io.github.blobanium.mcbrowser.feature.specialbutton.SpecialButtonHelper;
 import io.github.blobanium.mcbrowser.util.BrowserScreenHelper;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
@@ -31,6 +33,8 @@ public class BrowserScreen extends Screen {
     private ButtonWidget reloadButton;
     private ButtonWidget homeButton;
     private ButtonWidget[] navigationButtons;
+
+    private ButtonWidget specialButton;
 
     //Mouse Position
     private double lastMouseX;
@@ -79,6 +83,11 @@ public class BrowserScreen extends Screen {
         for(ButtonWidget button : navigationButtons){
             addSelectableChild(button);
         }
+
+        specialButton = ButtonWidget.builder(Text.of(""), button -> SpecialButtonHelper.onPress(currentUrl))
+                .dimensions(BROWSER_DRAW_OFFSET, height - BROWSER_DRAW_OFFSET + 5,  150, 15)
+                .build();
+        addSelectableChild(specialButton);
     }
 
     private void resizeBrowser() {
@@ -87,6 +96,10 @@ public class BrowserScreen extends Screen {
         }
         if(this.urlBox != null) {
             urlBox.setWidth(getUrlBoxWidth());
+        }
+
+        if(this.specialButton != null){
+            specialButton.setPosition(BROWSER_DRAW_OFFSET, height - BROWSER_DRAW_OFFSET + 5);
         }
     }
 
@@ -102,6 +115,10 @@ public class BrowserScreen extends Screen {
             if(!children().contains(button)){
                 addSelectableChild(button);
             }
+        }
+
+        if(!children().contains(specialButton)){
+            addSelectableChild(specialButton);
         }
     }
 
@@ -119,6 +136,9 @@ public class BrowserScreen extends Screen {
         urlBox.renderButton(context, mouseX, mouseY, delta);
         for(ButtonWidget button : navigationButtons){
             button.render(context, mouseX, mouseY, delta);
+        }
+        if(SpecialButtonHelper.isOnCompatableSite(currentUrl)) {
+            specialButton.render(context, mouseX, mouseY, delta);
         }
     }
 
@@ -210,6 +230,10 @@ public class BrowserScreen extends Screen {
             if(!urlBox.isFocused()) {
                 urlBox.setText(Text.of(currentUrl).getString());
                 urlBox.setCursorToStart();
+            }
+            SpecialButtonActions action = SpecialButtonActions.getFromUrlConstantValue(getURL);
+            if(action != null) {
+                specialButton.setMessage(action.getButtonText());
             }
         }
 
