@@ -5,6 +5,7 @@ import com.cinemamod.mcef.MCEFBrowser;
 
 import io.github.blobanium.mcbrowser.feature.BrowserUtil;
 import io.github.blobanium.mcbrowser.MCBrowser;
+import io.github.blobanium.mcbrowser.feature.specialbutton.SpecialButtonAction;
 import io.github.blobanium.mcbrowser.feature.specialbutton.SpecialButtonActions;
 import io.github.blobanium.mcbrowser.feature.specialbutton.SpecialButtonHelper;
 import io.github.blobanium.mcbrowser.util.BrowserScreenHelper;
@@ -227,6 +228,7 @@ public class BrowserScreen extends Screen {
 
         if(currentUrl != getURL){
             currentUrl = getURL;
+            SpecialButtonAction.currentUrl = getURL;
             if(!urlBox.isFocused()) {
                 urlBox.setText(Text.of(currentUrl).getString());
                 urlBox.setCursorToStart();
