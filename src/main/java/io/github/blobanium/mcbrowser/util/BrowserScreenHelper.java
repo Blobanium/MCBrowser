@@ -57,4 +57,8 @@ public class BrowserScreenHelper {
     public static int scaleY(double y, int offset) {
         return (int) ((y - offset * 2) * MinecraftClient.getInstance().getWindow().getScaleFactor());
     }
+
+    public static int getUrlBoxWidth(int width, int offset){
+        return width - (offset * 2) - 80;
+    }
 }

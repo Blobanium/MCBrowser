@@ -58,7 +58,7 @@ public class BrowserScreen extends Screen {
     }
 
     private void initButtons(){
-        this.urlBox = new TextFieldWidget(MinecraftClient.getInstance().textRenderer, BROWSER_DRAW_OFFSET + 80,BROWSER_DRAW_OFFSET-20,getUrlBoxWidth(),15, Text.of("TEST1234")){
+        this.urlBox = new TextFieldWidget(MinecraftClient.getInstance().textRenderer, BROWSER_DRAW_OFFSET + 80,BROWSER_DRAW_OFFSET-20,BrowserScreenHelper.getUrlBoxWidth(width, BROWSER_DRAW_OFFSET),15, Text.of("TEST1234")){
             @Override
             public boolean keyPressed(int keyCode, int scanCode, int modifiers){
                 if(isFocused()) {
@@ -96,7 +96,7 @@ public class BrowserScreen extends Screen {
             browser.resize(BrowserScreenHelper.scaleX(width, BROWSER_DRAW_OFFSET), BrowserScreenHelper.scaleY(height, BROWSER_DRAW_OFFSET));
         }
         if(this.urlBox != null) {
-            urlBox.setWidth(getUrlBoxWidth());
+            urlBox.setWidth(BrowserScreenHelper.getUrlBoxWidth(width, BROWSER_DRAW_OFFSET));
         }
 
         if(this.specialButton != null){
@@ -112,14 +112,13 @@ public class BrowserScreen extends Screen {
         if(!children().contains(urlBox)){
             addSelectableChild(urlBox);
         }
+        if(!children().contains(specialButton)){
+            addSelectableChild(specialButton);
+        }
         for(ButtonWidget button : navigationButtons){
             if(!children().contains(button)){
                 addSelectableChild(button);
             }
-        }
-
-        if(!children().contains(specialButton)){
-            addSelectableChild(specialButton);
         }
     }
 
@@ -281,9 +280,5 @@ public class BrowserScreen extends Screen {
             }
         }
         return false;
-    }
-
-    private int getUrlBoxWidth(){
-        return width - (BROWSER_DRAW_OFFSET * 2) - 80;
     }
 }
