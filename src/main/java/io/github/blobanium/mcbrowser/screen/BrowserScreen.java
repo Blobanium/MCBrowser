@@ -224,7 +224,7 @@ public class BrowserScreen extends Screen {
 
     @Override
     public void tick(){
-        String getURL = browser.getURL();
+        final String getURL = browser.getURL();
 
         if(currentUrl != getURL){
             currentUrl = getURL;
@@ -258,11 +258,13 @@ public class BrowserScreen extends Screen {
         if(isOverWidgets()){
             browser.setFocus(false);
             urlBox.setFocused(urlBox.isMouseOver(lastMouseX, lastMouseY));
+            specialButton.setFocused(specialButton.isMouseOver(lastMouseX, lastMouseY));
             for(ButtonWidget button : navigationButtons){
                 button.setFocused(button.isMouseOver(lastMouseX, lastMouseY));
             }
         }else{
             urlBox.setFocused(false);
+            specialButton.setFocused(false);
             for(ButtonWidget button : navigationButtons){
                 button.setFocused(false);
             }
@@ -270,7 +272,7 @@ public class BrowserScreen extends Screen {
         }
     }
     private boolean isOverWidgets(){
-        if(urlBox.isMouseOver(lastMouseX, lastMouseY)){
+        if(urlBox.isMouseOver(lastMouseX, lastMouseY) || specialButton.isMouseOver(lastMouseX, lastMouseY)){
             return true;
         }
         for(ButtonWidget button : navigationButtons){
