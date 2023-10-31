@@ -23,7 +23,8 @@ public class SpecialButtonAction {
     public static String currentUrl = null;
 
     public static void downloadModrinthMod(){
-        MinecraftClient.getInstance().getToastManager().add(new SystemToast(SystemToast.Type.TUTORIAL_HINT, MutableText.of(new TranslatableTextContent("mcbrowser.moddownload.toast.downloadstarted", "Download Started", TranslatableTextContent.EMPTY_ARGUMENTS)), MutableText.of(new TranslatableTextContent("mcbrowser.moddownload.toast.downloadstarted.description", "Please wait while your mod downloads.", TranslatableTextContent.EMPTY_ARGUMENTS))));
+        sendToastMessage(MutableText.of(new TranslatableTextContent("mcbrowser.moddownload.toast.downloadstarted", "Download Started", TranslatableTextContent.EMPTY_ARGUMENTS)),
+                MutableText.of(new TranslatableTextContent("mcbrowser.moddownload.toast.downloadstarted.description", "Please wait while your mod downloads.", TranslatableTextContent.EMPTY_ARGUMENTS)));
 
         CompletableFuture.runAsync(() -> {
             try {
@@ -47,9 +48,11 @@ public class SpecialButtonAction {
                 URL downloadURL = new URL(file.get("url").getAsString());
                 FileUtils.copyURLToFile(downloadURL, new File(FabricLoader.getInstance().getGameDir().toFile(), "mods/" + cleanseFileUrl(downloadURL.getFile())));
 
-                MinecraftClient.getInstance().getToastManager().add(new SystemToast(SystemToast.Type.TUTORIAL_HINT, MutableText.of(new TranslatableTextContent("mcbrowser.moddownload.toast.downloadcomplete", "Download Completed!", TranslatableTextContent.EMPTY_ARGUMENTS)), MutableText.of(new TranslatableTextContent("mcbrowser.moddownload.toast.downloadcomplete.description", "Restart your client for changes to take effect.", TranslatableTextContent.EMPTY_ARGUMENTS))));
+                sendToastMessage(MutableText.of(new TranslatableTextContent("mcbrowser.moddownload.toast.downloadcomplete", "Download Completed!", TranslatableTextContent.EMPTY_ARGUMENTS)),
+                        MutableText.of(new TranslatableTextContent("mcbrowser.moddownload.toast.downloadcomplete.description", "Restart your client for changes to take effect.", TranslatableTextContent.EMPTY_ARGUMENTS)));
             } catch (IOException e) {
-                MinecraftClient.getInstance().getToastManager().add(new SystemToast(SystemToast.Type.TUTORIAL_HINT, MutableText.of(new TranslatableTextContent("mcbrowser.moddownload.toast.downloadfailed", "Download Failed", TranslatableTextContent.EMPTY_ARGUMENTS)), MutableText.of(new TranslatableTextContent("mcbrowser.moddownload.toast.downloadfailed.description", "Check your logs for more info", TranslatableTextContent.EMPTY_ARGUMENTS))));
+                sendToastMessage(MutableText.of(new TranslatableTextContent("mcbrowser.moddownload.toast.downloadfailed", "Download Failed", TranslatableTextContent.EMPTY_ARGUMENTS)),
+                        MutableText.of(new TranslatableTextContent("mcbrowser.moddownload.toast.downloadfailed.description", "Check your logs for more info", TranslatableTextContent.EMPTY_ARGUMENTS)));
                 e.printStackTrace();
             }
         });
@@ -63,5 +66,9 @@ public class SpecialButtonAction {
     private static String getModrinthSlugFromUrl(String url){
         String[] array =url.replace("https://modrinth.com/mod/", "").split("/");
         return array[0];
+    }
+
+    private static void sendToastMessage(Text title, Text description){
+        MinecraftClient.getInstance().getToastManager().add(new SystemToast(SystemToast.Type.TUTORIAL_HINT, title, description));
     }
 }
