@@ -45,7 +45,7 @@ public class SpecialButtonAction {
 
                 //get file
                 URL downloadURL = new URL(file.get("url").getAsString());
-                FileUtils.copyURLToFile(downloadURL, new File(FabricLoader.getInstance().getGameDir().toFile(), "mods/" + trimFileUrl(downloadURL.getFile())));
+                FileUtils.copyURLToFile(downloadURL, new File(FabricLoader.getInstance().getGameDir().toFile(), "mods/" + cleanseFileUrl(downloadURL.getFile())));
 
                 MinecraftClient.getInstance().getToastManager().add(new SystemToast(SystemToast.Type.TUTORIAL_HINT, MutableText.of(new TranslatableTextContent("mcbrowser.moddownload.toast.downloadcomplete", "Download Completed!", TranslatableTextContent.EMPTY_ARGUMENTS)), MutableText.of(new TranslatableTextContent("mcbrowser.moddownload.toast.downloadcomplete.description", "Restart your client for changes to take effect.", TranslatableTextContent.EMPTY_ARGUMENTS))));
             } catch (IOException e) {
@@ -55,9 +55,9 @@ public class SpecialButtonAction {
         });
     }
 
-    private static String trimFileUrl(String url){
+    private static String cleanseFileUrl(String url){
         String[] array = url.split("/");
-        return array[array.length-1];
+        return array[array.length-1].replace("%2B", "+");
     }
 
     private static String getModrinthSlugFromUrl(String url){
