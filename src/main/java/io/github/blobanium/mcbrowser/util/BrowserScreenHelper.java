@@ -2,7 +2,6 @@ package io.github.blobanium.mcbrowser.util;
 
 import com.cinemamod.mcef.MCEF;
 import com.mojang.blaze3d.systems.RenderSystem;
-import io.github.blobanium.mcbrowser.feature.BrowserUtil;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.render.BufferBuilder;
@@ -16,6 +15,11 @@ public class BrowserScreenHelper {
     private static final int Z_SHIFT = -1;
 
     public static String currentUrl = null;
+
+    //Mouse position
+    public static double lastMouseX;
+    public static double lastMouseY;
+
 
     //Rendering
     public static void renderBrowser(int offset, int width, int height, int textureID){
@@ -45,11 +49,18 @@ public class BrowserScreenHelper {
     //Matrix related commands
 
     public static int mouseX(double x, int offset) {
+        lastMouseX = x;
         return (int) ((x - offset) * MinecraftClient.getInstance().getWindow().getScaleFactor());
     }
 
     public static int mouseY(double y, int offset) {
+        lastMouseY = y;
         return (int) ((y - offset) * MinecraftClient.getInstance().getWindow().getScaleFactor());
+    }
+
+    public static void updateMouseLocation(double mouseX, double mouseY){
+        lastMouseX = mouseX;
+        lastMouseY = mouseY;
     }
 
     public static int scaleX(double x, int offset) {
@@ -64,7 +75,7 @@ public class BrowserScreenHelper {
         return width - (offset * 2) - 80;
     }
 
-
+    //Browser Creation
     public static BrowserImpl createBrowser(String url, boolean transparent){
         if(MCEF.isInitialized()) {
             BrowserImpl browser = new BrowserImpl(MCEF.getClient(), url, transparent);

@@ -1,8 +1,5 @@
 package io.github.blobanium.mcbrowser.screen;
 
-import com.cinemamod.mcef.MCEF;
-import com.cinemamod.mcef.MCEFBrowser;
-
 import io.github.blobanium.mcbrowser.feature.BrowserUtil;
 import io.github.blobanium.mcbrowser.MCBrowser;
 import io.github.blobanium.mcbrowser.feature.specialbutton.SpecialButtonActions;
@@ -25,7 +22,6 @@ public class BrowserScreen extends Screen {
     //URL
     private String initURL;
 
-
     //Ui
     private TextFieldWidget urlBox;
     private ButtonWidget forwardButton;
@@ -36,10 +32,6 @@ public class BrowserScreen extends Screen {
     private ClickableWidget[] uiElements;
 
     private ButtonWidget specialButton;
-
-    //Mouse Position
-    private double lastMouseX;
-    private double lastMouseY;
 
     public BrowserScreen(Text title, String url) {
         super(title);
@@ -133,8 +125,7 @@ public class BrowserScreen extends Screen {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-    browser.sendMousePress(BrowserScreenHelper.mouseX(mouseX, BROWSER_DRAW_OFFSET), BrowserScreenHelper.mouseY(mouseY, BROWSER_DRAW_OFFSET), button);
-        updateMouseLocation(mouseX, mouseY);
+        browser.sendMousePress(BrowserScreenHelper.mouseX(mouseX, BROWSER_DRAW_OFFSET), BrowserScreenHelper.mouseY(mouseY, BROWSER_DRAW_OFFSET), button);
         setFocus();
         return super.mouseClicked(mouseX, mouseY, button);
     }
@@ -142,7 +133,6 @@ public class BrowserScreen extends Screen {
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
         browser.sendMouseRelease(BrowserScreenHelper.mouseX(mouseX, BROWSER_DRAW_OFFSET), BrowserScreenHelper.mouseY(mouseY, BROWSER_DRAW_OFFSET), button);
-        updateMouseLocation(mouseX, mouseY);
         setFocus();
         return super.mouseReleased(mouseX, mouseY, button);
     }
@@ -150,20 +140,18 @@ public class BrowserScreen extends Screen {
     @Override
     public void mouseMoved(double mouseX, double mouseY) {
         browser.sendMouseMove(BrowserScreenHelper.mouseX(mouseX, BROWSER_DRAW_OFFSET), BrowserScreenHelper.mouseY(mouseY, BROWSER_DRAW_OFFSET));
-        updateMouseLocation(mouseX, mouseY);
         super.mouseMoved(mouseX, mouseY);
     }
 
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
-        updateMouseLocation(mouseX, mouseY);
+        BrowserScreenHelper.updateMouseLocation(mouseX, mouseY);
         return super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
     }
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
         browser.sendMouseWheel(BrowserScreenHelper.mouseX(mouseX, BROWSER_DRAW_OFFSET), BrowserScreenHelper.mouseY(mouseY, BROWSER_DRAW_OFFSET), delta, 0);
-        updateMouseLocation(mouseX, mouseY);
         return super.mouseScrolled(mouseX, mouseY, delta);
     }
 
@@ -233,16 +221,11 @@ public class BrowserScreen extends Screen {
         }
     }
 
-    private void updateMouseLocation(double mouseX, double mouseY){
-        lastMouseX = mouseX;
-        lastMouseY = mouseY;
-    }
-
     public void setFocus(){
         if(isOverWidgets()){
             browser.setFocus(false);
             for(ClickableWidget widget : uiElements){
-                widget.setFocused(widget.isMouseOver(lastMouseX, lastMouseY));
+                widget.setFocused(widget.isMouseOver(BrowserScreenHelper.lastMouseX, BrowserScreenHelper.lastMouseY));
             }
         }else{
             for(ClickableWidget widget : uiElements){
@@ -254,7 +237,7 @@ public class BrowserScreen extends Screen {
 
     private boolean isOverWidgets(){
         for(ClickableWidget widget : uiElements){
-            if(widget.isMouseOver(lastMouseX, lastMouseY)){
+            if(widget.isMouseOver(BrowserScreenHelper.lastMouseX, BrowserScreenHelper.lastMouseY)){
                 return true;
             }
         }
