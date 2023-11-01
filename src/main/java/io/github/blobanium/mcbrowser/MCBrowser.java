@@ -8,7 +8,6 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.text.Text;
 import org.apache.logging.log4j.LogManager;
@@ -44,16 +43,6 @@ public class MCBrowser implements ClientModInitializer {
                     })
             );
         }));
-
-        String mcefVersion = FabricLoader.getInstance().getModContainer("mcef").get().getMetadata().getVersion().getFriendlyString();
-
-        //Check if using (Soon-to-be) outdated MCEF Version
-        if(mcefVersion.contains("2.0.1")){
-            LOGGER.warn("You are using a version of MCEF that will be no longer supported by MCBrowser." +
-                    "\nThe version of MCEF you are using is using a chromium build that is vulnerable to CVE-2023-4863" +
-                    "\nSupport for this version will become discontinued in future versions of MCBrowser" +
-                    "\nIt is strongly recommended to update MCEF when newer versions become available.");
-        }
     }
     private static final MinecraftClient minecraft = MinecraftClient.getInstance();
 
