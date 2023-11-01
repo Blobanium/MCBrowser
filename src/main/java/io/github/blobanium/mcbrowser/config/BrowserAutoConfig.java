@@ -7,4 +7,6 @@ import me.shedaniel.autoconfig.annotation.Config;
 public class BrowserAutoConfig implements ConfigData {
         public boolean openLinkInBrowser = true;
         public String homePage = "https://www.google.com";
+
+        public boolean asyncBrowserInput = true;
 }

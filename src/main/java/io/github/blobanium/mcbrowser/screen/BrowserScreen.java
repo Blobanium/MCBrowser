@@ -1,5 +1,6 @@
 package io.github.blobanium.mcbrowser.screen;
 
+import io.github.blobanium.mcbrowser.config.BrowserAutoConfig;
 import io.github.blobanium.mcbrowser.feature.BrowserUtil;
 import io.github.blobanium.mcbrowser.MCBrowser;
 import io.github.blobanium.mcbrowser.feature.specialbutton.SpecialButtonActions;
@@ -12,6 +13,8 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.*;
 import net.minecraft.text.Text;
 import org.lwjgl.glfw.GLFW;
+
+import java.util.concurrent.CompletableFuture;
 
 
 public class BrowserScreen extends Screen {
@@ -139,7 +142,11 @@ public class BrowserScreen extends Screen {
 
     @Override
     public void mouseMoved(double mouseX, double mouseY) {
-        browser.sendMouseMove(BrowserScreenHelper.mouseX(mouseX, BROWSER_DRAW_OFFSET), BrowserScreenHelper.mouseY(mouseY, BROWSER_DRAW_OFFSET));
+        if(MCBrowser.getConfig().asyncBrowserInput) {
+            CompletableFuture.runAsync(() -> browser.sendMouseMove(BrowserScreenHelper.mouseX(mouseX, BROWSER_DRAW_OFFSET), BrowserScreenHelper.mouseY(mouseY, BROWSER_DRAW_OFFSET)));
+        } else{
+            browser.sendMouseMove(BrowserScreenHelper.mouseX(mouseX, BROWSER_DRAW_OFFSET), BrowserScreenHelper.mouseY(mouseY, BROWSER_DRAW_OFFSET));
+        }
         super.mouseMoved(mouseX, mouseY);
     }
 
@@ -151,7 +158,11 @@ public class BrowserScreen extends Screen {
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
-        browser.sendMouseWheel(BrowserScreenHelper.mouseX(mouseX, BROWSER_DRAW_OFFSET), BrowserScreenHelper.mouseY(mouseY, BROWSER_DRAW_OFFSET), delta, 0);
+        if(MCBrowser.getConfig().asyncBrowserInput) {
+            CompletableFuture.runAsync(() -> browser.sendMouseWheel(BrowserScreenHelper.mouseX(mouseX, BROWSER_DRAW_OFFSET), BrowserScreenHelper.mouseY(mouseY, BROWSER_DRAW_OFFSET), delta, 0));
+        } else{
+            browser.sendMouseWheel(BrowserScreenHelper.mouseX(mouseX, BROWSER_DRAW_OFFSET), BrowserScreenHelper.mouseY(mouseY, BROWSER_DRAW_OFFSET), delta, 0);
+        }
         return super.mouseScrolled(mouseX, mouseY, delta);
     }
 
