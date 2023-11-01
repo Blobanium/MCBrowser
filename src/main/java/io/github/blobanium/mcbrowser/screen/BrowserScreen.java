@@ -222,10 +222,6 @@ public class BrowserScreen extends Screen {
             }
         }
 
-        doButtonWork();
-    }
-
-    private void doButtonWork(){
         forwardButton.active = browser.canGoForward();
         backButton.active = browser.canGoBack();
 
