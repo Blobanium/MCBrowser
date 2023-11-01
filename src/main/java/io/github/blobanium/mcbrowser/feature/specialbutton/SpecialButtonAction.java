@@ -3,6 +3,7 @@ package io.github.blobanium.mcbrowser.feature.specialbutton;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import io.github.blobanium.mcbrowser.util.BrowserScreenHelper;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.MinecraftVersion;
 import net.minecraft.client.MinecraftClient;
@@ -20,16 +21,13 @@ import java.net.URL;
 import java.util.concurrent.CompletableFuture;
 
 public class SpecialButtonAction {
-    public static String currentUrl = null;
-
     public static void downloadModrinthMod(){
-        sendToastMessage(MutableText.of(new TranslatableTextContent("mcbrowser.moddownload.toast.downloadstarted", "Download Started", TranslatableTextContent.EMPTY_ARGUMENTS)),
-                MutableText.of(new TranslatableTextContent("mcbrowser.moddownload.toast.downloadstarted.description", "Please wait while your mod downloads.", TranslatableTextContent.EMPTY_ARGUMENTS)));
+        sendToastMessage(MutableText.of(new TranslatableTextContent("mcbrowser.moddownload.toast.downloadstarted", "Download Started", TranslatableTextContent.EMPTY_ARGUMENTS)), MutableText.of(new TranslatableTextContent("mcbrowser.moddownload.toast.downloadstarted.description", "Please wait while your mod downloads.", TranslatableTextContent.EMPTY_ARGUMENTS)));
 
         CompletableFuture.runAsync(() -> {
             try {
                 //Get the file from modrinth's API
-                URL url = new URL("https://api.modrinth.com/v2/project/" + getModrinthSlugFromUrl(currentUrl) + "/version?game_versions=[%22" + MinecraftVersion.CURRENT.getName() + "%22]&loaders=[%22fabric%22]");
+                URL url = new URL("https://api.modrinth.com/v2/project/" + getModrinthSlugFromUrl(BrowserScreenHelper.currentUrl) + "/version?game_versions=[%22" + MinecraftVersion.CURRENT.getName() + "%22]&loaders=[%22fabric%22]");
                 HttpURLConnection http = (HttpURLConnection) url.openConnection();
                 http.setRequestMethod("GET");
                 http.connect();
@@ -48,11 +46,9 @@ public class SpecialButtonAction {
                 URL downloadURL = new URL(file.get("url").getAsString());
                 FileUtils.copyURLToFile(downloadURL, new File(FabricLoader.getInstance().getGameDir().toFile(), "mods/" + cleanseFileUrl(downloadURL.getFile())));
 
-                sendToastMessage(MutableText.of(new TranslatableTextContent("mcbrowser.moddownload.toast.downloadcomplete", "Download Completed!", TranslatableTextContent.EMPTY_ARGUMENTS)),
-                        MutableText.of(new TranslatableTextContent("mcbrowser.moddownload.toast.downloadcomplete.description", "Restart your client for changes to take effect.", TranslatableTextContent.EMPTY_ARGUMENTS)));
+                sendToastMessage(MutableText.of(new TranslatableTextContent("mcbrowser.moddownload.toast.downloadcomplete", "Download Completed!", TranslatableTextContent.EMPTY_ARGUMENTS)), MutableText.of(new TranslatableTextContent("mcbrowser.moddownload.toast.downloadcomplete.description", "Restart your client for changes to take effect.", TranslatableTextContent.EMPTY_ARGUMENTS)));
             } catch (IOException e) {
-                sendToastMessage(MutableText.of(new TranslatableTextContent("mcbrowser.moddownload.toast.downloadfailed", "Download Failed", TranslatableTextContent.EMPTY_ARGUMENTS)),
-                        MutableText.of(new TranslatableTextContent("mcbrowser.moddownload.toast.downloadfailed.description", "Check your logs for more info", TranslatableTextContent.EMPTY_ARGUMENTS)));
+                sendToastMessage(MutableText.of(new TranslatableTextContent("mcbrowser.moddownload.toast.downloadfailed", "Download Failed", TranslatableTextContent.EMPTY_ARGUMENTS)), MutableText.of(new TranslatableTextContent("mcbrowser.moddownload.toast.downloadfailed.description", "Check your logs for more info", TranslatableTextContent.EMPTY_ARGUMENTS)));
                 e.printStackTrace();
             }
         });

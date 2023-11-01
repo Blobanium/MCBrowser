@@ -5,7 +5,6 @@ import com.cinemamod.mcef.MCEFBrowser;
 
 import io.github.blobanium.mcbrowser.feature.BrowserUtil;
 import io.github.blobanium.mcbrowser.MCBrowser;
-import io.github.blobanium.mcbrowser.feature.specialbutton.SpecialButtonAction;
 import io.github.blobanium.mcbrowser.feature.specialbutton.SpecialButtonActions;
 import io.github.blobanium.mcbrowser.feature.specialbutton.SpecialButtonHelper;
 import io.github.blobanium.mcbrowser.util.BrowserScreenHelper;
@@ -24,7 +23,6 @@ public class BrowserScreen extends Screen {
 
     //URL
     private String initURL;
-    private String currentUrl;
 
 
     //Ui
@@ -34,6 +32,7 @@ public class BrowserScreen extends Screen {
     private ButtonWidget reloadButton;
     private ButtonWidget homeButton;
     private ButtonWidget[] navigationButtons;
+    private ClickableWidget[] uiElements;
 
     private ButtonWidget specialButton;
 
@@ -58,7 +57,7 @@ public class BrowserScreen extends Screen {
     }
 
     private void initButtons(){
-        this.urlBox = new TextFieldWidget(MinecraftClient.getInstance().textRenderer, BROWSER_DRAW_OFFSET + 80,BROWSER_DRAW_OFFSET-20,BrowserScreenHelper.getUrlBoxWidth(width, BROWSER_DRAW_OFFSET),15, Text.of("TEST1234")){
+        this.urlBox = new TextFieldWidget(MinecraftClient.getInstance().textRenderer, BROWSER_DRAW_OFFSET + 80,BROWSER_DRAW_OFFSET-20,BrowserScreenHelper.getUrlBoxWidth(width, BROWSER_DRAW_OFFSET),15, Text.of("")){
             @Override
             public boolean keyPressed(int keyCode, int scanCode, int modifiers){
                 if(isFocused()) {
@@ -72,7 +71,6 @@ public class BrowserScreen extends Screen {
             }
         };
         urlBox.setMaxLength(2048); //Most browsers have a max length of 2048
-        urlBox.setText(Text.of("").getString());
         addSelectableChild(urlBox);
 
         backButton = BrowserScreenHelper.initButton(Text.of("\u25C0"), button -> browser.goBack(), BROWSER_DRAW_OFFSET, BROWSER_DRAW_OFFSET);
@@ -85,10 +83,10 @@ public class BrowserScreen extends Screen {
             addSelectableChild(button);
         }
 
-        specialButton = ButtonWidget.builder(Text.of(""), button -> SpecialButtonHelper.onPress(currentUrl))
-                .dimensions(BROWSER_DRAW_OFFSET, height - BROWSER_DRAW_OFFSET + 5,  150, 15)
-                .build();
+        specialButton = ButtonWidget.builder(Text.of(""), button -> SpecialButtonHelper.onPress(BrowserScreenHelper.currentUrl)).dimensions(BROWSER_DRAW_OFFSET, height - BROWSER_DRAW_OFFSET + 5,  150, 15).build();
         addSelectableChild(specialButton);
+
+        uiElements = new ClickableWidget[]{forwardButton, backButton, reloadButton, homeButton, urlBox, specialButton};
     }
 
     private void resizeBrowser() {
@@ -137,7 +135,7 @@ public class BrowserScreen extends Screen {
         for(ButtonWidget button : navigationButtons){
             button.render(context, mouseX, mouseY, delta);
         }
-        if(SpecialButtonHelper.isOnCompatableSite(currentUrl)) {
+        if(SpecialButtonHelper.isOnCompatableSite(BrowserScreenHelper.currentUrl)) {
             specialButton.render(context, mouseX, mouseY, delta);
         }
     }
@@ -225,11 +223,10 @@ public class BrowserScreen extends Screen {
     public void tick(){
         final String getURL = browser.getURL();
 
-        if(currentUrl != getURL){
-            currentUrl = getURL;
-            SpecialButtonAction.currentUrl = getURL;
+        if(BrowserScreenHelper.currentUrl != getURL){
+            BrowserScreenHelper.currentUrl = getURL;
             if(!urlBox.isFocused()) {
-                urlBox.setText(Text.of(currentUrl).getString());
+                urlBox.setText(Text.of(BrowserScreenHelper.currentUrl).getString());
                 urlBox.setCursorToStart();
             }
             SpecialButtonActions action = SpecialButtonActions.getFromUrlConstantValue(getURL);
@@ -256,20 +253,19 @@ public class BrowserScreen extends Screen {
     public void setFocus(){
         if(isOverWidgets()){
             browser.setFocus(false);
-            urlBox.setFocused(urlBox.isMouseOver(lastMouseX, lastMouseY));
-            specialButton.setFocused(specialButton.isMouseOver(lastMouseX, lastMouseY));
-            for(ButtonWidget button : navigationButtons){
-                button.setFocused(button.isMouseOver(lastMouseX, lastMouseY));
+            for(ClickableWidget widget : uiElements){
+                widget.setFocused(widget.isMouseOver(lastMouseX, lastMouseY));
             }
         }else{
-            urlBox.setFocused(false);
-            specialButton.setFocused(false);
-            for(ButtonWidget button : navigationButtons){
-                button.setFocused(false);
+            for(ClickableWidget widget : uiElements){
+                widget.setFocused(false);
             }
             browser.setFocus(true);
         }
     }
+
+
+
     private boolean isOverWidgets(){
         if(urlBox.isMouseOver(lastMouseX, lastMouseY) || specialButton.isMouseOver(lastMouseX, lastMouseY)){
             return true;

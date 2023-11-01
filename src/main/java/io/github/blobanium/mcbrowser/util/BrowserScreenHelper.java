@@ -1,10 +1,8 @@
 package io.github.blobanium.mcbrowser.util;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import io.github.blobanium.mcbrowser.feature.BrowserUtil;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.Tessellator;
@@ -14,6 +12,8 @@ import net.minecraft.text.Text;
 
 public class BrowserScreenHelper {
     private static final int Z_SHIFT = -1;
+
+    public static String currentUrl = null;
 
     //Rendering
     public static void renderBrowser(int offset, int width, int height, int textureID){
