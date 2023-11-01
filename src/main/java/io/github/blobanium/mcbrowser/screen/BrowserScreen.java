@@ -7,6 +7,7 @@ import io.github.blobanium.mcbrowser.feature.BrowserUtil;
 import io.github.blobanium.mcbrowser.MCBrowser;
 import io.github.blobanium.mcbrowser.feature.specialbutton.SpecialButtonActions;
 import io.github.blobanium.mcbrowser.feature.specialbutton.SpecialButtonHelper;
+import io.github.blobanium.mcbrowser.util.BrowserImpl;
 import io.github.blobanium.mcbrowser.util.BrowserScreenHelper;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
@@ -19,7 +20,7 @@ import org.lwjgl.glfw.GLFW;
 public class BrowserScreen extends Screen {
     private static final int BROWSER_DRAW_OFFSET = 50;
 
-    private MCEFBrowser browser;
+    private BrowserImpl browser;
 
     //URL
     private String initURL;
@@ -50,7 +51,7 @@ public class BrowserScreen extends Screen {
         super.init();
         if (browser == null) {
             boolean transparent = false;
-            browser = MCEF.createBrowser(this.initURL, transparent);
+            browser = BrowserScreenHelper.createBrowser(this.initURL, transparent);
             resizeBrowser();
 
             initUrlBox();

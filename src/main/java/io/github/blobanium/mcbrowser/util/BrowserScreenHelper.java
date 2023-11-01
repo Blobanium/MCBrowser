@@ -1,6 +1,8 @@
 package io.github.blobanium.mcbrowser.util;
 
+import com.cinemamod.mcef.MCEF;
 import com.mojang.blaze3d.systems.RenderSystem;
+import io.github.blobanium.mcbrowser.feature.BrowserUtil;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.render.BufferBuilder;
@@ -60,5 +62,17 @@ public class BrowserScreenHelper {
 
     public static int getUrlBoxWidth(int width, int offset){
         return width - (offset * 2) - 80;
+    }
+
+
+    public static BrowserImpl createBrowser(String url, boolean transparent){
+        if(MCEF.isInitialized()) {
+            BrowserImpl browser = new BrowserImpl(MCEF.getClient(), url, transparent);
+            browser.setCloseAllowed();
+            browser.createImmediately();
+            return browser;
+        }else{
+            throw new RuntimeException("Chromium Embedded Framework was never initialized.");
+        }
     }
 }
