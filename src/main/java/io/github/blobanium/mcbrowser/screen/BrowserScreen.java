@@ -52,11 +52,23 @@ public class BrowserScreen extends Screen {
             boolean transparent = false;
             browser = MCEF.createBrowser(this.initURL, transparent);
             resizeBrowser();
-            initButtons();
+
+            initUrlBox();
+            backButton = BrowserScreenHelper.initButton(Text.of("\u25C0"), button -> browser.goBack(), BROWSER_DRAW_OFFSET, BROWSER_DRAW_OFFSET);
+            forwardButton = BrowserScreenHelper.initButton(Text.of("\u25B6"), button -> browser.goForward(), BROWSER_DRAW_OFFSET + 20, BROWSER_DRAW_OFFSET);
+            reloadButton = BrowserScreenHelper.initButton(Text.of("\u27F3"), button -> { if(browser.isLoading()) {browser.stopLoad();} else {browser.reload();} }, BROWSER_DRAW_OFFSET + 40, BROWSER_DRAW_OFFSET);
+            homeButton = BrowserScreenHelper.initButton(Text.of("\u2302"), button -> browser.loadURL(MCBrowser.getConfig().homePage), BROWSER_DRAW_OFFSET + 60, BROWSER_DRAW_OFFSET);
+            specialButton = ButtonWidget.builder(Text.of(""), button -> SpecialButtonHelper.onPress(BrowserScreenHelper.currentUrl)).dimensions(BROWSER_DRAW_OFFSET, height - BROWSER_DRAW_OFFSET + 5,  150, 15).build();
+
+            navigationButtons = new ButtonWidget[]{forwardButton, backButton, reloadButton, homeButton};
+            uiElements = new ClickableWidget[]{forwardButton, backButton, reloadButton, homeButton, urlBox, specialButton};
+            for(ClickableWidget widget : uiElements){
+                addSelectableChild(widget);
+            }
         }
     }
 
-    private void initButtons(){
+    private void initUrlBox(){
         this.urlBox = new TextFieldWidget(MinecraftClient.getInstance().textRenderer, BROWSER_DRAW_OFFSET + 80,BROWSER_DRAW_OFFSET-20,BrowserScreenHelper.getUrlBoxWidth(width, BROWSER_DRAW_OFFSET),15, Text.of("")){
             @Override
             public boolean keyPressed(int keyCode, int scanCode, int modifiers){
@@ -71,18 +83,6 @@ public class BrowserScreen extends Screen {
             }
         };
         urlBox.setMaxLength(2048); //Most browsers have a max length of 2048
-
-        backButton = BrowserScreenHelper.initButton(Text.of("\u25C0"), button -> browser.goBack(), BROWSER_DRAW_OFFSET, BROWSER_DRAW_OFFSET);
-        forwardButton = BrowserScreenHelper.initButton(Text.of("\u25B6"), button -> browser.goForward(), BROWSER_DRAW_OFFSET + 20, BROWSER_DRAW_OFFSET);
-        reloadButton = BrowserScreenHelper.initButton(Text.of("\u27F3"), button -> { if(browser.isLoading()) {browser.stopLoad();} else {browser.reload();} }, BROWSER_DRAW_OFFSET + 40, BROWSER_DRAW_OFFSET);
-        homeButton = BrowserScreenHelper.initButton(Text.of("\u2302"), button -> browser.loadURL(MCBrowser.getConfig().homePage), BROWSER_DRAW_OFFSET + 60, BROWSER_DRAW_OFFSET);
-        specialButton = ButtonWidget.builder(Text.of(""), button -> SpecialButtonHelper.onPress(BrowserScreenHelper.currentUrl)).dimensions(BROWSER_DRAW_OFFSET, height - BROWSER_DRAW_OFFSET + 5,  150, 15).build();
-
-        navigationButtons = new ButtonWidget[]{forwardButton, backButton, reloadButton, homeButton};
-        uiElements = new ClickableWidget[]{forwardButton, backButton, reloadButton, homeButton, urlBox, specialButton};
-        for(ClickableWidget widget : uiElements){
-            addSelectableChild(widget);
-        }
     }
 
     private void resizeBrowser() {
@@ -183,11 +183,8 @@ public class BrowserScreen extends Screen {
     }
 
     private boolean isButtonsFocused(){
-        if(urlBox.isFocused()){
-            return true;
-        }
-        for(ButtonWidget button : navigationButtons){
-            if(button.isFocused()){
+        for(ClickableWidget widget : uiElements){
+            if(widget.isFocused()){
                 return true;
             }
         }
@@ -255,11 +252,8 @@ public class BrowserScreen extends Screen {
     }
 
     private boolean isOverWidgets(){
-        if(urlBox.isMouseOver(lastMouseX, lastMouseY) || specialButton.isMouseOver(lastMouseX, lastMouseY)){
-            return true;
-        }
-        for(ButtonWidget button : navigationButtons){
-            if(button.isMouseOver(lastMouseX, lastMouseY)){
+        for(ClickableWidget widget : uiElements){
+            if(widget.isMouseOver(lastMouseX, lastMouseY)){
                 return true;
             }
         }
