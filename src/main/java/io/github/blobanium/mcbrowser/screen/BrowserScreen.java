@@ -71,22 +71,18 @@ public class BrowserScreen extends Screen {
             }
         };
         urlBox.setMaxLength(2048); //Most browsers have a max length of 2048
-        addSelectableChild(urlBox);
 
         backButton = BrowserScreenHelper.initButton(Text.of("\u25C0"), button -> browser.goBack(), BROWSER_DRAW_OFFSET, BROWSER_DRAW_OFFSET);
         forwardButton = BrowserScreenHelper.initButton(Text.of("\u25B6"), button -> browser.goForward(), BROWSER_DRAW_OFFSET + 20, BROWSER_DRAW_OFFSET);
         reloadButton = BrowserScreenHelper.initButton(Text.of("\u27F3"), button -> { if(browser.isLoading()) {browser.stopLoad();} else {browser.reload();} }, BROWSER_DRAW_OFFSET + 40, BROWSER_DRAW_OFFSET);
         homeButton = BrowserScreenHelper.initButton(Text.of("\u2302"), button -> browser.loadURL(MCBrowser.getConfig().homePage), BROWSER_DRAW_OFFSET + 60, BROWSER_DRAW_OFFSET);
+        specialButton = ButtonWidget.builder(Text.of(""), button -> SpecialButtonHelper.onPress(BrowserScreenHelper.currentUrl)).dimensions(BROWSER_DRAW_OFFSET, height - BROWSER_DRAW_OFFSET + 5,  150, 15).build();
 
         navigationButtons = new ButtonWidget[]{forwardButton, backButton, reloadButton, homeButton};
-        for(ButtonWidget button : navigationButtons){
-            addSelectableChild(button);
-        }
-
-        specialButton = ButtonWidget.builder(Text.of(""), button -> SpecialButtonHelper.onPress(BrowserScreenHelper.currentUrl)).dimensions(BROWSER_DRAW_OFFSET, height - BROWSER_DRAW_OFFSET + 5,  150, 15).build();
-        addSelectableChild(specialButton);
-
         uiElements = new ClickableWidget[]{forwardButton, backButton, reloadButton, homeButton, urlBox, specialButton};
+        for(ClickableWidget widget : uiElements){
+            addSelectableChild(widget);
+        }
     }
 
     private void resizeBrowser() {
@@ -107,15 +103,9 @@ public class BrowserScreen extends Screen {
         super.resize(minecraft, i, j);
         resizeBrowser();
 
-        if(!children().contains(urlBox)){
-            addSelectableChild(urlBox);
-        }
-        if(!children().contains(specialButton)){
-            addSelectableChild(specialButton);
-        }
-        for(ButtonWidget button : navigationButtons){
-            if(!children().contains(button)){
-                addSelectableChild(button);
+        for(ClickableWidget widget : uiElements){
+            if(!children().contains(widget)){
+                addSelectableChild(widget);
             }
         }
     }
@@ -229,7 +219,7 @@ public class BrowserScreen extends Screen {
                 urlBox.setText(Text.of(BrowserScreenHelper.currentUrl).getString());
                 urlBox.setCursorToStart();
             }
-            SpecialButtonActions action = SpecialButtonActions.getFromUrlConstantValue(getURL);
+            SpecialButtonActions action = SpecialButtonActions.getFromUrlConstantValue(BrowserScreenHelper.currentUrl);
             if(action != null) {
                 specialButton.setMessage(action.getButtonText());
             }
@@ -263,8 +253,6 @@ public class BrowserScreen extends Screen {
             browser.setFocus(true);
         }
     }
-
-
 
     private boolean isOverWidgets(){
         if(urlBox.isMouseOver(lastMouseX, lastMouseY) || specialButton.isMouseOver(lastMouseX, lastMouseY)){
