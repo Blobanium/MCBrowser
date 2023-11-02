@@ -128,14 +128,22 @@ public class BrowserScreen extends Screen {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        browser.sendMousePress(BrowserScreenHelper.mouseX(mouseX, BROWSER_DRAW_OFFSET), BrowserScreenHelper.mouseY(mouseY, BROWSER_DRAW_OFFSET), button);
+        if(MCBrowser.getConfig().asyncBrowserInput) {
+            CompletableFuture.runAsync(() ->browser.sendMousePress(BrowserScreenHelper.mouseX(mouseX, BROWSER_DRAW_OFFSET), BrowserScreenHelper.mouseY(mouseY, BROWSER_DRAW_OFFSET), button));
+        } else{
+            browser.sendMousePress(BrowserScreenHelper.mouseX(mouseX, BROWSER_DRAW_OFFSET), BrowserScreenHelper.mouseY(mouseY, BROWSER_DRAW_OFFSET), button);
+        }
         setFocus();
         return super.mouseClicked(mouseX, mouseY, button);
     }
 
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
-        browser.sendMouseRelease(BrowserScreenHelper.mouseX(mouseX, BROWSER_DRAW_OFFSET), BrowserScreenHelper.mouseY(mouseY, BROWSER_DRAW_OFFSET), button);
+        if(MCBrowser.getConfig().asyncBrowserInput) {
+            CompletableFuture.runAsync(() -> browser.sendMouseRelease(BrowserScreenHelper.mouseX(mouseX, BROWSER_DRAW_OFFSET), BrowserScreenHelper.mouseY(mouseY, BROWSER_DRAW_OFFSET), button));
+        }else {
+            browser.sendMouseRelease(BrowserScreenHelper.mouseX(mouseX, BROWSER_DRAW_OFFSET), BrowserScreenHelper.mouseY(mouseY, BROWSER_DRAW_OFFSET), button);
+        }
         setFocus();
         return super.mouseReleased(mouseX, mouseY, button);
     }
@@ -169,7 +177,11 @@ public class BrowserScreen extends Screen {
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if(!urlBox.isFocused()) {
-            browser.sendKeyPress(keyCode, scanCode, modifiers);
+            if(MCBrowser.getConfig().asyncBrowserInput) {
+                CompletableFuture.runAsync(() -> browser.sendKeyPress(keyCode, scanCode, modifiers));
+            }else{
+                browser.sendKeyPress(keyCode, scanCode, modifiers);
+            }
         }
 
         //Set Focus
@@ -193,15 +205,23 @@ public class BrowserScreen extends Screen {
 
     @Override
     public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
-        browser.sendKeyRelease(keyCode, scanCode, modifiers);
+        if(MCBrowser.getConfig().asyncBrowserInput) {
+            CompletableFuture.runAsync(() -> browser.sendKeyRelease(keyCode, scanCode, modifiers));
+        } else {
+            browser.sendKeyRelease(keyCode, scanCode, modifiers);
+        }
         setFocus();
         return super.keyReleased(keyCode, scanCode, modifiers);
     }
 
     @Override
     public boolean charTyped(char codePoint, int modifiers) {
-        if (codePoint == (char) 0) return false;
-        browser.sendKeyTyped(codePoint, modifiers);
+        if(codePoint == (char) 0) return false;
+        if(MCBrowser.getConfig().asyncBrowserInput) {
+            CompletableFuture.runAsync(() -> browser.sendKeyTyped(codePoint, modifiers));
+        } else {
+            browser.sendKeyTyped(codePoint, modifiers);
+        }
         setFocus();
         return super.charTyped(codePoint, modifiers);
     }
