@@ -2,6 +2,7 @@
   "text.autoconfig.mcbrowser.title": "MCBrowser Config",
   "text.autoconfig.mcbrowser.option.openLinkInBrowser": "Open Links In MCBrowser",
   "text.autoconfig.mcbrowser.option.homePage": "Default Home Page",
+  "text.autoconfig.mcbrowser.option.asyncBrowserInput": "Async Browser Input",
   "mcbrowser.moddownload.toast.downloadstarted": "Download Started",
   "mcbrowser.moddownload.toast.downloadstarted.description": "Please wait while your mod downloads.",
   "mcbrowser.moddownload.toast.downloadcomplete": "Download Completed!",
