@@ -1,6 +1,5 @@
 package io.github.blobanium.mcbrowser.screen;
 
-import io.github.blobanium.mcbrowser.config.BrowserAutoConfig;
 import io.github.blobanium.mcbrowser.feature.BrowserUtil;
 import io.github.blobanium.mcbrowser.MCBrowser;
 import io.github.blobanium.mcbrowser.feature.specialbutton.SpecialButtonActions;

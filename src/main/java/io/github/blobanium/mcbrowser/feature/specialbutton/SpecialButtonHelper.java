@@ -1,6 +1,5 @@
 package io.github.blobanium.mcbrowser.feature.specialbutton;
 
-import java.util.List;
 
 public class SpecialButtonHelper {
 
@@ -9,8 +8,8 @@ public class SpecialButtonHelper {
             if(SpecialButtonActions.getFromUrlConstantValue(url) != null) {
                 SpecialButtonActions.getFromUrlConstantValue(url).getOnExecute().run();
             }
-        }catch (IllegalArgumentException ignored){
-            ignored.printStackTrace();
+        }catch (IllegalArgumentException e){
+            e.printStackTrace();
         }
     }
 

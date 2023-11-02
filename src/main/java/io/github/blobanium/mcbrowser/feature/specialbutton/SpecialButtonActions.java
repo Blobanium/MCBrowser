@@ -3,7 +3,6 @@ package io.github.blobanium.mcbrowser.feature.specialbutton;
 import net.minecraft.text.Text;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public enum SpecialButtonActions {
