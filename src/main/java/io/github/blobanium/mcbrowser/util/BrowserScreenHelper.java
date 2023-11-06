@@ -23,6 +23,8 @@ public class BrowserScreenHelper {
 
     public static BrowserScreen instance;
 
+    public static String tooltipText;
+
 
     //Rendering
     public static void renderBrowser(int offset, int width, int height, int textureID){
