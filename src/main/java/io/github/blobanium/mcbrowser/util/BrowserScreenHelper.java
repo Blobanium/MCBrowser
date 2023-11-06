@@ -2,6 +2,7 @@ package io.github.blobanium.mcbrowser.util;
 
 import com.cinemamod.mcef.MCEF;
 import com.mojang.blaze3d.systems.RenderSystem;
+import io.github.blobanium.mcbrowser.screen.BrowserScreen;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.render.BufferBuilder;
@@ -19,6 +20,8 @@ public class BrowserScreenHelper {
     //Mouse position
     public static double lastMouseX;
     public static double lastMouseY;
+
+    public static BrowserScreen instance;
 
 
     //Rendering

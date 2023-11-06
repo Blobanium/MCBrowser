@@ -15,7 +15,7 @@ public class SpecialButtonHelper {
 
     public static boolean isOnCompatableSite(String url){
         for(String element : SpecialButtonActions.getAllUrls()){
-            if(url.contains(element)){
+            if(url != null && url.contains(element)){
                 return true;
             }
         }

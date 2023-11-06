@@ -60,6 +60,8 @@ public class BrowserScreen extends Screen {
             for(ClickableWidget widget : uiElements){
                 addSelectableChild(widget);
             }
+
+            BrowserScreenHelper.instance = this;
         }
     }
 
@@ -107,6 +109,7 @@ public class BrowserScreen extends Screen {
 
     @Override
     public void close() {
+        BrowserScreenHelper.instance = null;
         browser.close();
         MCBrowser.requestOpen = false;
         super.close();
@@ -234,20 +237,6 @@ public class BrowserScreen extends Screen {
 
     @Override
     public void tick(){
-        final String getURL = browser.getURL();
-
-        if(BrowserScreenHelper.currentUrl != getURL){
-            BrowserScreenHelper.currentUrl = getURL;
-            if(!urlBox.isFocused()) {
-                urlBox.setText(Text.of(BrowserScreenHelper.currentUrl).getString());
-                urlBox.setCursorToStart();
-            }
-            SpecialButtonActions action = SpecialButtonActions.getFromUrlConstantValue(BrowserScreenHelper.currentUrl);
-            if(action != null) {
-                specialButton.setMessage(action.getButtonText());
-            }
-        }
-
         forwardButton.active = browser.canGoForward();
         backButton.active = browser.canGoBack();
 
@@ -280,4 +269,17 @@ public class BrowserScreen extends Screen {
         }
         return false;
     }
+
+    public void onUrlChange(){
+        if(urlBox.isFocused()) {
+            urlBox.setFocused(false);
+        }
+        urlBox.setText(Text.of(BrowserScreenHelper.currentUrl).getString());
+        urlBox.setCursorToStart();
+        SpecialButtonActions action = SpecialButtonActions.getFromUrlConstantValue(BrowserScreenHelper.currentUrl);
+        if(action != null) {
+            specialButton.setMessage(action.getButtonText());
+        }
+    }
 }
+
