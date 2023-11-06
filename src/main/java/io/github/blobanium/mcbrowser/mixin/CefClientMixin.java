@@ -1,8 +1,6 @@
 package io.github.blobanium.mcbrowser.mixin;
 
 import io.github.blobanium.mcbrowser.util.BrowserScreenHelper;
-import net.minecraft.client.gui.tooltip.Tooltip;
-import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
 import org.cef.CefClient;
 import org.cef.browser.CefBrowser;
@@ -13,9 +11,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Pseudo
 @Mixin(CefClient.class)

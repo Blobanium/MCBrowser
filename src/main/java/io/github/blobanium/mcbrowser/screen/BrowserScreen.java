@@ -11,8 +11,11 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.*;
 import net.minecraft.text.Text;
+import net.minecraft.util.Util;
 import org.lwjgl.glfw.GLFW;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.concurrent.CompletableFuture;
 
 
@@ -35,6 +38,8 @@ public class BrowserScreen extends Screen {
 
     private ButtonWidget specialButton;
 
+    private ButtonWidget openInBrowserButton;
+
     public BrowserScreen(Text title, String url) {
         super(title);
         this.initURL = url;
@@ -54,9 +59,10 @@ public class BrowserScreen extends Screen {
             reloadButton = BrowserScreenHelper.initButton(Text.of("\u27F3"), button -> { if(browser.isLoading()) {browser.stopLoad();} else {browser.reload();} }, BROWSER_DRAW_OFFSET + 40, BROWSER_DRAW_OFFSET);
             homeButton = BrowserScreenHelper.initButton(Text.of("\u2302"), button -> browser.loadURL(MCBrowser.getConfig().homePage), BROWSER_DRAW_OFFSET + 60, BROWSER_DRAW_OFFSET);
             specialButton = ButtonWidget.builder(Text.of(""), button -> SpecialButtonHelper.onPress(BrowserScreenHelper.currentUrl)).dimensions(BROWSER_DRAW_OFFSET, height - BROWSER_DRAW_OFFSET + 5,  150, 15).build();
+            openInBrowserButton = ButtonWidget.builder(Text.of("Open In External Browser"), button -> {try {Util.getOperatingSystem().open(new URL(BrowserScreenHelper.currentUrl));} catch (MalformedURLException e) {throw new RuntimeException(e);}}).dimensions(width - 200, height - BROWSER_DRAW_OFFSET + 5, 150, 15).build();
 
             navigationButtons = new ButtonWidget[]{forwardButton, backButton, reloadButton, homeButton};
-            uiElements = new ClickableWidget[]{forwardButton, backButton, reloadButton, homeButton, urlBox, specialButton};
+            uiElements = new ClickableWidget[]{forwardButton, backButton, reloadButton, homeButton, urlBox, specialButton, openInBrowserButton};
             for(ClickableWidget widget : uiElements){
                 addSelectableChild(widget);
             }
@@ -92,6 +98,10 @@ public class BrowserScreen extends Screen {
 
         if(this.specialButton != null){
             specialButton.setPosition(BROWSER_DRAW_OFFSET, height - BROWSER_DRAW_OFFSET + 5);
+        }
+
+        if(this.openInBrowserButton != null){
+            openInBrowserButton.setPosition(width - 200, height - BROWSER_DRAW_OFFSET + 5);
         }
     }
 
@@ -129,6 +139,7 @@ public class BrowserScreen extends Screen {
         if(BrowserScreenHelper.tooltipText != null && BrowserScreenHelper.tooltipText.getBytes().length != 0) {
             setTooltip(Text.of(BrowserScreenHelper.tooltipText));
         }
+        openInBrowserButton.render(context, mouseX, mouseY, delta);
     }
 
     @Override
