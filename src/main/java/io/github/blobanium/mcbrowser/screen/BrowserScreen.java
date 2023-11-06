@@ -26,9 +26,9 @@ public class BrowserScreen extends Screen {
 
     //Ui
     private TextFieldWidget urlBox;
-    private ButtonWidget forwardButton;
-    private ButtonWidget backButton;
-    private ButtonWidget reloadButton;
+    public ButtonWidget forwardButton;
+    public ButtonWidget backButton;
+    public ButtonWidget reloadButton;
     private ButtonWidget homeButton;
     private ButtonWidget[] navigationButtons;
     private ClickableWidget[] uiElements;
@@ -236,18 +236,6 @@ public class BrowserScreen extends Screen {
         }
         setFocus();
         return super.charTyped(codePoint, modifiers);
-    }
-
-    @Override
-    public void tick(){
-        forwardButton.active = browser.canGoForward();
-        backButton.active = browser.canGoBack();
-
-        if(browser.isLoading()){
-            reloadButton.setMessage(Text.of("\u274C"));
-        } else {
-            reloadButton.setMessage(Text.of("\u27F3"));
-        }
     }
 
     public void setFocus(){
