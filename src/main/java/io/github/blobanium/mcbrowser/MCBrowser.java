@@ -12,12 +12,9 @@ import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallba
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.text.Text;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 
 public class MCBrowser implements ClientModInitializer {
-    public static final Logger LOGGER = LogManager.getLogger("MCBrowser");
 
     public static boolean requestOpen = false;
     private static String url;
@@ -31,7 +28,7 @@ public class MCBrowser implements ClientModInitializer {
             ClientCommandRegistrationCallback.EVENT.register(((dispatcher, registryAccess) -> {
                 dispatcher.register(ClientCommandManager.literal(command)
                         .executes(context -> {
-                            openBrowser(getConfig().homePage);
+                            openBrowser(BrowserUtil.prediffyURL(getConfig().homePage));
                             return 0;
                         }).then(ClientCommandManager.argument("url", StringArgumentType.greedyString())
                                 .executes(context -> {
