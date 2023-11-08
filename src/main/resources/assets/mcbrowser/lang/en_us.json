@@ -8,5 +8,11 @@
   "mcbrowser.moddownload.toast.downloadcomplete": "Download Completed!",
   "mcbrowser.moddownload.toast.downloadcomplete.description": "Restart your client for changes to take effect.",
   "mcbrowser.moddownload.toast.downloadfailed": "Download Failed",
-  "mcbrowser.moddownload.toast.downloadfailed.description": "Check your logs for more info"
+  "mcbrowser.moddownload.toast.downloadfailed.description": "Check your logs for more info",
+  "mcbrowser.rpdownload.toast.downloadstarted": "Download Started",
+  "mcbrowser.rpdownload.toast.downloadstarted.description": "Please wait while your resource pack downloads.",
+  "mcbrowser.rpdownload.toast.downloadcomplete": "Download Completed!",
+  "mcbrowser.rpdownload.toast.downloadcomplete.description": "Resource Pack can be turned on in Resource Packs Settings",
+  "mcbrowser.rpdownload.toast.downloadfailed": "Download Failed",
+  "mcbrowser.rpdownload.toast.downloadfailed.description": "Check your logs for more info"
 }
