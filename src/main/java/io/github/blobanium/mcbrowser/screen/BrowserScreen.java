@@ -56,8 +56,19 @@ public class BrowserScreen extends Screen {
             initUrlBox();
             backButton = BrowserScreenHelper.initButton(Text.of("\u25C0"), button -> browser.goBack(), BROWSER_DRAW_OFFSET, BROWSER_DRAW_OFFSET);
             forwardButton = BrowserScreenHelper.initButton(Text.of("\u25B6"), button -> browser.goForward(), BROWSER_DRAW_OFFSET + 20, BROWSER_DRAW_OFFSET);
-            reloadButton = BrowserScreenHelper.initButton(Text.of("\u27F3"), button -> { if(browser.isLoading()) {browser.stopLoad();} else {browser.reload();} }, BROWSER_DRAW_OFFSET + 40, BROWSER_DRAW_OFFSET);
-            homeButton = BrowserScreenHelper.initButton(Text.of("\u2302"), button -> browser.loadURL(MCBrowser.getConfig().homePage), BROWSER_DRAW_OFFSET + 60, BROWSER_DRAW_OFFSET);
+            reloadButton = BrowserScreenHelper.initButton(Text.of("\u27F3"), button -> {
+                urlBox.setText(browser.getURL());
+                if(browser.isLoading()) {
+                    browser.stopLoad();
+                } else {
+                    browser.reload();
+                }
+                }, BROWSER_DRAW_OFFSET + 40, BROWSER_DRAW_OFFSET);
+            homeButton = BrowserScreenHelper.initButton(Text.of("\u2302"), button -> {
+                String prediffyedHomePage = BrowserUtil.prediffyURL(MCBrowser.getConfig().homePage);
+                urlBox.setText(prediffyedHomePage);
+                browser.loadURL(prediffyedHomePage);
+            }, BROWSER_DRAW_OFFSET + 60, BROWSER_DRAW_OFFSET);
             specialButton = ButtonWidget.builder(Text.of(""), button -> SpecialButtonHelper.onPress(BrowserScreenHelper.currentUrl)).dimensions(BROWSER_DRAW_OFFSET, height - BROWSER_DRAW_OFFSET + 5,  150, 15).build();
             openInBrowserButton = ButtonWidget.builder(Text.of("Open In External Browser"), button -> {try {Util.getOperatingSystem().open(new URL(BrowserScreenHelper.currentUrl));} catch (MalformedURLException e) {throw new RuntimeException(e);}}).dimensions(width - 200, height - BROWSER_DRAW_OFFSET + 5, 150, 15).build();
 
