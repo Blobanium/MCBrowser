@@ -85,6 +85,9 @@ public class BrowserScreen extends Screen {
                 return super.keyPressed(keyCode, scanCode, modifiers);
             }
         };
+        if (this.initURL != null) {
+            urlBox.setText(this.initURL);
+        }
         urlBox.setMaxLength(2048); //Most browsers have a max length of 2048
     }
 
