@@ -8,3 +8,8 @@ REQUIRES [MCEF](https://modrinth.com/mod/mcef) and [Cloth Config](https://modrin
 
 type `/browser` or `/br` to open the browser.
 
+NOTICE: The developers of this mod (aka Myself) are not responsible for any sus or illegal things you come across while using MCBrowser. Use this mod at your own risk. 
+
+Find us on [Modrinth](https://modrinth.com/mod/mcbrowser)! (Curseforge not yet this mod needs an icon.)
+
+
