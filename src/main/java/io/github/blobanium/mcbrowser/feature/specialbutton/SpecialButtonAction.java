@@ -22,7 +22,7 @@ import java.util.concurrent.CompletableFuture;
 
 public class SpecialButtonAction {
     public static void downloadModrinthMod(){
-        sendToastMessage(MutableText.of(new TranslatableTextContent("mcbrowser.moddownload.toast.downloadstarted", "Download Started", TranslatableTextContent.EMPTY_ARGUMENTS)), MutableText.of(new TranslatableTextContent("mcbrowser.moddownload.toast.downloadstarted.description", "Please wait while your mod downloads.", TranslatableTextContent.EMPTY_ARGUMENTS)));
+        sendToastMessage(MutableText.of(new TranslatableTextContent("mcbrowser.download.toast.started", "Download Started", TranslatableTextContent.EMPTY_ARGUMENTS)), MutableText.of(new TranslatableTextContent("mcbrowser.download.toast.started.description.mod", "Please wait while your mod downloads.", TranslatableTextContent.EMPTY_ARGUMENTS)));
 
         CompletableFuture.runAsync(() -> {
             try {
@@ -46,16 +46,16 @@ public class SpecialButtonAction {
                 URL downloadURL = new URL(file.get("url").getAsString());
                 FileUtils.copyURLToFile(downloadURL, new File(FabricLoader.getInstance().getGameDir().toFile(), "mods/" + cleanseFileUrl(downloadURL.getFile())));
 
-                sendToastMessage(MutableText.of(new TranslatableTextContent("mcbrowser.moddownload.toast.downloadcomplete", "Download Completed!", TranslatableTextContent.EMPTY_ARGUMENTS)), MutableText.of(new TranslatableTextContent("mcbrowser.moddownload.toast.downloadcomplete.description", "Restart your client for changes to take effect.", TranslatableTextContent.EMPTY_ARGUMENTS)));
+                sendToastMessage(MutableText.of(new TranslatableTextContent("mcbrowser.download.toast.complete", "Download Completed!", TranslatableTextContent.EMPTY_ARGUMENTS)), MutableText.of(new TranslatableTextContent("mcbrowser.download.toast.complete.description.mod", "Restart your client for changes to take effect.", TranslatableTextContent.EMPTY_ARGUMENTS)));
             } catch (IOException e) {
-                sendToastMessage(MutableText.of(new TranslatableTextContent("mcbrowser.moddownload.toast.downloadfailed", "Download Failed", TranslatableTextContent.EMPTY_ARGUMENTS)), MutableText.of(new TranslatableTextContent("mcbrowser.moddownload.toast.downloadfailed.description", "Check your logs for more info", TranslatableTextContent.EMPTY_ARGUMENTS)));
+                sendToastMessage(MutableText.of(new TranslatableTextContent("mcbrowser.download.toast.failed", "Download Failed", TranslatableTextContent.EMPTY_ARGUMENTS)), MutableText.of(new TranslatableTextContent("mcbrowser.download.toast.failed.description", "Check your logs for more info", TranslatableTextContent.EMPTY_ARGUMENTS)));
                 e.printStackTrace();
             }
         });
     }
 
     public static void downloadModrinthRP(){
-        sendToastMessage(MutableText.of(new TranslatableTextContent("mcbrowser.rpdownload.toast.downloadstarted", "Download Started", TranslatableTextContent.EMPTY_ARGUMENTS)), MutableText.of(new TranslatableTextContent("mcbrowser.rpdownload.toast.downloadstarted.description", "Please wait while your resource pack downloads.", TranslatableTextContent.EMPTY_ARGUMENTS)));
+        sendToastMessage(MutableText.of(new TranslatableTextContent("mcbrowser.download.toast.started.rp", "Download Started", TranslatableTextContent.EMPTY_ARGUMENTS)), MutableText.of(new TranslatableTextContent("mcbrowser.download.toast.started.description.rp", "Please wait while your resource pack downloads.", TranslatableTextContent.EMPTY_ARGUMENTS)));
 
         CompletableFuture.runAsync(() -> {
             try {
@@ -79,9 +79,9 @@ public class SpecialButtonAction {
                 URL downloadURL = new URL(file.get("url").getAsString());
                 FileUtils.copyURLToFile(downloadURL, new File(FabricLoader.getInstance().getGameDir().toFile(), "resourcepacks/" + cleanseFileUrl(downloadURL.getFile())));
 
-                sendToastMessage(MutableText.of(new TranslatableTextContent("mcbrowser.rpdownload.toast.downloadcomplete", "Download Completed!", TranslatableTextContent.EMPTY_ARGUMENTS)), MutableText.of(new TranslatableTextContent("mcbrowser.rpdownload.toast.downloadcomplete.description", "Resource Pack can be turned on in Resource Packs Settings", TranslatableTextContent.EMPTY_ARGUMENTS)));
+                sendToastMessage(MutableText.of(new TranslatableTextContent("mcbrowser.download.toast.complete", "Download Completed!", TranslatableTextContent.EMPTY_ARGUMENTS)), MutableText.of(new TranslatableTextContent("mcbrowser.download.toast.complete.description.rp", "Resource Pack can be turned on in Resource Packs Settings", TranslatableTextContent.EMPTY_ARGUMENTS)));
             } catch (IOException e) {
-                sendToastMessage(MutableText.of(new TranslatableTextContent("mcbrowser.rpdownload.toast.downloadfailed", "Download Failed", TranslatableTextContent.EMPTY_ARGUMENTS)), MutableText.of(new TranslatableTextContent("mcbrowser.rpdownload.toast.downloadfailed.description", "Check your logs for more info", TranslatableTextContent.EMPTY_ARGUMENTS)));
+                sendToastMessage(MutableText.of(new TranslatableTextContent("mcbrowser.download.toast.failed", "Download Failed", TranslatableTextContent.EMPTY_ARGUMENTS)), MutableText.of(new TranslatableTextContent("mcbrowser.download.toast.failed.description", "Check your logs for more info", TranslatableTextContent.EMPTY_ARGUMENTS)));
                 e.printStackTrace();
             }
         });
