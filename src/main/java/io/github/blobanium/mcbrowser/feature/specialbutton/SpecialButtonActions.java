@@ -6,7 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public enum SpecialButtonActions {
-    MODRINTH_MOD("https://modrinth.com/mod/", Text.of("Download Mod"), SpecialButtonAction::downloadModrinthMod);
+    MODRINTH_MOD("https://modrinth.com/mod/", Text.of("Download Mod"), SpecialButtonAction::downloadModrinthMod),
+    MODRINTH_RP("https://modrinth.com/resourcepack/", Text.of("Download Resource Pack"), SpecialButtonAction::downloadModrinthRP);
 
     private final String url;
     private final Text buttonText;
