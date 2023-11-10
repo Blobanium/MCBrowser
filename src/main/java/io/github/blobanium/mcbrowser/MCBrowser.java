@@ -13,8 +13,12 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.text.Text;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 
 public class MCBrowser implements ClientModInitializer {
+    public static final Logger LOGGER = LogManager.getLogger("MCBrowser");
 
     public static boolean requestOpen = false;
     private static String url;

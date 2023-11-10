@@ -22,7 +22,7 @@ public class ScreenMixin {
                     ci.cancel();
                 }
             } catch (MalformedURLException e) {
-                System.err.println("Opening in browser. Failed to convert to URL");
+                MCBrowser.LOGGER.error("Opening in browser. Failed to convert to URL");
                 e.printStackTrace();
             }
     }
