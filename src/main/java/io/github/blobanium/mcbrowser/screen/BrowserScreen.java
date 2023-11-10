@@ -80,43 +80,6 @@ public class BrowserScreen extends Screen {
         }
     }
 
-    private void initUrlBox(){
-        this.urlBox = new TextFieldWidget(MinecraftClient.getInstance().textRenderer, BROWSER_DRAW_OFFSET + 80,BROWSER_DRAW_OFFSET-20,BrowserScreenHelper.getUrlBoxWidth(width, BROWSER_DRAW_OFFSET),15, Text.of("")){
-            @Override
-            public boolean keyPressed(int keyCode, int scanCode, int modifiers){
-                if(isFocused()) {
-                    browser.setFocus(false);
-                    if(keyCode == GLFW.GLFW_KEY_ENTER){
-                        browser.loadURL(BrowserUtil.prediffyURL(getText()));
-                        setFocused(false);
-                    }
-                }
-                return super.keyPressed(keyCode, scanCode, modifiers);
-            }
-        };
-        if (this.initURL != null) {
-            urlBox.setText(this.initURL);
-        }
-        urlBox.setMaxLength(2048); //Most browsers have a max length of 2048
-    }
-
-    private void resizeBrowser() {
-        if (width > 100 && height > 100) {
-            browser.resize(BrowserScreenHelper.scaleX(width, BROWSER_DRAW_OFFSET), BrowserScreenHelper.scaleY(height, BROWSER_DRAW_OFFSET));
-        }
-        if(this.urlBox != null) {
-            urlBox.setWidth(BrowserScreenHelper.getUrlBoxWidth(width, BROWSER_DRAW_OFFSET));
-        }
-
-        if(this.specialButton != null){
-            specialButton.setPosition(BROWSER_DRAW_OFFSET, height - BROWSER_DRAW_OFFSET + 5);
-        }
-
-        if(this.openInBrowserButton != null){
-            openInBrowserButton.setPosition(width - 200, height - BROWSER_DRAW_OFFSET + 5);
-        }
-    }
-
     @Override
     public void resize(MinecraftClient minecraft, int i, int j) {
         super.resize(minecraft, i, j);
@@ -166,23 +129,6 @@ public class BrowserScreen extends Screen {
         return super.mouseReleased(mouseX, mouseY, button);
     }
 
-    private void mouseButtonControl(double mouseX, double mouseY, int button, boolean isClick){
-        if(MCBrowser.getConfig().asyncBrowserInput) {
-            if(isClick){
-                CompletableFuture.runAsync(() -> browser.sendMousePress(BrowserScreenHelper.mouseX(mouseX, BROWSER_DRAW_OFFSET), BrowserScreenHelper.mouseY(mouseY, BROWSER_DRAW_OFFSET), button));
-            }else {
-                CompletableFuture.runAsync(() -> browser.sendMouseRelease(BrowserScreenHelper.mouseX(mouseX, BROWSER_DRAW_OFFSET), BrowserScreenHelper.mouseY(mouseY, BROWSER_DRAW_OFFSET), button));
-            }
-        }else {
-            if(isClick){
-                browser.sendMousePress(BrowserScreenHelper.mouseX(mouseX, BROWSER_DRAW_OFFSET), BrowserScreenHelper.mouseY(mouseY, BROWSER_DRAW_OFFSET), button);
-            }else {
-                browser.sendMouseRelease(BrowserScreenHelper.mouseX(mouseX, BROWSER_DRAW_OFFSET), BrowserScreenHelper.mouseY(mouseY, BROWSER_DRAW_OFFSET), button);
-            }
-        }
-        setFocus();
-    }
-
     @Override
     public void mouseMoved(double mouseX, double mouseY) {
         if(MCBrowser.getConfig().asyncBrowserInput) {
@@ -227,15 +173,6 @@ public class BrowserScreen extends Screen {
             return true;
         }
         return super.keyPressed(keyCode, scanCode, modifiers);
-    }
-
-    private boolean isButtonsFocused(){
-        for(ClickableWidget widget : uiElements){
-            if(widget.isFocused()){
-                return true;
-            }
-        }
-        return false;
     }
 
     @Override
@@ -294,6 +231,69 @@ public class BrowserScreen extends Screen {
         if(action != null) {
             specialButton.setMessage(action.getButtonText());
         }
+    }
+
+    private void initUrlBox(){
+        this.urlBox = new TextFieldWidget(MinecraftClient.getInstance().textRenderer, BROWSER_DRAW_OFFSET + 80,BROWSER_DRAW_OFFSET-20,BrowserScreenHelper.getUrlBoxWidth(width, BROWSER_DRAW_OFFSET),15, Text.of("")){
+            @Override
+            public boolean keyPressed(int keyCode, int scanCode, int modifiers){
+                if(isFocused()) {
+                    browser.setFocus(false);
+                    if(keyCode == GLFW.GLFW_KEY_ENTER){
+                        browser.loadURL(BrowserUtil.prediffyURL(getText()));
+                        setFocused(false);
+                    }
+                }
+                return super.keyPressed(keyCode, scanCode, modifiers);
+            }
+        };
+        if (this.initURL != null) {
+            urlBox.setText(this.initURL);
+        }
+        urlBox.setMaxLength(2048); //Most browsers have a max length of 2048
+    }
+
+    private void resizeBrowser() {
+        if (width > 100 && height > 100) {
+            browser.resize(BrowserScreenHelper.scaleX(width, BROWSER_DRAW_OFFSET), BrowserScreenHelper.scaleY(height, BROWSER_DRAW_OFFSET));
+        }
+        if(this.urlBox != null) {
+            urlBox.setWidth(BrowserScreenHelper.getUrlBoxWidth(width, BROWSER_DRAW_OFFSET));
+        }
+
+        if(this.specialButton != null){
+            specialButton.setPosition(BROWSER_DRAW_OFFSET, height - BROWSER_DRAW_OFFSET + 5);
+        }
+
+        if(this.openInBrowserButton != null){
+            openInBrowserButton.setPosition(width - 200, height - BROWSER_DRAW_OFFSET + 5);
+        }
+    }
+
+    private void mouseButtonControl(double mouseX, double mouseY, int button, boolean isClick){
+        if(MCBrowser.getConfig().asyncBrowserInput) {
+            if(isClick){
+                CompletableFuture.runAsync(() -> browser.sendMousePress(BrowserScreenHelper.mouseX(mouseX, BROWSER_DRAW_OFFSET), BrowserScreenHelper.mouseY(mouseY, BROWSER_DRAW_OFFSET), button));
+            }else {
+                CompletableFuture.runAsync(() -> browser.sendMouseRelease(BrowserScreenHelper.mouseX(mouseX, BROWSER_DRAW_OFFSET), BrowserScreenHelper.mouseY(mouseY, BROWSER_DRAW_OFFSET), button));
+            }
+        }else {
+            if(isClick){
+                browser.sendMousePress(BrowserScreenHelper.mouseX(mouseX, BROWSER_DRAW_OFFSET), BrowserScreenHelper.mouseY(mouseY, BROWSER_DRAW_OFFSET), button);
+            }else {
+                browser.sendMouseRelease(BrowserScreenHelper.mouseX(mouseX, BROWSER_DRAW_OFFSET), BrowserScreenHelper.mouseY(mouseY, BROWSER_DRAW_OFFSET), button);
+            }
+        }
+        setFocus();
+    }
+
+    private boolean isButtonsFocused(){
+        for(ClickableWidget widget : uiElements){
+            if(widget.isFocused()){
+                return true;
+            }
+        }
+        return false;
     }
 }
 
