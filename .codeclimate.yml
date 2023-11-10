@@ -7,3 +7,5 @@ engines:
       squid:S1118:
         enabled: false
 # ... CONFIG CONTENT ...
+  pmd:
+    enabled: true
