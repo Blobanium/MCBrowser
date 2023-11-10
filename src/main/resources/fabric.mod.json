@@ -27,7 +27,8 @@
     "modmenu":"*"
   },
   "recommends": {
-    "fabric": "*"
+    "fabric": "*",
+    "mcef": ">=2.1.1-1.20.1"
   },
   "depends": {
     "fabricloader": ">=${loader_version}",
