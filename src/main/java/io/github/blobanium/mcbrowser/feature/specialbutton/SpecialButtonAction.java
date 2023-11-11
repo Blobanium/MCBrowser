@@ -10,7 +10,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.toast.SystemToast;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableTextContent;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
@@ -35,7 +34,7 @@ public class SpecialButtonAction {
     }
 
     private static void downloadModrinth(SpecialButtonActions action){
-        sendToastMessage(MutableText.of(new TranslatableTextContent("mcbrowser.download.toast.started.rp", "Download Started", TranslatableTextContent.EMPTY_ARGUMENTS)), getTranslation(START_DL_DESCRIPTION, action));
+        sendToastMessage(Text.translatable("mcbrowser.download.toast.started"), getTranslation(START_DL_DESCRIPTION, action));
 
         CompletableFuture.runAsync(() -> {
             try {
@@ -59,9 +58,9 @@ public class SpecialButtonAction {
                 URL downloadURL = new URL(file.get("url").getAsString());
                 FileUtils.copyURLToFile(downloadURL, new File(FabricLoader.getInstance().getGameDir().toFile(), getTargetDirectory(action) + cleanseFileUrl(downloadURL.getFile())));
 
-                sendToastMessage(MutableText.of(new TranslatableTextContent("mcbrowser.download.toast.complete", "Download Completed!", TranslatableTextContent.EMPTY_ARGUMENTS)), getTranslation(END_DL_DESCRIPTION, action));
+                sendToastMessage(Text.translatable("mcbrowser.download.toast.complete"), getTranslation(END_DL_DESCRIPTION, action));
             } catch (IOException e) {
-                sendToastMessage(MutableText.of(new TranslatableTextContent("mcbrowser.download.toast.failed", "Download Failed", TranslatableTextContent.EMPTY_ARGUMENTS)), MutableText.of(new TranslatableTextContent("mcbrowser.download.toast.failed.description", "Check your logs for more info", TranslatableTextContent.EMPTY_ARGUMENTS)));
+                sendToastMessage(Text.translatable("mcbrowser.download.toast.failed"), Text.translatable("mcbrowser.download.toast.failed.description"));
                 e.printStackTrace();
             }
         });
@@ -86,13 +85,13 @@ public class SpecialButtonAction {
     private static MutableText getTranslation(byte type, SpecialButtonActions action){
         return switch (action){
             case MODRINTH_MOD -> switch (type){
-                case START_DL_DESCRIPTION -> MutableText.of(new TranslatableTextContent("mcbrowser.download.toast.started.description.mod", "Please wait while your mod downloads.", TranslatableTextContent.EMPTY_ARGUMENTS));
-                case END_DL_DESCRIPTION -> MutableText.of(new TranslatableTextContent("mcbrowser.download.toast.complete.description.mod", "Restart your client for changes to take effect.", TranslatableTextContent.EMPTY_ARGUMENTS));
+                case START_DL_DESCRIPTION -> Text.translatable("mcbrowser.download.toast.started.description.mod");
+                case END_DL_DESCRIPTION -> Text.translatable("mcbrowser.download.toast.complete.description.mod");
                 default -> throw new IllegalStateException("Unexpected type value: " + type);
             };
             case MODRINTH_RP -> switch (type){
-                case START_DL_DESCRIPTION -> MutableText.of(new TranslatableTextContent("mcbrowser.download.toast.started.description.rp", "Please wait while your resource pack downloads.", TranslatableTextContent.EMPTY_ARGUMENTS));
-                case END_DL_DESCRIPTION ->  MutableText.of(new TranslatableTextContent("mcbrowser.download.toast.complete.description.rp", "Resource Pack can be turned on in Resource Packs Settings", TranslatableTextContent.EMPTY_ARGUMENTS));
+                case START_DL_DESCRIPTION -> Text.translatable("mcbrowser.download.toast.started.description.rp");
+                case END_DL_DESCRIPTION ->  Text.translatable("mcbrowser.download.toast.complete.description.rp");
                 default -> throw new IllegalStateException("Unexpected type value: " + type);
             };
 
