@@ -91,11 +91,10 @@ public class BrowserScreen extends Screen {
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
         super.render(context, mouseX, mouseY, delta);
         BrowserScreenHelper.renderBrowser(BROWSER_DRAW_OFFSET, width, height, browser.getRenderer().getTextureID());
-        urlBox.renderButton(context, mouseX, mouseY, delta);
-        for(ButtonWidget button : navigationButtons){ button.render(context, mouseX, mouseY, delta); }
-        if(SpecialButtonHelper.isOnCompatableSite(BrowserScreenHelper.currentUrl)) { specialButton.render(context, mouseX, mouseY, delta);}
-        openInBrowserButton.render(context, mouseX, mouseY, delta);
-        renderTooltip();
+        renderButtons(context, mouseX, mouseY, delta);
+        if(BrowserScreenHelper.tooltipText != null && BrowserScreenHelper.tooltipText.getBytes().length != 0) {
+            setTooltip(Text.of(BrowserScreenHelper.tooltipText));
+        }
     }
 
     @Override
@@ -284,10 +283,17 @@ public class BrowserScreen extends Screen {
         return false;
     }
 
-    private void renderTooltip(){
-        if(BrowserScreenHelper.tooltipText != null && BrowserScreenHelper.tooltipText.getBytes().length != 0) {
-            setTooltip(Text.of(BrowserScreenHelper.tooltipText));
+    //Rendering Override
+
+    private void renderButtons(DrawContext context, int mouseX, int mouseY, float delta){
+        urlBox.renderButton(context, mouseX, mouseY, delta);
+        for(ButtonWidget button : navigationButtons){
+            button.render(context, mouseX, mouseY, delta);
         }
+        if(SpecialButtonHelper.isOnCompatableSite(BrowserScreenHelper.currentUrl)) {
+            specialButton.render(context, mouseX, mouseY, delta);
+        }
+        openInBrowserButton.render(context, mouseX, mouseY, delta);
     }
 }
 
