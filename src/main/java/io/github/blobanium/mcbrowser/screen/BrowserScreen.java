@@ -9,24 +9,21 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.*;
 import net.minecraft.text.Text;
-import net.minecraft.util.Util;
 import org.lwjgl.glfw.GLFW;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.concurrent.CompletableFuture;
 
 
 public class BrowserScreen extends Screen {
     private static final int BROWSER_DRAW_OFFSET = 50;
 
-    private BrowserImpl browser;
+    public BrowserImpl browser;
 
     //URL
     private String initURL;
 
     //Ui
-    private TextFieldWidget urlBox;
+    public TextFieldWidget urlBox;
     public ButtonWidget forwardButton;
     public ButtonWidget backButton;
     public ButtonWidget reloadButton;
@@ -47,6 +44,8 @@ public class BrowserScreen extends Screen {
     protected void init() {
         super.init();
         if (browser == null) {
+            BrowserScreenHelper.instance = this;
+
             boolean transparent = false;
             browser = BrowserScreenHelper.createBrowser(this.initURL, transparent);
             resizeBrowser();
@@ -54,29 +53,16 @@ public class BrowserScreen extends Screen {
             initUrlBox();
             backButton = BrowserScreenHelper.initButton(Text.of("\u25C0"), button -> browser.goBack(), BROWSER_DRAW_OFFSET, BROWSER_DRAW_OFFSET);
             forwardButton = BrowserScreenHelper.initButton(Text.of("\u25B6"), button -> browser.goForward(), BROWSER_DRAW_OFFSET + 20, BROWSER_DRAW_OFFSET);
-            reloadButton = BrowserScreenHelper.initButton(Text.of("\u27F3"), button -> {
-                urlBox.setText(browser.getURL());
-                if(browser.isLoading()) {
-                    browser.stopLoad();
-                } else {
-                    browser.reload();
-                }
-                }, BROWSER_DRAW_OFFSET + 40, BROWSER_DRAW_OFFSET);
-            homeButton = BrowserScreenHelper.initButton(Text.of("\u2302"), button -> {
-                String prediffyedHomePage = BrowserUtil.prediffyURL(MCBrowser.getConfig().homePage);
-                urlBox.setText(prediffyedHomePage);
-                browser.loadURL(prediffyedHomePage);
-            }, BROWSER_DRAW_OFFSET + 60, BROWSER_DRAW_OFFSET);
+            reloadButton = BrowserScreenHelper.initButton(Text.of("\u27F3"), button -> BrowserScreenHelper.reloadButtonAction(), BROWSER_DRAW_OFFSET + 40, BROWSER_DRAW_OFFSET);
+            homeButton = BrowserScreenHelper.initButton(Text.of("\u2302"), button -> BrowserScreenHelper.homeButtonAction(), BROWSER_DRAW_OFFSET + 60, BROWSER_DRAW_OFFSET);
             specialButton = ButtonWidget.builder(Text.of(""), button -> SpecialButtonHelper.onPress(BrowserScreenHelper.currentUrl)).dimensions(BROWSER_DRAW_OFFSET, height - BROWSER_DRAW_OFFSET + 5,  150, 15).build();
-            openInBrowserButton = ButtonWidget.builder(Text.of("Open In External Browser"), button -> {try {Util.getOperatingSystem().open(new URL(BrowserScreenHelper.currentUrl));} catch (MalformedURLException e) {throw new RuntimeException(e);}}).dimensions(width - 200, height - BROWSER_DRAW_OFFSET + 5, 150, 15).build();
+            openInBrowserButton = ButtonWidget.builder(Text.of("Open In External Browser"), button -> BrowserScreenHelper.openInBrowser()).dimensions(width - 200, height - BROWSER_DRAW_OFFSET + 5, 150, 15).build();
 
             navigationButtons = new ButtonWidget[]{forwardButton, backButton, reloadButton, homeButton};
             uiElements = new ClickableWidget[]{forwardButton, backButton, reloadButton, homeButton, urlBox, specialButton, openInBrowserButton};
             for(ClickableWidget widget : uiElements){
                 addSelectableChild(widget);
             }
-
-            BrowserScreenHelper.instance = this;
         }
     }
 

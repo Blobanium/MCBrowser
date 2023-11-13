@@ -2,6 +2,8 @@ package io.github.blobanium.mcbrowser.util;
 
 import com.cinemamod.mcef.MCEF;
 import com.mojang.blaze3d.systems.RenderSystem;
+import io.github.blobanium.mcbrowser.MCBrowser;
+import io.github.blobanium.mcbrowser.feature.BrowserUtil;
 import io.github.blobanium.mcbrowser.screen.BrowserScreen;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -11,6 +13,10 @@ import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.text.Text;
+import net.minecraft.util.Util;
+
+import java.net.MalformedURLException;
+import java.net.URL;
 
 public class BrowserScreenHelper {
     private static final int Z_SHIFT = -1;
@@ -90,5 +96,29 @@ public class BrowserScreenHelper {
         }else{
             throw new RuntimeException("Chromium Embedded Framework was never initialized.");
         }
+    }
+
+    //Button related Methods
+    public static void openInBrowser(){
+        try {
+            Util.getOperatingSystem().open(new URL(currentUrl));
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void reloadButtonAction(){
+        instance.urlBox.setText(instance.browser.getURL());
+        if(instance.browser.isLoading()) {
+            instance.browser.stopLoad();
+        } else {
+            instance.browser.reload();
+        }
+    }
+
+    public static void homeButtonAction(){
+        String prediffyedHomePage = BrowserUtil.prediffyURL(MCBrowser.getConfig().homePage);
+        instance.urlBox.setText(prediffyedHomePage);
+        instance.browser.loadURL(prediffyedHomePage);
     }
 }
