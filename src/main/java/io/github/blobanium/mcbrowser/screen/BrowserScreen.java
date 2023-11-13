@@ -97,10 +97,8 @@ public class BrowserScreen extends Screen {
         if(SpecialButtonHelper.isOnCompatableSite(BrowserScreenHelper.currentUrl)) {
             specialButton.render(context, mouseX, mouseY, delta);
         }
-        if(BrowserScreenHelper.tooltipText != null && BrowserScreenHelper.tooltipText.getBytes().length != 0) {
-            setTooltip(Text.of(BrowserScreenHelper.tooltipText));
-        }
         openInBrowserButton.render(context, mouseX, mouseY, delta);
+        renderTooltip();
     }
 
     @Override
@@ -287,6 +285,12 @@ public class BrowserScreen extends Screen {
             }
         }
         return false;
+    }
+
+    private void renderTooltip(){
+        if(BrowserScreenHelper.tooltipText != null && BrowserScreenHelper.tooltipText.getBytes().length != 0) {
+            setTooltip(Text.of(BrowserScreenHelper.tooltipText));
+        }
     }
 }
 
