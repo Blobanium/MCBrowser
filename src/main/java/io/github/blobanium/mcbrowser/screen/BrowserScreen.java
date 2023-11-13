@@ -92,12 +92,8 @@ public class BrowserScreen extends Screen {
         super.render(context, mouseX, mouseY, delta);
         BrowserScreenHelper.renderBrowser(BROWSER_DRAW_OFFSET, width, height, browser.getRenderer().getTextureID());
         urlBox.renderButton(context, mouseX, mouseY, delta);
-        for(ButtonWidget button : navigationButtons){
-            button.render(context, mouseX, mouseY, delta);
-        }
-        if(SpecialButtonHelper.isOnCompatableSite(BrowserScreenHelper.currentUrl)) {
-            specialButton.render(context, mouseX, mouseY, delta);
-        }
+        for(ButtonWidget button : navigationButtons){ button.render(context, mouseX, mouseY, delta); }
+        if(SpecialButtonHelper.isOnCompatableSite(BrowserScreenHelper.currentUrl)) { specialButton.render(context, mouseX, mouseY, delta);}
         openInBrowserButton.render(context, mouseX, mouseY, delta);
         renderTooltip();
     }
