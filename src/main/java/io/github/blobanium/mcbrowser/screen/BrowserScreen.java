@@ -212,18 +212,11 @@ public class BrowserScreen extends Screen {
     }
 
     private void mouseButtonControl(double mouseX, double mouseY, int button, boolean isClick){
-        if(MCBrowser.getConfig().asyncBrowserInput) {
-            if(isClick){
-                CompletableFuture.runAsync(() -> browser.sendMousePress(BrowserScreenHelper.mouseX(mouseX, BROWSER_DRAW_OFFSET), BrowserScreenHelper.mouseY(mouseY, BROWSER_DRAW_OFFSET), button));
-            }else {
-                CompletableFuture.runAsync(() -> browser.sendMouseRelease(BrowserScreenHelper.mouseX(mouseX, BROWSER_DRAW_OFFSET), BrowserScreenHelper.mouseY(mouseY, BROWSER_DRAW_OFFSET), button));
-            }
-        }else {
-            if(isClick){
-                browser.sendMousePress(BrowserScreenHelper.mouseX(mouseX, BROWSER_DRAW_OFFSET), BrowserScreenHelper.mouseY(mouseY, BROWSER_DRAW_OFFSET), button);
-            }else {
-                browser.sendMouseRelease(BrowserScreenHelper.mouseX(mouseX, BROWSER_DRAW_OFFSET), BrowserScreenHelper.mouseY(mouseY, BROWSER_DRAW_OFFSET), button);
-            }
+        switch (BrowserScreenHelper.toMultiBooleanByte(MCBrowser.getConfig().asyncBrowserInput, isClick)){
+            case 0 -> browser.sendMouseRelease(BrowserScreenHelper.mouseX(mouseX, BROWSER_DRAW_OFFSET), BrowserScreenHelper.mouseY(mouseY, BROWSER_DRAW_OFFSET), button);
+            case 1 -> browser.sendMousePress(BrowserScreenHelper.mouseX(mouseX, BROWSER_DRAW_OFFSET), BrowserScreenHelper.mouseY(mouseY, BROWSER_DRAW_OFFSET), button);
+            case 2 -> CompletableFuture.runAsync(() -> browser.sendMouseRelease(BrowserScreenHelper.mouseX(mouseX, BROWSER_DRAW_OFFSET), BrowserScreenHelper.mouseY(mouseY, BROWSER_DRAW_OFFSET), button));
+            case 3 -> CompletableFuture.runAsync(() -> browser.sendMousePress(BrowserScreenHelper.mouseX(mouseX, BROWSER_DRAW_OFFSET), BrowserScreenHelper.mouseY(mouseY, BROWSER_DRAW_OFFSET), button));
         }
         setFocus();
     }

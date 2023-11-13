@@ -121,4 +121,15 @@ public class BrowserScreenHelper {
         instance.urlBox.setText(prediffyedHomePage);
         instance.browser.loadURL(prediffyedHomePage);
     }
+
+    public static Byte toMultiBooleanByte(boolean b1, boolean b2){
+        byte b = 0;
+        if (b1) {
+            b |= 1 << 1;
+        }
+        if (b2) {
+            b |= 1 << 0;
+        }
+        return b;
+    }
 }
