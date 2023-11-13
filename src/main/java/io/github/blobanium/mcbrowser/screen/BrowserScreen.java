@@ -45,6 +45,7 @@ public class BrowserScreen extends Screen {
         super.init();
         if (browser == null) {
             BrowserScreenHelper.instance = this;
+            BrowserScreenHelper.tooltipText = null;
 
             boolean transparent = false;
             browser = BrowserScreenHelper.createBrowser(this.initURL, transparent);
