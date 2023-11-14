@@ -4,9 +4,11 @@ import com.cinemamod.mcef.MCEF;
 import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.blobanium.mcbrowser.MCBrowser;
 import io.github.blobanium.mcbrowser.feature.BrowserUtil;
+import io.github.blobanium.mcbrowser.feature.specialbutton.SpecialButtonActions;
 import io.github.blobanium.mcbrowser.screen.BrowserScreen;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.Tessellator;
@@ -14,6 +16,7 @@ import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.text.Text;
 import net.minecraft.util.Util;
+import org.lwjgl.glfw.GLFW;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -98,6 +101,27 @@ public class BrowserScreenHelper {
         }
     }
 
+    public static TextFieldWidget initurlBox(int offset, int width){
+        TextFieldWidget urlBox = new TextFieldWidget(MinecraftClient.getInstance().textRenderer, offset + 80,offset-20,BrowserScreenHelper.getUrlBoxWidth(width, offset),15, Text.of("")){
+            @Override
+            public boolean keyPressed(int keyCode, int scanCode, int modifiers){
+                if(isFocused()) {
+                    instance.browser.setFocus(false);
+                    if(keyCode == GLFW.GLFW_KEY_ENTER){
+                        instance.browser.loadURL(BrowserUtil.prediffyURL(getText()));
+                        setFocused(false);
+                    }
+                }
+                return super.keyPressed(keyCode, scanCode, modifiers);
+            }
+        };
+        if (instance.initURL != null) {
+            urlBox.setText(instance.initURL);
+        }
+        urlBox.setMaxLength(2048); //Most browsers have a max length of 2048
+        return urlBox;
+    }
+
     //Button related Methods
     public static void openInBrowser(){
         try {
@@ -131,5 +155,18 @@ public class BrowserScreenHelper {
             b |= 1 << 0;
         }
         return b;
+    }
+
+    //Event Methods
+    public static void onUrlChange(){
+        if(instance.urlBox.isFocused()) {
+            instance.urlBox.setFocused(false);
+        }
+        instance.urlBox.setText(Text.of(currentUrl).getString());
+        instance.urlBox.setCursorToStart();
+        SpecialButtonActions action = SpecialButtonActions.getFromUrlConstantValue(currentUrl);
+        if(action != null) {
+            instance.specialButton.setMessage(action.getButtonText());
+        }
     }
 }

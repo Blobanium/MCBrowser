@@ -19,7 +19,7 @@ public class CefClientMixin {
     public void onAddressChange(CefBrowser browser, CefFrame frame, String url, CallbackInfo ci){
         BrowserScreenHelper.currentUrl = url;
         if(url != null) {
-            BrowserScreenHelper.instance.onUrlChange();
+            BrowserScreenHelper.onUrlChange();
         }
     }
 

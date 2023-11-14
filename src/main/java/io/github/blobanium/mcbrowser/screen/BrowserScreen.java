@@ -1,6 +1,5 @@
 package io.github.blobanium.mcbrowser.screen;
 
-import io.github.blobanium.mcbrowser.feature.BrowserUtil;
 import io.github.blobanium.mcbrowser.MCBrowser;
 import io.github.blobanium.mcbrowser.feature.specialbutton.*;
 import io.github.blobanium.mcbrowser.util.*;
@@ -20,7 +19,7 @@ public class BrowserScreen extends Screen {
     public BrowserImpl browser;
 
     //URL
-    private String initURL;
+    public String initURL;
 
     //Ui
     public TextFieldWidget urlBox;
@@ -31,7 +30,7 @@ public class BrowserScreen extends Screen {
     private ButtonWidget[] navigationButtons;
     private ClickableWidget[] uiElements;
 
-    private ButtonWidget specialButton;
+    public ButtonWidget specialButton;
 
     private ButtonWidget openInBrowserButton;
 
@@ -51,7 +50,7 @@ public class BrowserScreen extends Screen {
             browser = BrowserScreenHelper.createBrowser(this.initURL, transparent);
             resizeBrowser();
 
-            initUrlBox();
+            urlBox = BrowserScreenHelper.initurlBox(BROWSER_DRAW_OFFSET, width);
             backButton = BrowserScreenHelper.initButton(Text.of("\u25C0"), button -> browser.goBack(), BROWSER_DRAW_OFFSET, BROWSER_DRAW_OFFSET);
             forwardButton = BrowserScreenHelper.initButton(Text.of("\u25B6"), button -> browser.goForward(), BROWSER_DRAW_OFFSET + 20, BROWSER_DRAW_OFFSET);
             reloadButton = BrowserScreenHelper.initButton(Text.of("\u27F3"), button -> BrowserScreenHelper.reloadButtonAction(), BROWSER_DRAW_OFFSET + 40, BROWSER_DRAW_OFFSET);
@@ -228,41 +227,6 @@ public class BrowserScreen extends Screen {
             }
         }
         return false;
-    }
-
-
-    //Event Methods
-    public void onUrlChange(){
-        if(urlBox.isFocused()) {
-            urlBox.setFocused(false);
-        }
-        urlBox.setText(Text.of(BrowserScreenHelper.currentUrl).getString());
-        urlBox.setCursorToStart();
-        SpecialButtonActions action = SpecialButtonActions.getFromUrlConstantValue(BrowserScreenHelper.currentUrl);
-        if(action != null) {
-            specialButton.setMessage(action.getButtonText());
-        }
-    }
-
-    //Init Override
-    private void initUrlBox(){
-        this.urlBox = new TextFieldWidget(MinecraftClient.getInstance().textRenderer, BROWSER_DRAW_OFFSET + 80,BROWSER_DRAW_OFFSET-20,BrowserScreenHelper.getUrlBoxWidth(width, BROWSER_DRAW_OFFSET),15, Text.of("")){
-            @Override
-            public boolean keyPressed(int keyCode, int scanCode, int modifiers){
-                if(isFocused()) {
-                    browser.setFocus(false);
-                    if(keyCode == GLFW.GLFW_KEY_ENTER){
-                        browser.loadURL(BrowserUtil.prediffyURL(getText()));
-                        setFocused(false);
-                    }
-                }
-                return super.keyPressed(keyCode, scanCode, modifiers);
-            }
-        };
-        if (this.initURL != null) {
-            urlBox.setText(this.initURL);
-        }
-        urlBox.setMaxLength(2048); //Most browsers have a max length of 2048
     }
 
     //Key Pressed Override
