@@ -3,7 +3,7 @@ package io.github.blobanium.mcbrowser.feature.specialbutton;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import io.github.blobanium.mcbrowser.util.BrowserScreenHelper;
+import io.github.blobanium.mcbrowser.MCBrowser;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.MinecraftVersion;
 import net.minecraft.client.MinecraftClient;
@@ -25,15 +25,15 @@ public class SpecialButtonAction {
     private static final byte END_DL_DESCRIPTION = 0x01;
 
     //These two methods exist for compatability purposes. May change later when i learn more about enum values.
-    public static void downloadModrinthMod(){
+    public static void downloadModrinthMod() {
         downloadModrinth(SpecialButtonActions.MODRINTH_MOD);
     }
 
-    public static void downloadModrinthRP(){
+    public static void downloadModrinthRP() {
         downloadModrinth(SpecialButtonActions.MODRINTH_RP);
     }
 
-    private static void downloadModrinth(SpecialButtonActions action){
+    private static void downloadModrinth(SpecialButtonActions action) {
         sendToastMessage(Text.translatable("mcbrowser.download.toast.started"), getTranslation(START_DL_DESCRIPTION, action));
 
         CompletableFuture.runAsync(() -> {
@@ -67,31 +67,31 @@ public class SpecialButtonAction {
     }
 
 
-    private static String cleanseFileUrl(String url){
+    private static String cleanseFileUrl(String url) {
         String[] array = url.split("/");
-        return array[array.length-1].replace("%2B", "+");
+        return array[array.length - 1].replace("%2B", "+");
     }
 
-    private static String getModrinthSlugFromUrl(String url){
+    private static String getModrinthSlugFromUrl(String url) {
         String string = url.replace("https://modrinth.com/", "");
         string = string.substring(string.indexOf("/") + 1);
         return string.split("/")[0];
     }
 
-    private static void sendToastMessage(Text title, Text description){
+    private static void sendToastMessage(Text title, Text description) {
         MinecraftClient.getInstance().getToastManager().add(new SystemToast(SystemToast.Type.TUTORIAL_HINT, title, description));
     }
 
-    private static MutableText getTranslation(byte type, SpecialButtonActions action){
-        return switch (action){
-            case MODRINTH_MOD -> switch (type){
+    private static MutableText getTranslation(byte type, SpecialButtonActions action) {
+        return switch (action) {
+            case MODRINTH_MOD -> switch (type) {
                 case START_DL_DESCRIPTION -> Text.translatable("mcbrowser.download.toast.started.description.mod");
                 case END_DL_DESCRIPTION -> Text.translatable("mcbrowser.download.toast.complete.description.mod");
                 default -> throw new IllegalStateException("Unexpected type value: " + type);
             };
-            case MODRINTH_RP -> switch (type){
+            case MODRINTH_RP -> switch (type) {
                 case START_DL_DESCRIPTION -> Text.translatable("mcbrowser.download.toast.started.description.rp");
-                case END_DL_DESCRIPTION ->  Text.translatable("mcbrowser.download.toast.complete.description.rp");
+                case END_DL_DESCRIPTION -> Text.translatable("mcbrowser.download.toast.complete.description.rp");
                 default -> throw new IllegalStateException("Unexpected type value: " + type);
             };
 
@@ -101,17 +101,17 @@ public class SpecialButtonAction {
     }
 
     private static URL getTargetURL(SpecialButtonActions action) throws MalformedURLException {
-        return switch (action){
-            case MODRINTH_MOD -> new URL("https://api.modrinth.com/v2/project/" + getModrinthSlugFromUrl(BrowserScreenHelper.currentUrl) + "/version?game_versions=[%22" + MinecraftVersion.CURRENT.getName() + "%22]&loaders=[%22fabric%22]");
-            case MODRINTH_RP -> new URL("https://api.modrinth.com/v2/project/" + getModrinthSlugFromUrl(BrowserScreenHelper.currentUrl) + "/version?game_versions=[%22" + MinecraftVersion.CURRENT.getName() + "%22]");
+        return switch (action) {
+            case MODRINTH_MOD -> new URL("https://api.modrinth.com/v2/project/" + getModrinthSlugFromUrl(MCBrowser.getCurrentUrl()) + "/version?game_versions=[%22" + MinecraftVersion.CURRENT.getName() + "%22]&loaders=[%22fabric%22]");
+            case MODRINTH_RP -> new URL("https://api.modrinth.com/v2/project/" + getModrinthSlugFromUrl(MCBrowser.getCurrentUrl()) + "/version?game_versions=[%22" + MinecraftVersion.CURRENT.getName() + "%22]");
 
             //Reserved for future usage.
             default -> throw new IllegalStateException("Unexpected action value: " + action);
         };
     }
 
-    private static String getTargetDirectory(SpecialButtonActions action){
-        return switch (action){
+    private static String getTargetDirectory(SpecialButtonActions action) {
+        return switch (action) {
             case MODRINTH_MOD -> "mods/";
             case MODRINTH_RP -> "resourcepacks/";
         };

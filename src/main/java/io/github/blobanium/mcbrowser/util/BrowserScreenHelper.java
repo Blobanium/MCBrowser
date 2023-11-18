@@ -1,22 +1,13 @@
 package io.github.blobanium.mcbrowser.util;
 
 import com.cinemamod.mcef.MCEF;
-import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.blobanium.mcbrowser.screen.BrowserScreen;
+import io.github.blobanium.mcbrowser.util.button.BrowserTabIcon;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.GameRenderer;
-import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexFormat;
-import net.minecraft.client.render.VertexFormats;
 import net.minecraft.text.Text;
 
 public class BrowserScreenHelper {
-    private static final int Z_SHIFT = -1;
-
-    public static String currentUrl = null;
-
     //Mouse position
     public static double lastMouseX;
     public static double lastMouseY;
@@ -25,29 +16,10 @@ public class BrowserScreenHelper {
 
     public static String tooltipText;
 
-
-    //Rendering
-    public static void renderBrowser(int offset, int width, int height, int textureID){
-        RenderSystem.disableDepthTest();
-        RenderSystem.setShader(GameRenderer::getPositionTexColorProgram);
-        RenderSystem.setShaderTexture(0, textureID);
-        Tessellator t = Tessellator.getInstance();
-        BufferBuilder buffer = t.getBuffer();
-        buffer.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR);
-        buffer.vertex(offset, height - offset, Z_SHIFT).texture(0.0f, 1.0f).color(255, 255, 255, 255).next();
-        buffer.vertex(width - offset, height - offset, Z_SHIFT).texture(1.0f, 1.0f).color(255, 255, 255, 255).next();
-        buffer.vertex(width - offset, offset, Z_SHIFT).texture(1.0f, 0.0f).color(255, 255, 255, 255).next();
-        buffer.vertex(offset, offset, Z_SHIFT).texture(0.0f, 0.0f).color(255, 255, 255, 255).next();
-        t.draw();
-        RenderSystem.setShaderTexture(0, 0);
-        RenderSystem.enableDepthTest();
-    }
-
     //Navigation initialization methods
-
-    public static ButtonWidget initButton(Text message, ButtonWidget.PressAction onPress, int positionX, int offset){
+    public static ButtonWidget initButton(Text message, ButtonWidget.PressAction onPress, int positionX, int offset) {
         return ButtonWidget.builder(message, onPress)
-                .dimensions(positionX, offset-20, 15, 15)
+                .dimensions(positionX, offset - 20, 15, 15)
                 .build();
     }
 
@@ -63,7 +35,7 @@ public class BrowserScreenHelper {
         return (int) ((y - offset) * MinecraftClient.getInstance().getWindow().getScaleFactor());
     }
 
-    public static void updateMouseLocation(double mouseX, double mouseY){
+    public static void updateMouseLocation(double mouseX, double mouseY) {
         lastMouseX = mouseX;
         lastMouseY = mouseY;
     }
@@ -76,18 +48,29 @@ public class BrowserScreenHelper {
         return (int) ((y - offset * 2) * MinecraftClient.getInstance().getWindow().getScaleFactor());
     }
 
-    public static int getUrlBoxWidth(int width, int offset){
+    public static int getUrlBoxWidth(int width, int offset) {
         return width - (offset * 2) - 80;
     }
 
     //Browser Creation
-    public static BrowserImpl createBrowser(String url, boolean transparent){
-        if(MCEF.isInitialized()) {
-            BrowserImpl browser = new BrowserImpl(MCEF.getClient(), url, transparent);
+    public static BrowserImpl createBrowser(String url) {
+        if (MCEF.isInitialized()) {
+            BrowserImpl browser = new BrowserImpl(MCEF.getClient(), url, false);
             browser.setCloseAllowed();
             browser.createImmediately();
             return browser;
-        }else{
+        } else {
+            throw new RuntimeException("Chromium Embedded Framework was never initialized.");
+        }
+    }
+
+    public static BrowserTabIcon createIcon(String url) {
+        if (MCEF.isInitialized()) {
+            BrowserTabIcon icon = new BrowserTabIcon(MCEF.getClient(), url, false);
+            icon.setCloseAllowed();
+            icon.createImmediately();
+            return icon;
+        } else {
             throw new RuntimeException("Chromium Embedded Framework was never initialized.");
         }
     }
