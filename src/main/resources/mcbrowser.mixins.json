@@ -8,10 +8,10 @@
     "CefUtilMixin",
     "ScreenMixin"
   ],
-  "injectors": {
-    "defaultRequire": 1
-  },
   "client": [
     "MinecraftClientMixin"
-  ]
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
 }

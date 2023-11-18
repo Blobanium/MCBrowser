@@ -69,9 +69,10 @@ public class MCBrowser implements ClientModInitializer {
                                             openBrowser();
                                             return 0;
                                         }))
-                        ));
+                        )); //todo remove debug commands
             }));
         }
+        runCompatabilityCheck();
     }
 
     private static final MinecraftClient minecraft = MinecraftClient.getInstance();
@@ -179,5 +180,16 @@ public class MCBrowser implements ClientModInitializer {
 
     public static BrowserAutoConfig getConfig() {
         return AutoConfig.getConfigHolder(BrowserAutoConfig.class).getConfig();
+    }
+
+    private static void runCompatabilityCheck(){
+        String mcefVersion = FabricLoader.getInstance().getModContainer("mcef").get().getMetadata().getVersion().getFriendlyString();
+
+        if(mcefVersion.contains("2.1.0")){
+            LOGGER.warn("You are using a version of MCEF that is known to have critical bugs" +
+                    "\nIt is strongly recomended to update MCEF to the latest version" +
+                    "\n - You will be unable to sign into google while using this version. (See: https://github.com/CinemaMod/mcef/issues/61)" +
+                    "\n - JCEF Processes created by MCEF may linger in the background and eat up your CPU Resources. Even after minecraft is shut down. (See: https://github.com/CinemaMod/mcef/issues/63)");
+        }
     }
 }

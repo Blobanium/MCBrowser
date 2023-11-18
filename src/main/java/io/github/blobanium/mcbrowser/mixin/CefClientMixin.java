@@ -22,7 +22,7 @@ public class CefClientMixin {
         if (url != null) {
             if (!(browser instanceof BrowserTabIcon)) {
                 if (browser instanceof BrowserImpl) {
-                    BrowserScreenHelper.instance.onUrlChange();
+                    BrowserScreenHelper.onUrlChange();
                 }
             }
         }

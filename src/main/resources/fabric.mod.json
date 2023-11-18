@@ -7,7 +7,8 @@
   "authors": ["Blobanium"],
   "contact": {
     "sources": "https://github.com/Blobanium/MCBrowser",
-    "issues": "https://github.com/Blobanium/MCBrowser/issues"
+    "issues": "https://github.com/Blobanium/MCBrowser/issues",
+    "discord": "https://discord.gg/UTJHBYugUD"
   },
   "license": "MIT",
   "icon": "assets/mcbrowser/icon.png",

@@ -1,11 +1,22 @@
 package io.github.blobanium.mcbrowser.util;
 
 import com.cinemamod.mcef.MCEF;
+import io.github.blobanium.mcbrowser.MCBrowser;
+import io.github.blobanium.mcbrowser.feature.BrowserUtil;
+import io.github.blobanium.mcbrowser.feature.specialbutton.SpecialButtonActions;
 import io.github.blobanium.mcbrowser.screen.BrowserScreen;
 import io.github.blobanium.mcbrowser.util.button.BrowserTabIcon;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.text.Text;
+import net.minecraft.util.Util;
+import org.lwjgl.glfw.GLFW;
+
+import java.net.MalformedURLException;
+import java.net.URL;
+
+import static io.github.blobanium.mcbrowser.MCBrowser.*;
 
 public class BrowserScreenHelper {
     //Mouse position
@@ -72,6 +83,54 @@ public class BrowserScreenHelper {
             return icon;
         } else {
             throw new RuntimeException("Chromium Embedded Framework was never initialized.");
+        }
+    }
+
+    public static TextFieldWidget initUrlBox(int offset, int width) {
+        TextFieldWidget urlBox = new TextFieldWidget(MinecraftClient.getInstance().textRenderer, offset + 80, offset - 20, BrowserScreenHelper.getUrlBoxWidth(width, offset), 15, Text.of("")) {
+            @Override
+            public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+                if (isFocused()) {
+                    for (TabHolder tab : tabs) {
+                        tab.getBrowser().setFocus(false);
+                    }
+                    if (keyCode == GLFW.GLFW_KEY_ENTER) {
+                        getCurrentTab().loadURL(BrowserUtil.prediffyURL(getText()));
+                        setFocused(false);
+                    }
+                }
+                return super.keyPressed(keyCode, scanCode, modifiers);
+            }
+        };
+        urlBox.setMaxLength(2048); //Most browsers have a max length of 2048
+        return urlBox;
+    }
+
+    //Button related Methods
+    public static void openInBrowser(){
+        try {
+            Util.getOperatingSystem().open(new URL(getCurrentUrl()));
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void homeButtonAction(){
+        String prediffyedHomePage = BrowserUtil.prediffyURL(MCBrowser.getConfig().homePage);
+        instance.urlBox.setText(prediffyedHomePage);
+        getCurrentTab().loadURL(prediffyedHomePage);
+    }
+
+    //Event Methods
+    public static void onUrlChange() {
+        if (instance.urlBox.isFocused()) {
+            instance.urlBox.setFocused(false);
+        }
+        instance.urlBox.setText(getCurrentUrl());
+        instance.urlBox.setCursorToStart();
+        SpecialButtonActions action = SpecialButtonActions.getFromUrlConstantValue(getCurrentUrl());
+        if (action != null) {
+            instance.specialButton.setMessage(action.getButtonText());
         }
     }
 }

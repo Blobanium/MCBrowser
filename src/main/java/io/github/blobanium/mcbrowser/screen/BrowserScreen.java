@@ -1,28 +1,17 @@
 package io.github.blobanium.mcbrowser.screen;
 
 import io.github.blobanium.mcbrowser.MCBrowser;
-import io.github.blobanium.mcbrowser.feature.BrowserUtil;
-import io.github.blobanium.mcbrowser.feature.specialbutton.SpecialButtonActions;
-import io.github.blobanium.mcbrowser.feature.specialbutton.SpecialButtonHelper;
-import io.github.blobanium.mcbrowser.util.BrowserScreenHelper;
-import io.github.blobanium.mcbrowser.util.TabHolder;
-import io.github.blobanium.mcbrowser.util.button.NewTabButton;
-import io.github.blobanium.mcbrowser.util.button.ReloadButton;
-import io.github.blobanium.mcbrowser.util.button.TabButton;
+import io.github.blobanium.mcbrowser.feature.specialbutton.*;
+import io.github.blobanium.mcbrowser.util.*;
+import io.github.blobanium.mcbrowser.util.button.*;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.gui.widget.ClickableWidget;
-import net.minecraft.client.gui.widget.PressableWidget;
-import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.client.gui.widget.*;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.text.Text;
-import net.minecraft.util.Util;
 import org.lwjgl.glfw.GLFW;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.concurrent.CompletableFuture;
 
@@ -43,7 +32,7 @@ public class BrowserScreen extends Screen {
     public ArrayList<TabButton> tabButtons = new ArrayList<>();
     private NewTabButton newTabButton = null;
 
-    private ButtonWidget specialButton;
+    public ButtonWidget specialButton;
 
     private ButtonWidget openInBrowserButton;
 
@@ -92,24 +81,14 @@ public class BrowserScreen extends Screen {
         newTabButton = new NewTabButton(BROWSER_DRAW_OFFSET, BROWSER_DRAW_OFFSET - 40, 15, 15, Text.of("+"));
         initTabs();
 
-        initUrlBox();
+        urlBox = BrowserScreenHelper.initUrlBox(BROWSER_DRAW_OFFSET, width);
 
         backButton = BrowserScreenHelper.initButton(Text.of("\u25C0"), button -> getCurrentTab().goBack(), BROWSER_DRAW_OFFSET, BROWSER_DRAW_OFFSET);
         forwardButton = BrowserScreenHelper.initButton(Text.of("\u25B6"), button -> getCurrentTab().goForward(), BROWSER_DRAW_OFFSET + 20, BROWSER_DRAW_OFFSET);
         reloadButton = new ReloadButton(BROWSER_DRAW_OFFSET + 40, BROWSER_DRAW_OFFSET - 20, 15, 15);
-        homeButton = BrowserScreenHelper.initButton(Text.of("\u2302"), button -> {
-            String prediffyedHomePage = BrowserUtil.prediffyURL(MCBrowser.getConfig().homePage);
-            urlBox.setText(prediffyedHomePage);
-            getCurrentTab().loadURL(prediffyedHomePage);
-        }, BROWSER_DRAW_OFFSET + 60, BROWSER_DRAW_OFFSET);
+        homeButton = BrowserScreenHelper.initButton(Text.of("\u2302"), button -> BrowserScreenHelper.homeButtonAction(), BROWSER_DRAW_OFFSET + 60, BROWSER_DRAW_OFFSET);
         specialButton = ButtonWidget.builder(Text.of(""), button -> SpecialButtonHelper.onPress(getCurrentUrl())).dimensions(BROWSER_DRAW_OFFSET, height - BROWSER_DRAW_OFFSET + 5, 150, 15).build();
-        openInBrowserButton = ButtonWidget.builder(Text.of("Open In External Browser"), button -> {
-            try {
-                Util.getOperatingSystem().open(new URL(getCurrentUrl()));
-            } catch (MalformedURLException e) {
-                throw new RuntimeException(e);
-            }
-        }).dimensions(width - 200, height - BROWSER_DRAW_OFFSET + 5, 150, 15).build();
+        openInBrowserButton = ButtonWidget.builder(Text.of("Open In External Browser"), button -> BrowserScreenHelper.openInBrowser()).dimensions(width - 200, height - BROWSER_DRAW_OFFSET + 5, 150, 15).build();
 
         navigationButtons = new PressableWidget[]{forwardButton, backButton, reloadButton, homeButton};
         uiElements = new ClickableWidget[]{forwardButton, backButton, reloadButton, homeButton, urlBox, specialButton, openInBrowserButton, newTabButton};
@@ -171,21 +150,10 @@ public class BrowserScreen extends Screen {
             getCurrentTabHolder().init();
             resizeBrowser();
         }
-        urlBox.renderButton(context, mouseX, mouseY, delta);
-        for (PressableWidget button : navigationButtons) {
-            button.render(context, mouseX, mouseY, delta);
-        }
-        if (SpecialButtonHelper.isOnCompatableSite(getCurrentUrl())) {
-            specialButton.render(context, mouseX, mouseY, delta);
-        }
+        renderButtons(context, mouseX, mouseY, delta);
         if (BrowserScreenHelper.tooltipText != null && BrowserScreenHelper.tooltipText.getBytes().length != 0) {
             setTooltip(Text.of(BrowserScreenHelper.tooltipText));
         }
-        for (TabButton tabButton : tabButtons) {
-            tabButton.render(context, mouseX, mouseY, delta);
-        }
-        newTabButton.render(context, mouseX, mouseY, delta);
-        openInBrowserButton.render(context, mouseX, mouseY, delta);
     }
 
     @Override
@@ -347,7 +315,6 @@ public class BrowserScreen extends Screen {
         if (this.openInBrowserButton != null) {
             openInBrowserButton.setPosition(width - 200, height - BROWSER_DRAW_OFFSET + 5);
         }
-
     }
 
     private void mouseButtonControl(double mouseX, double mouseY, int button, boolean isClick) {
@@ -369,39 +336,6 @@ public class BrowserScreen extends Screen {
         }
     }
 
-    //Event Methods
-    public void onUrlChange() {
-        if (urlBox.isFocused()) {
-            urlBox.setFocused(false);
-        }
-        urlBox.setText(getCurrentUrl());
-        urlBox.setCursorToStart();
-        SpecialButtonActions action = SpecialButtonActions.getFromUrlConstantValue(getCurrentUrl());
-        if (action != null) {
-            specialButton.setMessage(action.getButtonText());
-        }
-    }
-
-    //Init Override
-    private void initUrlBox() {
-        this.urlBox = new TextFieldWidget(MinecraftClient.getInstance().textRenderer, BROWSER_DRAW_OFFSET + 80, BROWSER_DRAW_OFFSET - 20, BrowserScreenHelper.getUrlBoxWidth(width, BROWSER_DRAW_OFFSET), 15, Text.of("")) {
-            @Override
-            public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-                if (isFocused()) {
-                    for (TabHolder tab : tabs) {
-                        tab.getBrowser().setFocus(false);
-                    }
-                    if (keyCode == GLFW.GLFW_KEY_ENTER) {
-                        getCurrentTab().loadURL(BrowserUtil.prediffyURL(getText()));
-                        setFocused(false);
-                    }
-                }
-                return super.keyPressed(keyCode, scanCode, modifiers);
-            }
-        };
-        urlBox.setMaxLength(2048); //Most browsers have a max length of 2048
-    }
-
     private boolean isButtonsFocused() {
         for (ClickableWidget widget : uiElements) {
             if (widget.isFocused()) {
@@ -409,6 +343,23 @@ public class BrowserScreen extends Screen {
             }
         }
         return false;
+    }
+
+    //Rendering Override
+
+    private void renderButtons(DrawContext context, int mouseX, int mouseY, float delta){
+        urlBox.renderButton(context, mouseX, mouseY, delta);
+        for (PressableWidget button : navigationButtons) {
+            button.render(context, mouseX, mouseY, delta);
+        }
+        if (SpecialButtonHelper.isOnCompatableSite(getCurrentUrl())) {
+            specialButton.render(context, mouseX, mouseY, delta);
+        }
+        for (TabButton tabButton : tabButtons) {
+            tabButton.render(context, mouseX, mouseY, delta);
+        }
+        newTabButton.render(context, mouseX, mouseY, delta);
+        openInBrowserButton.render(context, mouseX, mouseY, delta);
     }
 }
 
