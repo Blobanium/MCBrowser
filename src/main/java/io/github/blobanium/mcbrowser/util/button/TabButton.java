@@ -2,8 +2,11 @@ package io.github.blobanium.mcbrowser.util.button;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.blobanium.mcbrowser.MCBrowser;
+import io.github.blobanium.mcbrowser.screen.BrowserScreen;
 import io.github.blobanium.mcbrowser.util.BrowserScreenHelper;
+import me.shedaniel.math.Color;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.PressableWidget;
@@ -29,7 +32,7 @@ public class TabButton extends PressableWidget {
 
     @Override
     public int getX() {
-        return startX + (tab * (width + 5));
+        return startX + (tab * (getWidth() + 5));
     }
 
     public void setTab(int tab) {
@@ -47,20 +50,26 @@ public class TabButton extends PressableWidget {
 
     @Override
     public void renderButton(DrawContext context, int mouseX, int mouseY, float delta) {
+        if (this.getX() > BrowserScreenHelper.instance.width - BrowserScreen.BROWSER_DRAW_OFFSET - 35) {
+            return;
+        }
+        TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
         context.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha);
         RenderSystem.enableBlend();
         RenderSystem.enableDepthTest();
-        int mainTextureOffset = 1;
-        int closeTextureOffset = 1;
-        if (activeTab == tab) {
-            mainTextureOffset = 2;
+        boolean selected = activeTab == tab;
+        boolean hoveringClose = (mouseX >= this.getX() + (this.getWidth() - 15)) && (mouseX <= this.getX() + this.getWidth()) && (mouseY >= this.getY()) && (mouseY <= this.getY() + this.getHeight());
+        boolean tooSmall = this.getWidth() < this.getHeight() * 3;
+        int mainTextureOffset = selected ? 2 : 1;
+        int closeTextureOffset = hoveringClose ? 2 : 1;
+        if (this.getWidth() > this.getHeight()) {
+            context.drawNineSlicedTexture(WIDGETS_TEXTURE, this.getX(), this.getY(), this.getWidth(), this.getHeight(), 20, 4, 200, 20, 0, 46 + mainTextureOffset * 20);
         }
-        if ((mouseX >= this.getX() + (this.getWidth() - 15)) && (mouseX <= this.getX() + this.getWidth()) && (mouseY >= this.getY()) && (mouseY <= this.getY() + this.getHeight())) {
-            closeTextureOffset = 2;
+        if (!tooSmall || selected) {
+            context.drawNineSlicedTexture(WIDGETS_TEXTURE, this.getX() + (this.getWidth() - 15), this.getY(), 15, this.getHeight(), 20, 4, 200, 20, 0, 46 + closeTextureOffset * 20);
+            String cross = "\u274C";
+            context.drawText(textRenderer, cross, this.getX() + this.getWidth() - 8 - textRenderer.getWidth(cross) / 2, this.getY() + 4, 0xFFFFFFFF, true);
         }
-        context.fill(this.getX(), this.getY(), this.getX() + this.getHeight(), this.getY() + this.getHeight(), 0xFFFFFFFF);
-        context.drawNineSlicedTexture(WIDGETS_TEXTURE, this.getX() + this.getHeight(), this.getY(), this.getWidth() - this.getHeight() - 15, this.getHeight(), 20, 4, 200, 20, 0, 46 + mainTextureOffset * 20);
-        context.drawNineSlicedTexture(WIDGETS_TEXTURE, this.getX() + (this.getWidth() - 15), this.getY(), 15, this.getHeight(), 20, 4, 200, 20, 0, 46 + closeTextureOffset * 20);
         context.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         String name;
         if (tabs.get(tab).isInit()) {
@@ -81,8 +90,14 @@ public class TabButton extends PressableWidget {
         } else {
             name = tabs.get(tab).holderUrl;
         }
-        drawScrollableText(context, MinecraftClient.getInstance().textRenderer, Text.of(name), this.getX() + 2 + 15, this.getY(), this.getX() + this.getWidth() - 15 - 2, this.getY() + this.getHeight(), 16777215 | MathHelper.ceil(this.alpha * 255.0F) << 24);
+        drawScrollableText(context, textRenderer, Text.of(name), this.getX() + 2 + 15, this.getY(), this.getX() + this.getWidth() - (!tooSmall || selected ? 17 : 2), this.getY() + this.getHeight(), 16777215 | MathHelper.ceil(this.alpha * 255.0F) << 24);
+
+        context.fill(this.getX(), this.getY(), this.getX() + this.getHeight(), this.getY() + this.getHeight(), 0xFFFFFFFF);
         renderIco();
+
+        if (selected) {
+            context.fill(this.getX(), this.getY() + this.getHeight(), this.getX() + this.getWidth(), this.getY() + this.getHeight() + 2, 0xFFFFFFFF);
+        }
     }
 
     public void renderIco() {
@@ -136,10 +151,19 @@ public class TabButton extends PressableWidget {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (this.getX() > BrowserScreenHelper.instance.width - BrowserScreen.BROWSER_DRAW_OFFSET - 35) {
+            return false;
+        }
         if (this.clicked(mouseX, mouseY)) {
             if (button == 2) {
                 close();
                 return true;
+            }
+            if (this.getWidth() < this.getHeight() * 3) {
+                if (activeTab != tab) {
+                    open();
+                    return true;
+                }
             }
             if (mouseX > this.getX() + this.getWidth() - 15) {
                 close();

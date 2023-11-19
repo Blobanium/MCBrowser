@@ -1,5 +1,6 @@
 package io.github.blobanium.mcbrowser.util.button;
 
+import io.github.blobanium.mcbrowser.screen.BrowserScreen;
 import io.github.blobanium.mcbrowser.util.BrowserScreenHelper;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.PressableWidget;
@@ -17,7 +18,7 @@ public class NewTabButton extends PressableWidget {
 
     @Override
     public int getX() {
-        return startX + ((BrowserScreenHelper.instance.tabButtons.size()) * 105);
+        return Math.min(BrowserScreenHelper.instance.width - BrowserScreen.BROWSER_DRAW_OFFSET - 15, startX + ((BrowserScreenHelper.instance.tabButtons.size()) * 105));
     }
 
     @Override

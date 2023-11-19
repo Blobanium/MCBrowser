@@ -19,7 +19,7 @@ import static io.github.blobanium.mcbrowser.MCBrowser.*;
 
 
 public class BrowserScreen extends Screen {
-    private static final int BROWSER_DRAW_OFFSET = 50;
+    public static final int BROWSER_DRAW_OFFSET = 50;
 
     //Ui
     public TextFieldWidget urlBox;
@@ -57,6 +57,7 @@ public class BrowserScreen extends Screen {
         tabButtons.get(index).resetIco();
         tabButtons.remove(index);
         updateTabButtonsIndexes(index);
+        updateTabSize();
     }
 
     public void addTab(int index) {
@@ -64,12 +65,22 @@ public class BrowserScreen extends Screen {
         tabButtons.add(index, tabButton);
         updateTabButtonsIndexes(index + 1);
         addSelectableChild(tabButton);
+        updateTabSize();
     }
 
     private void updateTabButtonsIndexes(int i) {
         while (i < tabButtons.size()) {
             tabButtons.get(i).setTab(i);
             i++;
+        }
+    }
+
+    private void updateTabSize() {
+        if (tabButtons.size() > 0) {
+            int size = Math.min(100, (this.width - (BROWSER_DRAW_OFFSET * 2) - 15) / tabButtons.size() - 5);
+            for (TabButton tabButton : tabButtons) {
+                tabButton.setWidth(Math.max(15, size));
+            }
         }
     }
 
@@ -124,6 +135,7 @@ public class BrowserScreen extends Screen {
         for (TabButton tabButton : tabButtons) {
             addSelectableChild(tabButton);
         }
+        updateTabSize();
 
         for (ClickableWidget widget : uiElements) {
             if (!children().contains(widget)) {

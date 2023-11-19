@@ -168,8 +168,10 @@ public class MCBrowser implements ClientModInitializer {
                 ArrayList<String> urls = gson.fromJson(fileReader, type);
                 fileReader.close();
                 for (String url : urls) {
-                    TabHolder tab = new TabHolder(url);
-                    tabs.add(tab);
+                    if (!url.isEmpty()) {
+                        TabHolder tab = new TabHolder(url);
+                        tabs.add(tab);
+                    }
                 }
             } catch (IOException e) {
                 LOGGER.error("Could not read list of tabs from \"" + filename + "\"");
