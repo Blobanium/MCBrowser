@@ -35,9 +35,7 @@ public class CefClientMixin {
 
     @Inject(at = @At("HEAD"), method = "onLoadingStateChange", remap = false)
     public void onLoadingStateChange(CefBrowser browser, boolean isLoading, boolean canGoBack, boolean canGoForward, CallbackInfo ci) {
-        BrowserScreenHelper.instance.reloadButton.setMessage(Text.of(isLoading ? "\u274C" : "\u27F3"));
-        BrowserScreenHelper.instance.forwardButton.active = canGoForward;
-        BrowserScreenHelper.instance.backButton.active = canGoBack;
+        BrowserScreenHelper.instance.updateWidgets();
     }
 
 }

@@ -65,11 +65,6 @@ public class TabButton extends PressableWidget {
         if (this.getWidth() > this.getHeight()) {
             context.drawNineSlicedTexture(WIDGETS_TEXTURE, this.getX(), this.getY(), this.getWidth(), this.getHeight(), 20, 4, 200, 20, 0, 46 + mainTextureOffset * 20);
         }
-        if (!tooSmall || selected) {
-            context.drawNineSlicedTexture(WIDGETS_TEXTURE, this.getX() + (this.getWidth() - 15), this.getY(), 15, this.getHeight(), 20, 4, 200, 20, 0, 46 + closeTextureOffset * 20);
-            String cross = "\u274C";
-            context.drawText(textRenderer, cross, this.getX() + this.getWidth() - 8 - textRenderer.getWidth(cross) / 2, this.getY() + 4, 0xFFFFFFFF, true);
-        }
         context.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         String name;
         if (tabs.get(tab).isInit()) {
@@ -94,6 +89,11 @@ public class TabButton extends PressableWidget {
 
         context.fill(this.getX(), this.getY(), this.getX() + this.getHeight(), this.getY() + this.getHeight(), 0xFFFFFFFF);
         renderIco();
+        if (!tooSmall || selected) {
+            context.drawNineSlicedTexture(WIDGETS_TEXTURE, this.getX() + (this.getWidth() - 15), this.getY(), 15, this.getHeight(), 20, 4, 200, 20, 0, 46 + closeTextureOffset * 20);
+            String cross = "\u274C";
+            context.drawText(textRenderer, cross, this.getX() + this.getWidth() - 8 - textRenderer.getWidth(cross) / 2, this.getY() + 4, 0xFFFFFFFF, true);
+        }
 
         if (selected) {
             context.fill(this.getX(), this.getY() + this.getHeight(), this.getX() + this.getWidth(), this.getY() + this.getHeight() + 2, 0xFFFFFFFF);
@@ -135,6 +135,9 @@ public class TabButton extends PressableWidget {
             currentUrl = tabs.get(tab).holderUrl;
         } else {
             currentUrl = tabs.get(tab).getBrowser().getURL();
+        }
+        if (currentUrl.isEmpty()) {
+            return;
         }
         tabs.get(tab).initIcon(currentUrl);
         try {
@@ -180,17 +183,6 @@ public class TabButton extends PressableWidget {
     }
 
     public void close() {
-        BrowserScreenHelper.instance.removeTab(tab);
-        tabs.get(tab).close();
-        tabs.remove(tab);
-        if (tabs.size() == 0) {
-            BrowserScreenHelper.instance.close();
-            return;
-        }
-        if (tab <= activeTab && activeTab != 0) {
-            setActiveTab(activeTab - 1);
-        } else {
-            BrowserScreenHelper.instance.updateWidgets();
-        }
+        closeTab(tab);
     }
 }

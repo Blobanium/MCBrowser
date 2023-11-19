@@ -36,6 +36,7 @@ public class MCBrowser implements ClientModInitializer {
     public static final Logger LOGGER = LogManager.getLogger("MCBrowser");
 
     public static List<TabHolder> tabs = new ArrayList<>();
+    public static List<String> closedTabs = new ArrayList<>();
     public static int activeTab = 0;
     private static boolean firstOpen = true;
 
@@ -43,7 +44,9 @@ public class MCBrowser implements ClientModInitializer {
     public void onInitializeClient() {
         AutoConfig.register(BrowserAutoConfig.class, GsonConfigSerializer::new);
 
-        MCEF.getSettings().setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) MCEF/2 Chrome/119.0.0.0 Safari/537.36");
+        if (MCEF.getSettings().getUserAgent().equals("null")) {
+            MCEF.getSettings().setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) MCEF/2 Chrome/119.0.0.0 Safari/537.36");
+        }
 
         for (String command : new String[]{"browser", "br"}) {
             ClientCommandRegistrationCallback.EVENT.register(((dispatcher, registryAccess) -> {
@@ -99,6 +102,24 @@ public class MCBrowser implements ClientModInitializer {
             BrowserScreenHelper.instance.addTab(index);
         } else {
             openBrowser();
+        }
+    }
+
+    public static void closeTab(int index) {
+        if (BrowserScreenHelper.instance != null) {
+            BrowserScreenHelper.instance.removeTab(index);
+        }
+        closedTabs.add(tabs.get(index).isInit() ? tabs.get(index).getBrowser().getURL() : tabs.get(index).holderUrl);
+        tabs.get(index).close();
+        tabs.remove(index);
+        if (tabs.size() == 0 && BrowserScreenHelper.instance != null) {
+            BrowserScreenHelper.instance.close();
+            return;
+        }
+        if (index <= activeTab && activeTab != 0) {
+            setActiveTab(activeTab - 1);
+        } else if (BrowserScreenHelper.instance != null) {
+            BrowserScreenHelper.instance.updateWidgets();
         }
     }
 

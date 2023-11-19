@@ -88,6 +88,7 @@ public class BrowserScreen extends Screen {
     protected void init() {
         super.init();
         BrowserScreenHelper.instance = this;
+        BrowserScreenHelper.tooltipText = null;
 
         newTabButton = new NewTabButton(BROWSER_DRAW_OFFSET, BROWSER_DRAW_OFFSET - 40, 15, 15, Text.of("+"));
         initTabs();
@@ -206,24 +207,10 @@ public class BrowserScreen extends Screen {
         return super.mouseScrolled(mouseX, mouseY, delta);
     }
 
-    boolean tabPressFuse = false;
-
-    private boolean isTabJustPressed() {
-        if (InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), GLFW.GLFW_KEY_TAB)) {
-            if (!tabPressFuse) {
-                tabPressFuse = true;
-                return true;
-            }
-        } else {
-            tabPressFuse = false;
-        }
-        return false;
-    }
-
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if (Screen.hasControlDown()) {
-            if (isTabJustPressed()) {
+            if (keyCode == GLFW.GLFW_KEY_TAB) {
                 if (Screen.hasShiftDown()) {
                     if (activeTab == 0) {
                         setActiveTab(tabs.size() - 1);
@@ -239,7 +226,16 @@ public class BrowserScreen extends Screen {
                 }
                 setFocus();
                 return true;
-            } else if (tabPressFuse) {
+            } else if (keyCode == GLFW.GLFW_KEY_T) {
+                if (Screen.hasShiftDown()) {
+                    if (!closedTabs.isEmpty()) {
+                        int lastTab = closedTabs.size() - 1;
+                        openNewTab(closedTabs.get(lastTab));
+                        closedTabs.remove(lastTab);
+                    }
+                } else {
+                    openNewTab();
+                }
                 setFocus();
                 return true;
             }
@@ -270,9 +266,6 @@ public class BrowserScreen extends Screen {
 
     @Override
     public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
-        if (keyCode == GLFW.GLFW_KEY_TAB) {
-            tabPressFuse = false;
-        } //have to set tabPressFuse to false manually cause of one tricky bug
         if (!Screen.hasControlDown() || keyCode != GLFW.GLFW_KEY_TAB) {
             if (MCBrowser.getConfig().asyncBrowserInput) {
                 CompletableFuture.runAsync(() -> getCurrentTab().sendKeyRelease(keyCode, scanCode, modifiers));
@@ -330,7 +323,11 @@ public class BrowserScreen extends Screen {
     }
 
     private void mouseButtonControl(double mouseX, double mouseY, int button, boolean isClick) {
-        if (mouseX > BROWSER_DRAW_OFFSET && mouseX < this.width - BROWSER_DRAW_OFFSET && mouseY > BROWSER_DRAW_OFFSET && mouseY < this.height - BROWSER_DRAW_OFFSET) {
+        if (button == GLFW.GLFW_MOUSE_BUTTON_4 && getCurrentTab().canGoBack()) {
+            getCurrentTab().goBack();
+        } else if (button == GLFW.GLFW_MOUSE_BUTTON_5 && getCurrentTab().canGoForward()) {
+            getCurrentTab().goForward();
+        } else if (mouseX > BROWSER_DRAW_OFFSET && mouseX < this.width - BROWSER_DRAW_OFFSET && mouseY > BROWSER_DRAW_OFFSET && mouseY < this.height - BROWSER_DRAW_OFFSET) {
             if (MCBrowser.getConfig().asyncBrowserInput) {
                 CompletableFuture.runAsync(() -> sendMousePressOrRelease(mouseX, mouseY, button, isClick));
             } else {
