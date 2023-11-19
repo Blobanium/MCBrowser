@@ -17,4 +17,8 @@ public class BrowserAutoConfig implements ConfigData {
 
     @ConfigEntry.Gui.Tooltip
     public boolean saveTabs = true;
+
+    @ConfigEntry.Gui.Tooltip
+    @ConfigEntry.Gui.RequiresRestart
+    public boolean enableMediaStream = false;
 }
