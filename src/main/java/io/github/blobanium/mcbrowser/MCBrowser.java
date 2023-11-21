@@ -96,8 +96,12 @@ public class MCBrowser implements ClientModInitializer {
     }
 
     public static void openNewTab(String url, int index) {
+        openNewTab(url, index, index);
+    }
+
+    public static void openNewTab(String url, int index, int setActive) {
         tabs.add(index, new TabHolder(url));
-        setActiveTab(index);
+        setActiveTab(setActive);
         if (minecraft.currentScreen instanceof BrowserScreen) {
             BrowserScreenHelper.instance.addTab(index);
         } else {
@@ -109,7 +113,7 @@ public class MCBrowser implements ClientModInitializer {
         if (BrowserScreenHelper.instance != null) {
             BrowserScreenHelper.instance.removeTab(index);
         }
-        closedTabs.add(tabs.get(index).isInit() ? tabs.get(index).getBrowser().getURL() : tabs.get(index).holderUrl);
+        closedTabs.add(tabs.get(index).getUrl());
         tabs.get(index).close();
         tabs.remove(index);
         if (tabs.size() == 0 && BrowserScreenHelper.instance != null) {
@@ -124,8 +128,7 @@ public class MCBrowser implements ClientModInitializer {
     }
 
     public static void copyTab(int index) {
-        openNewTab(tabs.get(index).getBrowser().getURL(), index + 1);
-        setActiveTab(index);
+        openNewTab(tabs.get(index).getUrl(), index + 1, index);
     }
 
     public static void openBrowser() {
@@ -153,6 +156,9 @@ public class MCBrowser implements ClientModInitializer {
     }
 
     public static BrowserImpl getCurrentTab() {
+        if (!tabs.get(activeTab).isInit()) {
+            tabs.get(activeTab).init();
+        }
         return tabs.get(activeTab).getBrowser();
     }
 
@@ -163,7 +169,7 @@ public class MCBrowser implements ClientModInitializer {
     public static void saveTabsToJson() {
         ArrayList<String> urls = new ArrayList<>();
         for (TabHolder tab : tabs) {
-            urls.add(tab.getBrowser().getURL());
+            urls.add(tab.getUrl());
         }
         try {
             FileWriter fileWriter = new FileWriter(FabricLoader.getInstance().getConfigDir().resolve("MCBrowser") + "\\tabs" + ".json");

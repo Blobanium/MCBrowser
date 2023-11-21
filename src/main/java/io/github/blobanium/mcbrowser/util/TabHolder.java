@@ -10,19 +10,22 @@ public class TabHolder {
 
     public TabHolder(String url) {
         holderUrl = url;
-        browser = BrowserScreenHelper.createBrowser("");
     }
 
     public void init() {
-        if (browser.isLoading()) {
-            browser.stopLoad();
+        if (browser != null) {
+            browser.close();
         }
-        browser.loadURL(holderUrl);
+        browser = BrowserScreenHelper.createBrowser(holderUrl);
         init = true;
     }
 
     public boolean isInit() {
         return init;
+    }
+
+    public String getUrl() {
+        return isInit() ? getBrowser().getURL() : holderUrl;
     }
 
     public void initIcon(String url) {
