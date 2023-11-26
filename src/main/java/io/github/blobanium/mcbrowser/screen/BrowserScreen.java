@@ -92,6 +92,7 @@ public class BrowserScreen extends Screen {
 
         newTabButton = new NewTabButton(BROWSER_DRAW_OFFSET, BROWSER_DRAW_OFFSET - 40, 15, 15, Text.of("+"));
         initTabs();
+        updateTabSize();
 
         urlBox = BrowserScreenHelper.initUrlBox(BROWSER_DRAW_OFFSET, width);
 
@@ -323,15 +324,17 @@ public class BrowserScreen extends Screen {
     }
 
     private void mouseButtonControl(double mouseX, double mouseY, int button, boolean isClick) {
-        if (button == GLFW.GLFW_MOUSE_BUTTON_4 && getCurrentTab().canGoBack()) {
-            getCurrentTab().goBack();
-        } else if (button == GLFW.GLFW_MOUSE_BUTTON_5 && getCurrentTab().canGoForward()) {
-            getCurrentTab().goForward();
-        } else if (mouseX > BROWSER_DRAW_OFFSET && mouseX < this.width - BROWSER_DRAW_OFFSET && mouseY > BROWSER_DRAW_OFFSET && mouseY < this.height - BROWSER_DRAW_OFFSET) {
-            if (MCBrowser.getConfig().asyncBrowserInput) {
-                CompletableFuture.runAsync(() -> sendMousePressOrRelease(mouseX, mouseY, button, isClick));
+        if (mouseX > BROWSER_DRAW_OFFSET && mouseX < this.width - BROWSER_DRAW_OFFSET && mouseY > BROWSER_DRAW_OFFSET && mouseY < this.height - BROWSER_DRAW_OFFSET) {
+            if (button == GLFW.GLFW_MOUSE_BUTTON_4 && getCurrentTab().canGoBack() && !isClick) {
+                getCurrentTab().goBack();
+            } else if (button == GLFW.GLFW_MOUSE_BUTTON_5 && getCurrentTab().canGoForward() && !isClick) {
+                getCurrentTab().goForward();
             } else {
-                sendMousePressOrRelease(mouseX, mouseY, button, isClick);
+                if (MCBrowser.getConfig().asyncBrowserInput) {
+                    CompletableFuture.runAsync(() -> sendMousePressOrRelease(mouseX, mouseY, button, isClick));
+                } else {
+                    sendMousePressOrRelease(mouseX, mouseY, button, isClick);
+                }
             }
         }
         setFocus();

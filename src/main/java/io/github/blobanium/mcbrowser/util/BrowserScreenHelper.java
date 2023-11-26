@@ -92,7 +92,10 @@ public class BrowserScreenHelper {
             public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
                 if (isFocused()) {
                     for (TabHolder tab : tabs) {
-                        tab.getBrowser().setFocus(false);
+                        BrowserImpl browser = tab.getBrowser();
+                        if (browser != null) {
+                            tab.getBrowser().setFocus(false);
+                        }
                     }
                     if (keyCode == GLFW.GLFW_KEY_ENTER) {
                         getCurrentTab().loadURL(BrowserUtil.prediffyURL(getText()));

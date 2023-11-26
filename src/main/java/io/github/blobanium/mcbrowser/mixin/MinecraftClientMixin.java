@@ -14,5 +14,6 @@ public class MinecraftClientMixin {
         if (MCBrowser.getConfig().saveTabs) {
             MCBrowser.saveTabsToJson();
         }
+        MCBrowser.reset();
     }
 }

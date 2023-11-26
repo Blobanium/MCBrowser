@@ -60,19 +60,12 @@ public class MCBrowser implements ClientModInitializer {
                                             openNewTab(BrowserUtil.prediffyURL(StringArgumentType.getString(context, "url")));
                                             return 0;
                                         }))
-                        ).then(ClientCommandManager.literal("reset")
+                        ).then(ClientCommandManager.literal("close")
                                 .executes(context -> {
                                     reset();
                                     return 0;
                                 })
-                        ).then(ClientCommandManager.literal("test")
-                                .then(ClientCommandManager.argument("tabNumber", IntegerArgumentType.integer(0, 9))
-                                        .executes(context -> {
-                                            setActiveTab(IntegerArgumentType.getInteger(context, "tabNumber"));
-                                            openBrowser();
-                                            return 0;
-                                        }))
-                        )); //todo remove debug commands
+                        ));
             }));
         }
         runCompatabilityCheck();
@@ -133,10 +126,10 @@ public class MCBrowser implements ClientModInitializer {
 
     public static void openBrowser() {
         if (firstOpen) {
-            firstOpen = false;
             loadTabsFromJson();
             setActiveTab(Math.max(0, tabs.size() - 1));
         }
+        firstOpen = false;
         if (tabs.isEmpty()) {
             tabs.add(new TabHolder(BrowserUtil.prediffyURL(getConfig().homePage)));
         }

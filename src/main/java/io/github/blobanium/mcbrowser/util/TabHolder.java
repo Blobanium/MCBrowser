@@ -51,7 +51,7 @@ public class TabHolder {
     public void close() {
         if (isInit()) {
             browser.close();
-            resetIcon();
         }
+        resetIcon();
     }
 }
