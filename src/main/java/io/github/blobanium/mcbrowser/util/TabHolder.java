@@ -29,7 +29,11 @@ public class TabHolder {
     }
 
     public void initIcon(String url) {
-        icon = BrowserScreenHelper.createIcon(url);
+        String parsedUrl = url;
+        if (url.contains("://")) {
+            parsedUrl = url.substring(url.indexOf("://") + 3);
+        }
+        icon = BrowserScreenHelper.createIcon(parsedUrl);
     }
 
     public BrowserImpl getBrowser() {

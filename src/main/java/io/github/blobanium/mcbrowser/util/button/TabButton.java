@@ -96,31 +96,51 @@ public class TabButton extends PressableWidget {
 
     public void renderIco() {
         BrowserTabIcon ico = tabs.get(tab).getIcon();
-        if (ico != null) {
-            if (!tabs.get(tab).isInit()) {
-                ico.render(this.getX() + 1, this.getY() + 1, this.getHeight() - 2, this.getHeight() - 2);
-                return;
-            }
-            if (!ico.getURL().isEmpty() && !tabs.get(tab).getBrowser().getURL().isEmpty()) {
-                String icoUrl = ico.getURL().replace("+", "%20");
-                if (!icoUrl.endsWith(tabs.get(tab).getBrowser().getURL())) {
-                    if (isIcoForUrl(icoUrl, tabs.get(tab).getBrowser().getURL())) {
-                        ico.render(this.getX() + 1, this.getY() + 1, this.getHeight() - 2, this.getHeight() - 2);
-                        return;
-                    }
-                    resetIco();
-                }
-            }
-        } else {
+        if (ico == null) {
             initIco();
+            return;
+        }
+        if (!tabs.get(tab).isInit()) {
+            ico.render(this.getX() + 1, this.getY() + 1, this.getHeight() - 2, this.getHeight() - 2);
+            return;
+        }
+        String browserUrl = tabs.get(tab).getBrowser().getURL();
+        String icoUrl = ico.getURL();
+        if (!icoUrl.isEmpty() && !browserUrl.isEmpty()) {
+            if (!icoUrl.endsWith(browserUrl)) {
+                if (isIcoForUrl(icoUrl, browserUrl)) {
+                    ico.render(this.getX() + 1, this.getY() + 1, this.getHeight() - 2, this.getHeight() - 2);
+                    return;
+                }
+                resetIco();
+            } else {
+                ico.render(this.getX() + 1, this.getY() + 1, this.getHeight() - 2, this.getHeight() - 2);
+            }
         }
     }
 
     private boolean isIcoForUrl(String icoUrl, String url) {
+        int end = icoUrl.length();
+        int begin = 0;
         if (icoUrl.contains("&size=")) {
-            icoUrl = icoUrl.substring(0, icoUrl.lastIndexOf("&size="));
+            end = icoUrl.lastIndexOf("&size=");
         }
-        return icoUrl.endsWith(url);
+        if (icoUrl.contains("&url=")) {
+            begin = icoUrl.lastIndexOf("&url=") + 5;
+        }
+        icoUrl = icoUrl.substring(begin, end);
+        if (icoUrl.contains("://")) {
+            icoUrl = icoUrl.substring(icoUrl.indexOf("://") + 3);
+        }
+
+        String siteUrl = url;
+        if (siteUrl.contains("://")) {
+            siteUrl = siteUrl.substring(siteUrl.indexOf("://") + 3);
+        }
+        if (siteUrl.contains("/")) {
+            siteUrl = siteUrl.substring(0, siteUrl.indexOf("/"));
+        }
+        return icoUrl.startsWith(siteUrl);
     }
 
     private void initIco() {
