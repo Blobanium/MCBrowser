@@ -1,73 +1,206 @@
 package io.github.blobanium.mcbrowser;
 
+import com.cinemamod.mcef.MCEF;
+import com.google.common.reflect.TypeToken;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import io.github.blobanium.mcbrowser.config.BrowserAutoConfig;
 import io.github.blobanium.mcbrowser.feature.BrowserUtil;
 import io.github.blobanium.mcbrowser.screen.BrowserScreen;
+import io.github.blobanium.mcbrowser.util.BrowserImpl;
+import io.github.blobanium.mcbrowser.util.BrowserScreenHelper;
+import io.github.blobanium.mcbrowser.util.TabHolder;
 import me.shedaniel.autoconfig.AutoConfig;
 import me.shedaniel.autoconfig.serializer.GsonConfigSerializer;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.text.Text;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class MCBrowser implements ClientModInitializer {
     public static final Logger LOGGER = LogManager.getLogger("MCBrowser");
 
-    public static boolean requestOpen = false;
-    private static String url;
+    public static List<TabHolder> tabs = new ArrayList<>();
+    public static List<String> closedTabs = new ArrayList<>();
+    public static int activeTab = 0;
+    private static boolean firstOpen = true;
 
     @Override
     public void onInitializeClient() {
         AutoConfig.register(BrowserAutoConfig.class, GsonConfigSerializer::new);
 
-        ClientTickEvents.START_CLIENT_TICK.register((client) -> onTick());
+        if (MCEF.getSettings().getUserAgent().equals("null")) {
+            MCEF.getSettings().setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) MCEF/2 Chrome/119.0.0.0 Safari/537.36");
+        }
+
         for (String command : new String[]{"browser", "br"}) {
             ClientCommandRegistrationCallback.EVENT.register(((dispatcher, registryAccess) -> {
                 dispatcher.register(ClientCommandManager.literal(command)
                         .executes(context -> {
-                            openBrowser(BrowserUtil.prediffyURL(getConfig().homePage));
+                            openBrowser();
                             return 0;
-                        }).then(ClientCommandManager.argument("url", StringArgumentType.greedyString())
+                        }).then(ClientCommandManager.literal("url")
+                                .then(ClientCommandManager.argument("url", StringArgumentType.greedyString())
+                                        .executes(context -> {
+                                            openNewTab(BrowserUtil.prediffyURL(StringArgumentType.getString(context, "url")));
+                                            return 0;
+                                        }))
+                        ).then(ClientCommandManager.literal("close")
                                 .executes(context -> {
-                                    openBrowser(BrowserUtil.prediffyURL(StringArgumentType.getString(context, "url")));
+                                    reset();
                                     return 0;
                                 })
-                        )
-                );
+                        ));
             }));
         }
-
         runCompatabilityCheck();
     }
-    
+
     private static final MinecraftClient minecraft = MinecraftClient.getInstance();
 
-
-    public void onTick() {
-        // Check if our key was pressed
-        if (requestOpen && !(minecraft.currentScreen instanceof BrowserScreen)) {
-            //Display the web browser UI.
-
-            minecraft.setScreen(new BrowserScreen(
-                    Text.literal("Basic Browser"),
-                    url
-            ));
+    public static void setActiveTab(int index) {
+        activeTab = index;
+        if (minecraft.currentScreen instanceof BrowserScreen) {
+            BrowserScreenHelper.instance.updateWidgets();
         }
     }
 
-    public static void openBrowser(String targetUrl){
-        url = targetUrl;
-        requestOpen = true;
+    public static void openNewTab() {
+        openNewTab(BrowserUtil.prediffyURL(getConfig().homePage));
     }
 
-    public static BrowserAutoConfig getConfig(){
+    public static void openNewTab(String url) {
+        openNewTab(url, tabs.size());
+    }
+
+    public static void openNewTab(String url, int index) {
+        openNewTab(url, index, index);
+    }
+
+    public static void openNewTab(String url, int index, int setActive) {
+        tabs.add(index, new TabHolder(url));
+        setActiveTab(setActive);
+        if (minecraft.currentScreen instanceof BrowserScreen) {
+            BrowserScreenHelper.instance.addTab(index);
+        } else {
+            openBrowser();
+        }
+    }
+
+    public static void closeTab(int index) {
+        if (BrowserScreenHelper.instance != null) {
+            BrowserScreenHelper.instance.removeTab(index);
+        }
+        closedTabs.add(tabs.get(index).getUrl());
+        tabs.get(index).close();
+        tabs.remove(index);
+        if (tabs.size() == 0 && BrowserScreenHelper.instance != null) {
+            BrowserScreenHelper.instance.close();
+            return;
+        }
+        if (index <= activeTab && activeTab != 0) {
+            setActiveTab(activeTab - 1);
+        } else if (BrowserScreenHelper.instance != null) {
+            BrowserScreenHelper.instance.updateWidgets();
+        }
+    }
+
+    public static void copyTab(int index) {
+        openNewTab(tabs.get(index).getUrl(), index + 1, index);
+    }
+
+    public static void openBrowser() {
+        if (firstOpen) {
+            loadTabsFromJson();
+            setActiveTab(Math.max(0, tabs.size() - 1));
+        }
+        firstOpen = false;
+        if (tabs.isEmpty()) {
+            tabs.add(new TabHolder(BrowserUtil.prediffyURL(getConfig().homePage)));
+        }
+        minecraft.send(() -> minecraft.setScreen(new BrowserScreen(Text.literal("Basic Browser"))));
+    }
+
+    public static void reset() {
+        for (TabHolder tab : tabs) {
+            tab.close();
+        }
+        tabs.clear();
+        activeTab = 0;
+    }
+
+    public static TabHolder getCurrentTabHolder() {
+        return tabs.get(activeTab);
+    }
+
+    public static BrowserImpl getCurrentTab() {
+        if (!tabs.get(activeTab).isInit()) {
+            tabs.get(activeTab).init();
+        }
+        return tabs.get(activeTab).getBrowser();
+    }
+
+    public static String getCurrentUrl() {
+        return getCurrentTab().getURL();
+    }
+
+    public static void saveTabsToJson() {
+        ArrayList<String> urls = new ArrayList<>();
+        for (TabHolder tab : tabs) {
+            urls.add(tab.getUrl());
+        }
+        try {
+            FileWriter fileWriter = new FileWriter(FabricLoader.getInstance().getConfigDir().resolve("MCBrowser") + "\\tabs" + ".json");
+            Gson gson = new GsonBuilder().setPrettyPrinting().create();
+            gson.toJson(urls, fileWriter);
+            fileWriter.close();
+        } catch (IOException e) {
+            LOGGER.error("Could not save opened tabs for MCBrowser");
+            e.printStackTrace();
+            return;
+        }
+        LOGGER.info("Successfully saved tabs for MCBrowser");
+    }
+
+    public static void loadTabsFromJson() {
+        String filename = FabricLoader.getInstance().getConfigDir().resolve("MCBrowser") + "\\tabs" + ".json";
+        if (new File(filename).exists()) {
+            try {
+                FileReader fileReader = new FileReader(filename);
+                Type type = new TypeToken<ArrayList<String>>() {
+                }.getType();
+                Gson gson = new Gson();
+                ArrayList<String> urls = gson.fromJson(fileReader, type);
+                fileReader.close();
+                for (String url : urls) {
+                    if (!url.isEmpty()) {
+                        TabHolder tab = new TabHolder(url);
+                        tabs.add(tab);
+                    }
+                }
+            } catch (IOException e) {
+                LOGGER.error("Could not read list of tabs from \"" + filename + "\"");
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public static BrowserAutoConfig getConfig() {
         return AutoConfig.getConfigHolder(BrowserAutoConfig.class).getConfig();
     }
 

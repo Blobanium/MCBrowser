@@ -3,76 +3,144 @@ package io.github.blobanium.mcbrowser.screen;
 import io.github.blobanium.mcbrowser.MCBrowser;
 import io.github.blobanium.mcbrowser.feature.specialbutton.*;
 import io.github.blobanium.mcbrowser.util.*;
+import io.github.blobanium.mcbrowser.util.button.*;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.*;
+import net.minecraft.client.util.InputUtil;
 import net.minecraft.text.Text;
 import org.lwjgl.glfw.GLFW;
 
+import java.util.ArrayList;
 import java.util.concurrent.CompletableFuture;
+
+import static io.github.blobanium.mcbrowser.MCBrowser.*;
 
 
 public class BrowserScreen extends Screen {
-    private static final int BROWSER_DRAW_OFFSET = 50;
-
-    public BrowserImpl browser;
-
-    //URL
-    public String initURL;
+    public static final int BROWSER_DRAW_OFFSET = 50;
 
     //Ui
     public TextFieldWidget urlBox;
     public ButtonWidget forwardButton;
     public ButtonWidget backButton;
-    public ButtonWidget reloadButton;
+    public ReloadButton reloadButton;
     private ButtonWidget homeButton;
-    private ButtonWidget[] navigationButtons;
+    private PressableWidget[] navigationButtons;
     private ClickableWidget[] uiElements;
+    public ArrayList<TabButton> tabButtons = new ArrayList<>();
+    private NewTabButton newTabButton = null;
 
     public ButtonWidget specialButton;
 
     private ButtonWidget openInBrowserButton;
 
-    public BrowserScreen(Text title, String url) {
+    public BrowserScreen(Text title) {
         super(title);
-        this.initURL = url;
+
     }
 
-    @Override
-    protected void init() {
-        super.init();
-        if (browser == null) {
-            BrowserScreenHelper.instance = this;
-            BrowserScreenHelper.tooltipText = null;
+    public void initTabs() {
+        for (TabHolder tab : tabs) {
+            int index = tabs.indexOf(tab);
+            TabButton tabButton = new TabButton(BROWSER_DRAW_OFFSET, BROWSER_DRAW_OFFSET - 40, 100, 15, index);
+            tabButtons.add(tabButton);
+        }
+        for (TabButton tabButton : tabButtons) {
+            addSelectableChild(tabButton);
+        }
+    }
 
-            boolean transparent = false;
-            browser = BrowserScreenHelper.createBrowser(this.initURL, transparent);
-            resizeBrowser();
+    public void removeTab(int index) {
+        remove(tabButtons.get(index));
+        tabButtons.get(index).resetIco();
+        tabButtons.remove(index);
+        updateTabButtonsIndexes(index);
+        updateTabSize();
+    }
 
-            urlBox = BrowserScreenHelper.initurlBox(BROWSER_DRAW_OFFSET, width);
-            backButton = BrowserScreenHelper.initButton(Text.of("\u25C0"), button -> browser.goBack(), BROWSER_DRAW_OFFSET, BROWSER_DRAW_OFFSET);
-            forwardButton = BrowserScreenHelper.initButton(Text.of("\u25B6"), button -> browser.goForward(), BROWSER_DRAW_OFFSET + 20, BROWSER_DRAW_OFFSET);
-            reloadButton = BrowserScreenHelper.initButton(Text.of("\u27F3"), button -> BrowserScreenHelper.reloadButtonAction(), BROWSER_DRAW_OFFSET + 40, BROWSER_DRAW_OFFSET);
-            homeButton = BrowserScreenHelper.initButton(Text.of("\u2302"), button -> BrowserScreenHelper.homeButtonAction(), BROWSER_DRAW_OFFSET + 60, BROWSER_DRAW_OFFSET);
-            specialButton = ButtonWidget.builder(Text.of(""), button -> SpecialButtonHelper.onPress(BrowserScreenHelper.currentUrl)).dimensions(BROWSER_DRAW_OFFSET, height - BROWSER_DRAW_OFFSET + 5,  150, 15).build();
-            openInBrowserButton = ButtonWidget.builder(Text.of("Open In External Browser"), button -> BrowserScreenHelper.openInBrowser()).dimensions(width - 200, height - BROWSER_DRAW_OFFSET + 5, 150, 15).build();
+    public void addTab(int index) {
+        TabButton tabButton = new TabButton(BROWSER_DRAW_OFFSET, BROWSER_DRAW_OFFSET - 40, 100, 15, index);
+        tabButtons.add(index, tabButton);
+        updateTabButtonsIndexes(index + 1);
+        addSelectableChild(tabButton);
+        updateTabSize();
+    }
 
-            navigationButtons = new ButtonWidget[]{forwardButton, backButton, reloadButton, homeButton};
-            uiElements = new ClickableWidget[]{forwardButton, backButton, reloadButton, homeButton, urlBox, specialButton, openInBrowserButton};
-            for(ClickableWidget widget : uiElements){
-                addSelectableChild(widget);
+    private void updateTabButtonsIndexes(int i) {
+        while (i < tabButtons.size()) {
+            tabButtons.get(i).setTab(i);
+            i++;
+        }
+    }
+
+    private void updateTabSize() {
+        if (tabButtons.size() > 0) {
+            int size = Math.min(100, (this.width - (BROWSER_DRAW_OFFSET * 2) - 15) / tabButtons.size() - 5);
+            for (TabButton tabButton : tabButtons) {
+                tabButton.setWidth(Math.max(15, size));
             }
         }
     }
 
     @Override
+    protected void init() {
+        super.init();
+        BrowserScreenHelper.instance = this;
+        BrowserScreenHelper.tooltipText = null;
+
+        newTabButton = new NewTabButton(BROWSER_DRAW_OFFSET, BROWSER_DRAW_OFFSET - 40, 15, 15, Text.of("+"));
+        initTabs();
+        updateTabSize();
+
+        urlBox = BrowserScreenHelper.initUrlBox(BROWSER_DRAW_OFFSET, width);
+
+        backButton = BrowserScreenHelper.initButton(Text.of("\u25C0"), button -> getCurrentTab().goBack(), BROWSER_DRAW_OFFSET, BROWSER_DRAW_OFFSET);
+        forwardButton = BrowserScreenHelper.initButton(Text.of("\u25B6"), button -> getCurrentTab().goForward(), BROWSER_DRAW_OFFSET + 20, BROWSER_DRAW_OFFSET);
+        reloadButton = new ReloadButton(BROWSER_DRAW_OFFSET + 40, BROWSER_DRAW_OFFSET - 20, 15, 15);
+        homeButton = BrowserScreenHelper.initButton(Text.of("\u2302"), button -> BrowserScreenHelper.homeButtonAction(), BROWSER_DRAW_OFFSET + 60, BROWSER_DRAW_OFFSET);
+        specialButton = ButtonWidget.builder(Text.of(""), button -> SpecialButtonHelper.onPress(getCurrentUrl())).dimensions(BROWSER_DRAW_OFFSET, height - BROWSER_DRAW_OFFSET + 5, 150, 15).build();
+        openInBrowserButton = ButtonWidget.builder(Text.of("Open In External Browser"), button -> BrowserScreenHelper.openInBrowser()).dimensions(width - 200, height - BROWSER_DRAW_OFFSET + 5, 150, 15).build();
+
+        navigationButtons = new PressableWidget[]{forwardButton, backButton, reloadButton, homeButton};
+        uiElements = new ClickableWidget[]{forwardButton, backButton, reloadButton, homeButton, urlBox, specialButton, openInBrowserButton, newTabButton};
+        for (ClickableWidget widget : uiElements) {
+            addSelectableChild(widget);
+        }
+        updateWidgets();
+    }
+
+    public void updateWidgets() {
+        urlBox.setText(getCurrentTab().getURL());
+        backButton.active = getCurrentTab().canGoBack();
+        forwardButton.active = getCurrentTab().canGoForward();
+        reloadButton.setMessage(Text.of(getCurrentTab().isLoading() ? "\u274C" : "\u27F3"));
+        SpecialButtonActions action = SpecialButtonActions.getFromUrlConstantValue(getCurrentUrl());
+        if (action != null) {
+            specialButton.setMessage(action.getButtonText());
+        }
+        getCurrentTab().resize(BrowserScreenHelper.scaleX(width, BROWSER_DRAW_OFFSET), BrowserScreenHelper.scaleY(height, BROWSER_DRAW_OFFSET));
+    }
+
+    @Override
     public void resize(MinecraftClient minecraft, int i, int j) {
+        ArrayList<TabButton> tempList = new ArrayList<>(tabButtons);
+        tabButtons.clear();
         super.resize(minecraft, i, j);
         resizeBrowser();
+        updateWidgets();
+        for (TabButton tabButton : tabButtons) {
+            remove(tabButton);
+        }
+        tabButtons = tempList;
+        for (TabButton tabButton : tabButtons) {
+            addSelectableChild(tabButton);
+        }
+        updateTabSize();
 
-        for(ClickableWidget widget : uiElements){
-            if(!children().contains(widget)){
+        for (ClickableWidget widget : uiElements) {
+            if (!children().contains(widget)) {
                 addSelectableChild(widget);
             }
         }
@@ -81,17 +149,23 @@ public class BrowserScreen extends Screen {
     @Override
     public void close() {
         BrowserScreenHelper.instance = null;
-        browser.close();
-        MCBrowser.requestOpen = false;
+        for (TabButton tabButton : tabButtons) {
+            tabButton.resetIco();
+        }
         super.close();
     }
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
         super.render(context, mouseX, mouseY, delta);
-        BrowserScreenHelper.renderBrowser(BROWSER_DRAW_OFFSET, width, height, browser.getRenderer().getTextureID());
+        if (getCurrentTabHolder().isInit()) {
+            getCurrentTab().render(BROWSER_DRAW_OFFSET, BROWSER_DRAW_OFFSET, this.width - BROWSER_DRAW_OFFSET * 2, this.height - BROWSER_DRAW_OFFSET * 2);
+        } else {
+            getCurrentTabHolder().init();
+            resizeBrowser();
+        }
         renderButtons(context, mouseX, mouseY, delta);
-        if(BrowserScreenHelper.tooltipText != null && BrowserScreenHelper.tooltipText.getBytes().length != 0) {
+        if (BrowserScreenHelper.tooltipText != null && BrowserScreenHelper.tooltipText.getBytes().length != 0) {
             setTooltip(Text.of(BrowserScreenHelper.tooltipText));
         }
     }
@@ -110,10 +184,10 @@ public class BrowserScreen extends Screen {
 
     @Override
     public void mouseMoved(double mouseX, double mouseY) {
-        if(MCBrowser.getConfig().asyncBrowserInput) {
-            CompletableFuture.runAsync(() -> browser.sendMouseMove(BrowserScreenHelper.mouseX(mouseX, BROWSER_DRAW_OFFSET), BrowserScreenHelper.mouseY(mouseY, BROWSER_DRAW_OFFSET)));
-        } else{
-            browser.sendMouseMove(BrowserScreenHelper.mouseX(mouseX, BROWSER_DRAW_OFFSET), BrowserScreenHelper.mouseY(mouseY, BROWSER_DRAW_OFFSET));
+        if (MCBrowser.getConfig().asyncBrowserInput) {
+            CompletableFuture.runAsync(() -> getCurrentTab().sendMouseMove(BrowserScreenHelper.mouseX(mouseX, BROWSER_DRAW_OFFSET), BrowserScreenHelper.mouseY(mouseY, BROWSER_DRAW_OFFSET)));
+        } else {
+            getCurrentTab().sendMouseMove(BrowserScreenHelper.mouseX(mouseX, BROWSER_DRAW_OFFSET), BrowserScreenHelper.mouseY(mouseY, BROWSER_DRAW_OFFSET));
         }
         super.mouseMoved(mouseX, mouseY);
     }
@@ -126,21 +200,52 @@ public class BrowserScreen extends Screen {
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
-        if(MCBrowser.getConfig().asyncBrowserInput) {
-            CompletableFuture.runAsync(() -> browser.sendMouseWheel(BrowserScreenHelper.mouseX(mouseX, BROWSER_DRAW_OFFSET), BrowserScreenHelper.mouseY(mouseY, BROWSER_DRAW_OFFSET), delta, 0));
-        } else{
-            browser.sendMouseWheel(BrowserScreenHelper.mouseX(mouseX, BROWSER_DRAW_OFFSET), BrowserScreenHelper.mouseY(mouseY, BROWSER_DRAW_OFFSET), delta, 0);
+        if (MCBrowser.getConfig().asyncBrowserInput) {
+            CompletableFuture.runAsync(() -> getCurrentTab().sendMouseWheel(BrowserScreenHelper.mouseX(mouseX, BROWSER_DRAW_OFFSET), BrowserScreenHelper.mouseY(mouseY, BROWSER_DRAW_OFFSET), delta, 0));
+        } else {
+            getCurrentTab().sendMouseWheel(BrowserScreenHelper.mouseX(mouseX, BROWSER_DRAW_OFFSET), BrowserScreenHelper.mouseY(mouseY, BROWSER_DRAW_OFFSET), delta, 0);
         }
         return super.mouseScrolled(mouseX, mouseY, delta);
     }
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if(!urlBox.isFocused()) {
-            if(MCBrowser.getConfig().asyncBrowserInput) {
-                CompletableFuture.runAsync(() -> browser.sendKeyPress(keyCode, scanCode, modifiers));
-            }else{
-                browser.sendKeyPress(keyCode, scanCode, modifiers);
+        if (Screen.hasControlDown()) {
+            if (keyCode == GLFW.GLFW_KEY_TAB) {
+                if (Screen.hasShiftDown()) {
+                    if (activeTab == 0) {
+                        setActiveTab(tabs.size() - 1);
+                    } else {
+                        setActiveTab(activeTab - 1);
+                    }
+                } else {
+                    if (activeTab == tabs.size() - 1) {
+                        setActiveTab(0);
+                    } else {
+                        setActiveTab(activeTab + 1);
+                    }
+                }
+                setFocus();
+                return true;
+            } else if (keyCode == GLFW.GLFW_KEY_T) {
+                if (Screen.hasShiftDown()) {
+                    if (!closedTabs.isEmpty()) {
+                        int lastTab = closedTabs.size() - 1;
+                        openNewTab(closedTabs.get(lastTab));
+                        closedTabs.remove(lastTab);
+                    }
+                } else {
+                    openNewTab();
+                }
+                setFocus();
+                return true;
+            }
+        }
+        if (!urlBox.isFocused()) {
+            if (MCBrowser.getConfig().asyncBrowserInput) {
+                CompletableFuture.runAsync(() -> getCurrentTab().sendKeyPress(keyCode, scanCode, modifiers));
+            } else {
+                getCurrentTab().sendKeyPress(keyCode, scanCode, modifiers);
             }
         }
 
@@ -148,18 +253,26 @@ public class BrowserScreen extends Screen {
         setFocus();
 
         // Make sure screen isn't sending the enter key if the buttons aren't focused.
-        if(!isButtonsFocused() && keyCode == GLFW.GLFW_KEY_ENTER){
+        if (!isButtonsFocused() && keyCode == GLFW.GLFW_KEY_ENTER) {
             return true;
         }
-        return super.keyPressed(keyCode, scanCode, modifiers);
+
+        if (keyCode == 256 && this.shouldCloseOnEsc()) { //Removed tab selection functional
+            this.close();
+            return true;
+        } else {
+            return this.getFocused() != null && this.getFocused().keyPressed(keyCode, scanCode, modifiers);
+        }
     }
 
     @Override
     public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
-        if(MCBrowser.getConfig().asyncBrowserInput) {
-            CompletableFuture.runAsync(() -> browser.sendKeyRelease(keyCode, scanCode, modifiers));
-        } else {
-            browser.sendKeyRelease(keyCode, scanCode, modifiers);
+        if (!Screen.hasControlDown() || keyCode != GLFW.GLFW_KEY_TAB) {
+            if (MCBrowser.getConfig().asyncBrowserInput) {
+                CompletableFuture.runAsync(() -> getCurrentTab().sendKeyRelease(keyCode, scanCode, modifiers));
+            } else {
+                getCurrentTab().sendKeyRelease(keyCode, scanCode, modifiers);
+            }
         }
         setFocus();
         return super.keyReleased(keyCode, scanCode, modifiers);
@@ -167,11 +280,11 @@ public class BrowserScreen extends Screen {
 
     @Override
     public boolean charTyped(char codePoint, int modifiers) {
-        if(codePoint == (char) 0) return false;
-        if(MCBrowser.getConfig().asyncBrowserInput) {
-            CompletableFuture.runAsync(() -> browser.sendKeyTyped(codePoint, modifiers));
+        if (codePoint == (char) 0) return false;
+        if (MCBrowser.getConfig().asyncBrowserInput) {
+            CompletableFuture.runAsync(() -> getCurrentTab().sendKeyTyped(codePoint, modifiers));
         } else {
-            browser.sendKeyTyped(codePoint, modifiers);
+            getCurrentTab().sendKeyTyped(codePoint, modifiers);
         }
         setFocus();
         return super.charTyped(codePoint, modifiers);
@@ -179,61 +292,65 @@ public class BrowserScreen extends Screen {
 
 
     //Multi Override Util Methods
-    public void setFocus(){
-        if(isOverWidgets()){
-            browser.setFocus(false);
-            for(ClickableWidget widget : uiElements){
-                widget.setFocused(widget.isMouseOver(BrowserScreenHelper.lastMouseX, BrowserScreenHelper.lastMouseY));
+    public void setFocus() {
+        boolean browserFocus = true;
+        for (ClickableWidget widget : uiElements) {
+            boolean mouseOver = widget.isMouseOver(BrowserScreenHelper.lastMouseX, BrowserScreenHelper.lastMouseY);
+            widget.setFocused(mouseOver);
+            if (mouseOver) {
+                browserFocus = false;
             }
-        }else{
-            for(ClickableWidget widget : uiElements){
-                widget.setFocused(false);
-            }
-            browser.setFocus(true);
         }
+        getCurrentTab().setFocus(browserFocus);
     }
 
     private void resizeBrowser() {
         if (width > 100 && height > 100) {
-            browser.resize(BrowserScreenHelper.scaleX(width, BROWSER_DRAW_OFFSET), BrowserScreenHelper.scaleY(height, BROWSER_DRAW_OFFSET));
+            for (TabHolder tab : tabs) {
+                tab.getBrowser().resize(BrowserScreenHelper.scaleX(width, BROWSER_DRAW_OFFSET), BrowserScreenHelper.scaleY(height, BROWSER_DRAW_OFFSET));
+            }
         }
-        if(this.urlBox != null) {
+        if (this.urlBox != null) {
             urlBox.setWidth(BrowserScreenHelper.getUrlBoxWidth(width, BROWSER_DRAW_OFFSET));
         }
 
-        if(this.specialButton != null){
+        if (this.specialButton != null) {
             specialButton.setPosition(BROWSER_DRAW_OFFSET, height - BROWSER_DRAW_OFFSET + 5);
         }
 
-        if(this.openInBrowserButton != null){
+        if (this.openInBrowserButton != null) {
             openInBrowserButton.setPosition(width - 200, height - BROWSER_DRAW_OFFSET + 5);
         }
     }
 
-    private void mouseButtonControl(double mouseX, double mouseY, int button, boolean isClick){
-        switch (BrowserScreenHelper.toMultiBooleanByte(MCBrowser.getConfig().asyncBrowserInput, isClick)){
-            case 0 -> browser.sendMouseRelease(BrowserScreenHelper.mouseX(mouseX, BROWSER_DRAW_OFFSET), BrowserScreenHelper.mouseY(mouseY, BROWSER_DRAW_OFFSET), button); //False, False
-            case 1 -> browser.sendMousePress(BrowserScreenHelper.mouseX(mouseX, BROWSER_DRAW_OFFSET), BrowserScreenHelper.mouseY(mouseY, BROWSER_DRAW_OFFSET), button); //False, True
-            case 2 -> CompletableFuture.runAsync(() -> browser.sendMouseRelease(BrowserScreenHelper.mouseX(mouseX, BROWSER_DRAW_OFFSET), BrowserScreenHelper.mouseY(mouseY, BROWSER_DRAW_OFFSET), button)); //True, False
-            case 3 -> CompletableFuture.runAsync(() -> browser.sendMousePress(BrowserScreenHelper.mouseX(mouseX, BROWSER_DRAW_OFFSET), BrowserScreenHelper.mouseY(mouseY, BROWSER_DRAW_OFFSET), button)); //True, True
+    private void mouseButtonControl(double mouseX, double mouseY, int button, boolean isClick) {
+        if (mouseX > BROWSER_DRAW_OFFSET && mouseX < this.width - BROWSER_DRAW_OFFSET && mouseY > BROWSER_DRAW_OFFSET && mouseY < this.height - BROWSER_DRAW_OFFSET) {
+            if (button == GLFW.GLFW_MOUSE_BUTTON_4 && getCurrentTab().canGoBack() && !isClick) {
+                getCurrentTab().goBack();
+            } else if (button == GLFW.GLFW_MOUSE_BUTTON_5 && getCurrentTab().canGoForward() && !isClick) {
+                getCurrentTab().goForward();
+            } else {
+                if (MCBrowser.getConfig().asyncBrowserInput) {
+                    CompletableFuture.runAsync(() -> sendMousePressOrRelease(mouseX, mouseY, button, isClick));
+                } else {
+                    sendMousePressOrRelease(mouseX, mouseY, button, isClick);
+                }
+            }
         }
         setFocus();
     }
 
-    private boolean isOverWidgets(){
-        for(ClickableWidget widget : uiElements){
-            if(widget.isMouseOver(BrowserScreenHelper.lastMouseX, BrowserScreenHelper.lastMouseY)){
-                return true;
-            }
+    private void sendMousePressOrRelease(double mouseX, double mouseY, int button, boolean isClick) {
+        if (isClick) {
+            getCurrentTab().sendMousePress(BrowserScreenHelper.mouseX(mouseX, BROWSER_DRAW_OFFSET), BrowserScreenHelper.mouseY(mouseY, BROWSER_DRAW_OFFSET), button);
+        } else {
+            getCurrentTab().sendMouseRelease(BrowserScreenHelper.mouseX(mouseX, BROWSER_DRAW_OFFSET), BrowserScreenHelper.mouseY(mouseY, BROWSER_DRAW_OFFSET), button);
         }
-        return false;
     }
 
-    //Key Pressed Override
-
-    private boolean isButtonsFocused(){
-        for(ClickableWidget widget : uiElements){
-            if(widget.isFocused()){
+    private boolean isButtonsFocused() {
+        for (ClickableWidget widget : uiElements) {
+            if (widget.isFocused()) {
                 return true;
             }
         }
@@ -244,12 +361,16 @@ public class BrowserScreen extends Screen {
 
     private void renderButtons(DrawContext context, int mouseX, int mouseY, float delta){
         urlBox.renderButton(context, mouseX, mouseY, delta);
-        for(ButtonWidget button : navigationButtons){
+        for (PressableWidget button : navigationButtons) {
             button.render(context, mouseX, mouseY, delta);
         }
-        if(SpecialButtonHelper.isOnCompatableSite(BrowserScreenHelper.currentUrl)) {
+        if (SpecialButtonHelper.isOnCompatableSite(getCurrentUrl())) {
             specialButton.render(context, mouseX, mouseY, delta);
         }
+        for (TabButton tabButton : tabButtons) {
+            tabButton.render(context, mouseX, mouseY, delta);
+        }
+        newTabButton.render(context, mouseX, mouseY, delta);
         openInBrowserButton.render(context, mouseX, mouseY, delta);
     }
 }

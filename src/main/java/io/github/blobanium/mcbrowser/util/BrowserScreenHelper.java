@@ -1,19 +1,14 @@
 package io.github.blobanium.mcbrowser.util;
 
 import com.cinemamod.mcef.MCEF;
-import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.blobanium.mcbrowser.MCBrowser;
 import io.github.blobanium.mcbrowser.feature.BrowserUtil;
 import io.github.blobanium.mcbrowser.feature.specialbutton.SpecialButtonActions;
 import io.github.blobanium.mcbrowser.screen.BrowserScreen;
+import io.github.blobanium.mcbrowser.util.button.BrowserTabIcon;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.GameRenderer;
-import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexFormat;
-import net.minecraft.client.render.VertexFormats;
 import net.minecraft.text.Text;
 import net.minecraft.util.Util;
 import org.lwjgl.glfw.GLFW;
@@ -21,11 +16,9 @@ import org.lwjgl.glfw.GLFW;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import static io.github.blobanium.mcbrowser.MCBrowser.*;
+
 public class BrowserScreenHelper {
-    private static final int Z_SHIFT = -1;
-
-    public static String currentUrl = null;
-
     //Mouse position
     public static double lastMouseX;
     public static double lastMouseY;
@@ -34,29 +27,10 @@ public class BrowserScreenHelper {
 
     public static String tooltipText;
 
-
-    //Rendering
-    public static void renderBrowser(int offset, int width, int height, int textureID){
-        RenderSystem.disableDepthTest();
-        RenderSystem.setShader(GameRenderer::getPositionTexColorProgram);
-        RenderSystem.setShaderTexture(0, textureID);
-        Tessellator t = Tessellator.getInstance();
-        BufferBuilder buffer = t.getBuffer();
-        buffer.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR);
-        buffer.vertex(offset, height - offset, Z_SHIFT).texture(0.0f, 1.0f).color(255, 255, 255, 255).next();
-        buffer.vertex(width - offset, height - offset, Z_SHIFT).texture(1.0f, 1.0f).color(255, 255, 255, 255).next();
-        buffer.vertex(width - offset, offset, Z_SHIFT).texture(1.0f, 0.0f).color(255, 255, 255, 255).next();
-        buffer.vertex(offset, offset, Z_SHIFT).texture(0.0f, 0.0f).color(255, 255, 255, 255).next();
-        t.draw();
-        RenderSystem.setShaderTexture(0, 0);
-        RenderSystem.enableDepthTest();
-    }
-
     //Navigation initialization methods
-
-    public static ButtonWidget initButton(Text message, ButtonWidget.PressAction onPress, int positionX, int offset){
+    public static ButtonWidget initButton(Text message, ButtonWidget.PressAction onPress, int positionX, int offset) {
         return ButtonWidget.builder(message, onPress)
-                .dimensions(positionX, offset-20, 15, 15)
+                .dimensions(positionX, offset - 20, 15, 15)
                 .build();
     }
 
@@ -72,7 +46,7 @@ public class BrowserScreenHelper {
         return (int) ((y - offset) * MinecraftClient.getInstance().getWindow().getScaleFactor());
     }
 
-    public static void updateMouseLocation(double mouseX, double mouseY){
+    public static void updateMouseLocation(double mouseX, double mouseY) {
         lastMouseX = mouseX;
         lastMouseY = mouseY;
     }
@@ -85,39 +59,52 @@ public class BrowserScreenHelper {
         return (int) ((y - offset * 2) * MinecraftClient.getInstance().getWindow().getScaleFactor());
     }
 
-    public static int getUrlBoxWidth(int width, int offset){
+    public static int getUrlBoxWidth(int width, int offset) {
         return width - (offset * 2) - 80;
     }
 
     //Browser Creation
-    public static BrowserImpl createBrowser(String url, boolean transparent){
-        if(MCEF.isInitialized()) {
-            BrowserImpl browser = new BrowserImpl(MCEF.getClient(), url, transparent);
+    public static BrowserImpl createBrowser(String url) {
+        if (MCEF.isInitialized()) {
+            BrowserImpl browser = new BrowserImpl(MCEF.getClient(), url, false);
             browser.setCloseAllowed();
             browser.createImmediately();
             return browser;
-        }else{
+        } else {
             throw new RuntimeException("Chromium Embedded Framework was never initialized.");
         }
     }
 
-    public static TextFieldWidget initurlBox(int offset, int width){
-        TextFieldWidget urlBox = new TextFieldWidget(MinecraftClient.getInstance().textRenderer, offset + 80,offset-20,BrowserScreenHelper.getUrlBoxWidth(width, offset),15, Text.of("")){
+    public static BrowserTabIcon createIcon(String url) {
+        if (MCEF.isInitialized()) {
+            BrowserTabIcon icon = new BrowserTabIcon(MCEF.getClient(), url, false);
+            icon.setCloseAllowed();
+            icon.createImmediately();
+            return icon;
+        } else {
+            throw new RuntimeException("Chromium Embedded Framework was never initialized.");
+        }
+    }
+
+    public static TextFieldWidget initUrlBox(int offset, int width) {
+        TextFieldWidget urlBox = new TextFieldWidget(MinecraftClient.getInstance().textRenderer, offset + 80, offset - 20, BrowserScreenHelper.getUrlBoxWidth(width, offset), 15, Text.of("")) {
             @Override
-            public boolean keyPressed(int keyCode, int scanCode, int modifiers){
-                if(isFocused()) {
-                    instance.browser.setFocus(false);
-                    if(keyCode == GLFW.GLFW_KEY_ENTER){
-                        instance.browser.loadURL(BrowserUtil.prediffyURL(getText()));
+            public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+                if (isFocused()) {
+                    for (TabHolder tab : tabs) {
+                        BrowserImpl browser = tab.getBrowser();
+                        if (browser != null) {
+                            tab.getBrowser().setFocus(false);
+                        }
+                    }
+                    if (keyCode == GLFW.GLFW_KEY_ENTER) {
+                        getCurrentTab().loadURL(BrowserUtil.prediffyURL(getText()));
                         setFocused(false);
                     }
                 }
                 return super.keyPressed(keyCode, scanCode, modifiers);
             }
         };
-        if (instance.initURL != null) {
-            urlBox.setText(instance.initURL);
-        }
         urlBox.setMaxLength(2048); //Most browsers have a max length of 2048
         return urlBox;
     }
@@ -125,47 +112,27 @@ public class BrowserScreenHelper {
     //Button related Methods
     public static void openInBrowser(){
         try {
-            Util.getOperatingSystem().open(new URL(currentUrl));
+            Util.getOperatingSystem().open(new URL(getCurrentUrl()));
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
-        }
-    }
-
-    public static void reloadButtonAction(){
-        instance.urlBox.setText(instance.browser.getURL());
-        if(instance.browser.isLoading()) {
-            instance.browser.stopLoad();
-        } else {
-            instance.browser.reload();
         }
     }
 
     public static void homeButtonAction(){
         String prediffyedHomePage = BrowserUtil.prediffyURL(MCBrowser.getConfig().homePage);
         instance.urlBox.setText(prediffyedHomePage);
-        instance.browser.loadURL(prediffyedHomePage);
-    }
-
-    public static Byte toMultiBooleanByte(boolean b1, boolean b2){
-        byte b = 0;
-        if (b1) {
-            b |= 1 << 1;
-        }
-        if (b2) {
-            b |= 1 << 0;
-        }
-        return b;
+        getCurrentTab().loadURL(prediffyedHomePage);
     }
 
     //Event Methods
-    public static void onUrlChange(){
-        if(instance.urlBox.isFocused()) {
+    public static void onUrlChange() {
+        if (instance.urlBox.isFocused()) {
             instance.urlBox.setFocused(false);
         }
-        instance.urlBox.setText(Text.of(currentUrl).getString());
+        instance.urlBox.setText(getCurrentUrl());
         instance.urlBox.setCursorToStart();
-        SpecialButtonActions action = SpecialButtonActions.getFromUrlConstantValue(currentUrl);
-        if(action != null) {
+        SpecialButtonActions action = SpecialButtonActions.getFromUrlConstantValue(getCurrentUrl());
+        if (action != null) {
             instance.specialButton.setMessage(action.getButtonText());
         }
     }
