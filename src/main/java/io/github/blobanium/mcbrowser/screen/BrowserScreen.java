@@ -113,7 +113,6 @@ public class BrowserScreen extends Screen {
 
     public void updateWidgets() {
         urlBox.setText(getCurrentTab().getURL());
-        urlBox.setCursorToStart();
         backButton.active = getCurrentTab().canGoBack();
         forwardButton.active = getCurrentTab().canGoForward();
         reloadButton.setMessage(Text.of(getCurrentTab().isLoading() ? "\u274C" : "\u27F3"));

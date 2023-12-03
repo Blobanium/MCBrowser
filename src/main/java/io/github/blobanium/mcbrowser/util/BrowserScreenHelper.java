@@ -104,6 +104,11 @@ public class BrowserScreenHelper {
                 }
                 return super.keyPressed(keyCode, scanCode, modifiers);
             }
+
+            @Override
+            public void setCursorToEnd(){
+                this.setCursorToStart();
+            }
         };
         urlBox.setMaxLength(2048); //Most browsers have a max length of 2048
         return urlBox;
