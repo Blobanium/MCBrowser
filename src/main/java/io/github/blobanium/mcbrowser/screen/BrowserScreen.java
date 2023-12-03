@@ -17,6 +17,7 @@ import java.util.concurrent.CompletableFuture;
 
 import static io.github.blobanium.mcbrowser.MCBrowser.*;
 
+
 public class BrowserScreen extends Screen {
     public static final int BROWSER_DRAW_OFFSET = 50;
 
@@ -356,28 +357,20 @@ public class BrowserScreen extends Screen {
         return false;
     }
 
-    //Key Pressed Override
-
-    private boolean isButtonsFocused(){
-        for(ClickableWidget widget : uiElements){
-            if(widget.isFocused()){
-                return true;
-            }
-        }
-        newTabButton.render(context, mouseX, mouseY, delta);
-        openInBrowserButton.render(context, mouseX, mouseY, delta);
-    }
-
     //Rendering Override
 
     private void renderButtons(DrawContext context, int mouseX, int mouseY, float delta){
         urlBox.renderButton(context, mouseX, mouseY, delta);
-        for(ButtonWidget button : navigationButtons){
+        for (PressableWidget button : navigationButtons) {
             button.render(context, mouseX, mouseY, delta);
         }
-        if(SpecialButtonHelper.isOnCompatableSite(BrowserScreenHelper.currentUrl)) {
+        if (SpecialButtonHelper.isOnCompatableSite(getCurrentUrl())) {
             specialButton.render(context, mouseX, mouseY, delta);
         }
+        for (TabButton tabButton : tabButtons) {
+            tabButton.render(context, mouseX, mouseY, delta);
+        }
+        newTabButton.render(context, mouseX, mouseY, delta);
         openInBrowserButton.render(context, mouseX, mouseY, delta);
     }
 }

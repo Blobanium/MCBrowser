@@ -9,14 +9,10 @@ import io.github.blobanium.mcbrowser.util.button.BrowserTabIcon;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.GameRenderer;
-import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexFormat;
-import net.minecraft.client.render.VertexFormats;
 import net.minecraft.text.Text;
 import net.minecraft.util.Util;
 import org.lwjgl.glfw.GLFW;
+
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -109,9 +105,6 @@ public class BrowserScreenHelper {
                 return super.keyPressed(keyCode, scanCode, modifiers);
             }
         };
-        if (instance.initURL != null) {
-            urlBox.setText(instance.initURL);
-        }
         urlBox.setMaxLength(2048); //Most browsers have a max length of 2048
         return urlBox;
     }

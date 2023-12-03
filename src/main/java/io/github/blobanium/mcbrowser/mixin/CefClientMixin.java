@@ -25,7 +25,6 @@ public class CefClientMixin {
                     BrowserScreenHelper.onUrlChange();
                 }
             }
-
         }
     }
 
