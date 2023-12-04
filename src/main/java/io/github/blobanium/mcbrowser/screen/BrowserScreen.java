@@ -209,7 +209,7 @@ public class BrowserScreen extends Screen {
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (Screen.hasControlDown()) {
+        if (Screen.hasControlDown() && (keyCode == GLFW.GLFW_KEY_TAB || keyCode == GLFW.GLFW_KEY_T)) {
             if (keyCode == GLFW.GLFW_KEY_TAB) {
                 if (Screen.hasShiftDown()) {
                     if (activeTab == 0) {
@@ -224,8 +224,6 @@ public class BrowserScreen extends Screen {
                         setActiveTab(activeTab + 1);
                     }
                 }
-                setFocus();
-                return true;
             } else if (keyCode == GLFW.GLFW_KEY_T) {
                 if (Screen.hasShiftDown()) {
                     if (!closedTabs.isEmpty()) {
@@ -236,9 +234,9 @@ public class BrowserScreen extends Screen {
                 } else {
                     openNewTab();
                 }
-                setFocus();
-                return true;
             }
+            setFocus();
+            return true;
         }
         sendKeyActivityAndSetFocus(keyCode, scanCode, modifiers, true);
 
