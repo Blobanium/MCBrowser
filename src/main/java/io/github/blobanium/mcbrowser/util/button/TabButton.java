@@ -47,6 +47,9 @@ public class TabButton extends PressableWidget {
     protected void appendClickableNarrations(NarrationMessageBuilder builder) {
     }
 
+    private final boolean selected = activeTab == tab;
+    private final boolean tooSmall = this.getWidth() < this.getHeight() * 3;
+
     @Override
     public void renderButton(DrawContext context, int mouseX, int mouseY, float delta) {
         if (this.getX() > BrowserScreenHelper.instance.width - BrowserScreen.BROWSER_DRAW_OFFSET - 35) {
@@ -56,9 +59,7 @@ public class TabButton extends PressableWidget {
         context.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha);
         RenderSystem.enableBlend();
         RenderSystem.enableDepthTest();
-        boolean selected = activeTab == tab;
         boolean hoveringClose = (mouseX >= this.getX() + (this.getWidth() - 15)) && (mouseX <= this.getX() + this.getWidth()) && (mouseY >= this.getY()) && (mouseY <= this.getY() + this.getHeight());
-        boolean tooSmall = this.getWidth() < this.getHeight() * 3;
         int mainTextureOffset = selected ? 2 : 1;
         int closeTextureOffset = hoveringClose ? 2 : 1;
         if (this.getWidth() > this.getHeight()) {
@@ -161,11 +162,9 @@ public class TabButton extends PressableWidget {
                 close();
                 return true;
             }
-            if (this.getWidth() < this.getHeight() * 3) {
-                if (activeTab != tab) {
-                    open();
-                    return true;
-                }
+            if (tooSmall && !selected) {
+                open();
+                return true;
             }
             if (mouseX > this.getX() + this.getWidth() - 15) {
                 close();
