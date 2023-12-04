@@ -215,11 +215,14 @@ public class BrowserScreen extends Screen {
             final int CTRL_TAB = GLFW.GLFW_MOD_CONTROL + GLFW.GLFW_KEY_TAB;
             final int CTRL_SHIFT_TAB = GLFW.GLFW_MOD_CONTROL + GLFW.GLFW_MOD_SHIFT + GLFW.GLFW_KEY_TAB;
 
-            switch (keyCode + modifiers){
-                case CTRL_T -> openNewTab();
-                case CTRL_SHIFT_T -> ctrlShiftTFunction();
-                case CTRL_TAB -> ctrlTabFunction();
-                case CTRL_SHIFT_TAB -> ctrlShiftTabFunction();
+            if(keyCode+modifiers == CTRL_T){
+                openNewTab();
+            }else if(keyCode+modifiers == CTRL_SHIFT_T){
+                ctrlShiftTFunction();
+            }else if(keyCode+modifiers == CTRL_TAB){
+                ctrlTabFunction();
+            }else if(keyCode+modifiers == CTRL_SHIFT_TAB){
+                ctrlShiftTabFunction();
             }
 
             setFocus();
