@@ -177,6 +177,14 @@ public class MCBrowser implements ClientModInitializer {
         LOGGER.info("Successfully saved tabs for MCBrowser");
     }
 
+    public static void setTitleForTab(int identifier, String title){
+        for(TabHolder tab: tabs){
+            if(identifier == tab.getBrowser().getIdentifier()){
+                tab.setTitle(title);
+            }
+        }
+    }
+
     public static void loadTabsFromJson() {
         String filename = FabricLoader.getInstance().getConfigDir().resolve("MCBrowser") + "\\tabs" + ".json";
         if (new File(filename).exists()) {

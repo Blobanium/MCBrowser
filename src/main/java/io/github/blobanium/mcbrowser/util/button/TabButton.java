@@ -65,18 +65,8 @@ public class TabButton extends PressableWidget {
             context.drawNineSlicedTexture(WIDGETS_TEXTURE, this.getX(), this.getY(), this.getWidth(), this.getHeight(), 20, 4, 200, 20, 0, 46 + mainTextureOffset * 20);
         }
         context.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-        String name = tabs.get(tab).getUrl();
-        if (!name.isEmpty()) {
-            if (name.startsWith("https://")) {
-                name = name.substring(8);
-            }
-            if (name.startsWith("www.")) {
-                name = name.substring(4);
-            }
-            if (name.endsWith("/")) {
-                name = name.substring(0, name.length() - 1);
-            }
-        } else {
+        String name = tabs.get(tab).getTitle();
+        if (name == null || name.isEmpty()) {
             name = "Loading...";
         }
         drawScrollableText(context, textRenderer, Text.of(name), this.getX() + 2 + 15, this.getY(), this.getX() + this.getWidth() - (!tooSmall || selected ? 17 : 2), this.getY() + this.getHeight(), 16777215 | MathHelper.ceil(this.alpha * 255.0F) << 24);

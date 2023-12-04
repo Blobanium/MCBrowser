@@ -7,6 +7,7 @@ public class TabHolder {
     BrowserImpl browser;
     BrowserTabIcon icon = null;
     private boolean init = false;
+    public String holderTitle;
 
     public TabHolder(String url) {
         holderUrl = url;
@@ -42,6 +43,14 @@ public class TabHolder {
 
     public BrowserTabIcon getIcon() {
         return icon;
+    }
+
+    public String getTitle() {
+        return holderTitle;
+    }
+
+    public void setTitle(String title){
+        holderTitle = title;
     }
 
     public void resetIcon() {
