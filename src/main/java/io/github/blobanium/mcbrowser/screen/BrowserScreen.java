@@ -217,27 +217,9 @@ public class BrowserScreen extends Screen {
 
             switch (keyCode + modifiers){
                 case CTRL_T -> openNewTab();
-                case CTRL_SHIFT_T -> {
-                    if (!closedTabs.isEmpty()) {
-                        int lastTab = closedTabs.size() - 1;
-                        openNewTab(closedTabs.get(lastTab));
-                        closedTabs.remove(lastTab);
-                    }
-                }
-                case CTRL_TAB -> {
-                    if (activeTab == tabs.size() - 1) {
-                        setActiveTab(0);
-                    } else {
-                        setActiveTab(activeTab + 1);
-                    }
-                }
-                case CTRL_SHIFT_TAB -> {
-                    if (activeTab == 0) {
-                        setActiveTab(tabs.size() - 1);
-                    } else {
-                        setActiveTab(activeTab - 1);
-                    }
-                }
+                case CTRL_SHIFT_T -> ctrlShiftTFunction();
+                case CTRL_TAB -> ctrlTabFunction();
+                case CTRL_SHIFT_TAB -> ctrlShiftTabFunction();
             }
 
             setFocus();
@@ -255,6 +237,30 @@ public class BrowserScreen extends Screen {
             return true;
         } else {
             return this.getFocused() != null && this.getFocused().keyPressed(keyCode, scanCode, modifiers);
+        }
+    }
+
+    private void ctrlShiftTFunction(){
+        if (!closedTabs.isEmpty()) {
+            int lastTab = closedTabs.size() - 1;
+            openNewTab(closedTabs.get(lastTab));
+            closedTabs.remove(lastTab);
+        }
+    }
+
+    private void ctrlTabFunction(){
+        if (activeTab == tabs.size() - 1) {
+            setActiveTab(0);
+        } else {
+            setActiveTab(activeTab + 1);
+        }
+    }
+
+    private void ctrlShiftTabFunction(){
+        if (activeTab == 0) {
+            setActiveTab(tabs.size() - 1);
+        } else {
+            setActiveTab(activeTab - 1);
         }
     }
 
