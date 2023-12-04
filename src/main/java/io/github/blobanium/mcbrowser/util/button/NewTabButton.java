@@ -2,11 +2,10 @@ package io.github.blobanium.mcbrowser.util.button;
 
 import io.github.blobanium.mcbrowser.screen.BrowserScreen;
 import io.github.blobanium.mcbrowser.util.BrowserScreenHelper;
+import io.github.blobanium.mcbrowser.util.TabManager;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.PressableWidget;
 import net.minecraft.text.Text;
-
-import static io.github.blobanium.mcbrowser.MCBrowser.*;
 
 public class NewTabButton extends PressableWidget {
     int startX;
@@ -33,12 +32,12 @@ public class NewTabButton extends PressableWidget {
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (this.clicked(mouseX, mouseY)) {
             if (button == 2) {
-                int i = activeTab;
-                openNewTab();
-                setActiveTab(i);
+                int i = TabManager.activeTab;
+                TabManager.openNewTab();
+                TabManager.setActiveTab(i);
                 return true;
             }
-            openNewTab();
+            TabManager.openNewTab();
             return true;
         }
         return false;

@@ -3,7 +3,7 @@ package io.github.blobanium.mcbrowser.feature.specialbutton;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import io.github.blobanium.mcbrowser.MCBrowser;
+import io.github.blobanium.mcbrowser.util.TabManager;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.MinecraftVersion;
 import net.minecraft.client.MinecraftClient;
@@ -102,8 +102,8 @@ public class SpecialButtonAction {
 
     private static URL getTargetURL(SpecialButtonActions action) throws MalformedURLException {
         return switch (action) {
-            case MODRINTH_MOD -> new URL("https://api.modrinth.com/v2/project/" + getModrinthSlugFromUrl(MCBrowser.getCurrentUrl()) + "/version?game_versions=[%22" + MinecraftVersion.CURRENT.getName() + "%22]&loaders=[%22fabric%22]");
-            case MODRINTH_RP -> new URL("https://api.modrinth.com/v2/project/" + getModrinthSlugFromUrl(MCBrowser.getCurrentUrl()) + "/version?game_versions=[%22" + MinecraftVersion.CURRENT.getName() + "%22]");
+            case MODRINTH_MOD -> new URL("https://api.modrinth.com/v2/project/" + getModrinthSlugFromUrl(TabManager.getCurrentUrl()) + "/version?game_versions=[%22" + MinecraftVersion.CURRENT.getName() + "%22]&loaders=[%22fabric%22]");
+            case MODRINTH_RP -> new URL("https://api.modrinth.com/v2/project/" + getModrinthSlugFromUrl(TabManager.getCurrentUrl()) + "/version?game_versions=[%22" + MinecraftVersion.CURRENT.getName() + "%22]");
 
             //Reserved for future usage.
             default -> throw new IllegalStateException("Unexpected action value: " + action);

@@ -1,8 +1,8 @@
 package io.github.blobanium.mcbrowser.mixin;
 
-import io.github.blobanium.mcbrowser.MCBrowser;
 import io.github.blobanium.mcbrowser.util.BrowserImpl;
 import io.github.blobanium.mcbrowser.util.BrowserScreenHelper;
+import io.github.blobanium.mcbrowser.util.TabManager;
 import io.github.blobanium.mcbrowser.util.button.BrowserTabIcon;
 import org.cef.CefClient;
 import org.cef.browser.CefBrowser;
@@ -40,7 +40,7 @@ public class CefClientMixin {
 
     @Inject(at = @At("HEAD"), method = "onTitleChange", remap = false)
     public void onTitleChange(CefBrowser browser, String title, CallbackInfo ci) {
-        MCBrowser.setTitleForTab(browser.getIdentifier(), title);
+        TabManager.setTitleForTab(browser.getIdentifier(), title);
     }
 
 }

@@ -16,8 +16,6 @@ import org.lwjgl.glfw.GLFW;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import static io.github.blobanium.mcbrowser.MCBrowser.*;
-
 public class BrowserScreenHelper {
     //Mouse position
     public static double lastMouseX;
@@ -91,14 +89,14 @@ public class BrowserScreenHelper {
             @Override
             public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
                 if (isFocused()) {
-                    for (TabHolder tab : tabs) {
+                    for (TabHolder tab : TabManager.tabs) {
                         BrowserImpl browser = tab.getBrowser();
                         if (browser != null) {
                             tab.getBrowser().setFocus(false);
                         }
                     }
                     if (keyCode == GLFW.GLFW_KEY_ENTER) {
-                        getCurrentTab().loadURL(BrowserUtil.prediffyURL(getText()));
+                        TabManager.getCurrentTab().loadURL(BrowserUtil.prediffyURL(getText()));
                         setFocused(false);
                     }
                 }
@@ -117,7 +115,7 @@ public class BrowserScreenHelper {
     //Button related Methods
     public static void openInBrowser(){
         try {
-            Util.getOperatingSystem().open(new URL(getCurrentUrl()));
+            Util.getOperatingSystem().open(new URL(TabManager.getCurrentUrl()));
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }
@@ -126,7 +124,7 @@ public class BrowserScreenHelper {
     public static void homeButtonAction(){
         String prediffyedHomePage = BrowserUtil.prediffyURL(MCBrowser.getConfig().homePage);
         instance.urlBox.setText(prediffyedHomePage);
-        getCurrentTab().loadURL(prediffyedHomePage);
+        TabManager.getCurrentTab().loadURL(prediffyedHomePage);
     }
 
     //Event Methods
@@ -134,9 +132,9 @@ public class BrowserScreenHelper {
         if (instance.urlBox.isFocused()) {
             instance.urlBox.setFocused(false);
         }
-        instance.urlBox.setText(getCurrentUrl());
+        instance.urlBox.setText(TabManager.getCurrentUrl());
         instance.urlBox.setCursorToStart();
-        SpecialButtonActions action = SpecialButtonActions.getFromUrlConstantValue(getCurrentUrl());
+        SpecialButtonActions action = SpecialButtonActions.getFromUrlConstantValue(TabManager.getCurrentUrl());
         if (action != null) {
             instance.specialButton.setMessage(action.getButtonText());
         }

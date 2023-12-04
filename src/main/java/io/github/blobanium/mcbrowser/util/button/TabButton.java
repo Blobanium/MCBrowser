@@ -4,6 +4,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.blobanium.mcbrowser.MCBrowser;
 import io.github.blobanium.mcbrowser.screen.BrowserScreen;
 import io.github.blobanium.mcbrowser.util.BrowserScreenHelper;
+import io.github.blobanium.mcbrowser.util.TabManager;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
@@ -16,8 +17,6 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URL;
-
-import static io.github.blobanium.mcbrowser.MCBrowser.*;
 
 public class TabButton extends PressableWidget {
     int tab;
@@ -47,7 +46,7 @@ public class TabButton extends PressableWidget {
     protected void appendClickableNarrations(NarrationMessageBuilder builder) {
     }
 
-    private final boolean selected = activeTab == tab;
+    private final boolean selected = TabManager.activeTab == tab;
     private final boolean tooSmall = this.getWidth() < this.getHeight() * 3;
 
     @Override
@@ -66,7 +65,7 @@ public class TabButton extends PressableWidget {
             context.drawNineSlicedTexture(WIDGETS_TEXTURE, this.getX(), this.getY(), this.getWidth(), this.getHeight(), 20, 4, 200, 20, 0, 46 + mainTextureOffset * 20);
         }
         context.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-        String name = tabs.get(tab).getTitle();
+        String name = TabManager.tabs.get(tab).getTitle();
         if (name == null || name.isEmpty()) {
             name = "Loading...";
         }
@@ -86,16 +85,16 @@ public class TabButton extends PressableWidget {
     }
 
     public void renderIco() {
-        BrowserTabIcon ico = tabs.get(tab).getIcon();
+        BrowserTabIcon ico = TabManager.tabs.get(tab).getIcon();
         if (ico == null) {
             initIco();
             return;
         }
-        if (!tabs.get(tab).isInit()) {
+        if (!TabManager.tabs.get(tab).isInit()) {
             ico.render(this.getX() + 1, this.getY() + 1, this.getHeight() - 2, this.getHeight() - 2);
             return;
         }
-        String browserUrl = tabs.get(tab).getBrowser().getURL();
+        String browserUrl = TabManager.tabs.get(tab).getBrowser().getURL();
         String icoUrl = ico.getURL();
         if (!icoUrl.isEmpty() && !browserUrl.isEmpty()) {
             if (!icoUrl.endsWith(browserUrl)) {
@@ -135,21 +134,21 @@ public class TabButton extends PressableWidget {
     }
 
     private void initIco() {
-        String currentUrl = tabs.get(tab).getUrl();
+        String currentUrl = TabManager.tabs.get(tab).getUrl();
         if (currentUrl.isEmpty()) {
             return;
         }
-        tabs.get(tab).initIcon(currentUrl);
+        TabManager.tabs.get(tab).initIcon(currentUrl);
         try {
             BufferedImage bufferedImage = ImageIO.read(new URL(BrowserTabIcon.apiUrl + currentUrl));
-            tabs.get(tab).getIcon().setSize(bufferedImage.getWidth());
+            TabManager.tabs.get(tab).getIcon().setSize(bufferedImage.getWidth());
         } catch (IOException e) {
             MCBrowser.LOGGER.warn("Could not find size of ico for " + currentUrl);
         }
     }
 
     public void resetIco() {
-        tabs.get(tab).resetIcon();
+        TabManager.tabs.get(tab).resetIcon();
     }
 
     @Override
@@ -177,10 +176,10 @@ public class TabButton extends PressableWidget {
     }
 
     public void open() {
-        setActiveTab(tab);
+        TabManager.setActiveTab(tab);
     }
 
     public void close() {
-        closeTab(tab);
+        TabManager.closeTab(tab);
     }
 }

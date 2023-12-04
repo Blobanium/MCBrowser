@@ -1,6 +1,7 @@
 package io.github.blobanium.mcbrowser.mixin;
 
 import io.github.blobanium.mcbrowser.MCBrowser;
+import io.github.blobanium.mcbrowser.util.TabManager;
 import net.minecraft.client.gui.screen.Screen;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -16,7 +17,7 @@ public class ScreenMixin {
     private void openLink(URI link, CallbackInfo ci) {
         try {
             if (MCBrowser.getConfig().openLinkInBrowser) {
-                MCBrowser.openNewTab(link.toURL().toString());
+                TabManager.openNewTab(link.toURL().toString());
                 ci.cancel();
             }
         } catch (MalformedURLException e) {
