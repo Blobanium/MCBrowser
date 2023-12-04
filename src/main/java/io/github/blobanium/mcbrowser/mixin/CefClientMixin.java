@@ -4,7 +4,6 @@ import io.github.blobanium.mcbrowser.MCBrowser;
 import io.github.blobanium.mcbrowser.util.BrowserImpl;
 import io.github.blobanium.mcbrowser.util.BrowserScreenHelper;
 import io.github.blobanium.mcbrowser.util.button.BrowserTabIcon;
-import net.minecraft.text.Text;
 import org.cef.CefClient;
 import org.cef.browser.CefBrowser;
 import org.cef.browser.CefFrame;

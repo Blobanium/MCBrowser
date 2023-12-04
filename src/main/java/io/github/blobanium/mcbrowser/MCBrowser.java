@@ -4,7 +4,6 @@ import com.cinemamod.mcef.MCEF;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import io.github.blobanium.mcbrowser.config.BrowserAutoConfig;
 import io.github.blobanium.mcbrowser.feature.BrowserUtil;
@@ -109,7 +108,7 @@ public class MCBrowser implements ClientModInitializer {
         closedTabs.add(tabs.get(index).getUrl());
         tabs.get(index).close();
         tabs.remove(index);
-        if (tabs.size() == 0 && BrowserScreenHelper.instance != null) {
+        if (tabs.isEmpty() && BrowserScreenHelper.instance != null) {
             BrowserScreenHelper.instance.close();
             return;
         }
@@ -216,10 +215,11 @@ public class MCBrowser implements ClientModInitializer {
         String mcefVersion = FabricLoader.getInstance().getModContainer("mcef").get().getMetadata().getVersion().getFriendlyString();
 
         if(mcefVersion.contains("2.1.0")){
-            LOGGER.warn("You are using a version of MCEF that is known to have critical bugs" +
-                    "\nIt is strongly recomended to update MCEF to the latest version" +
-                    "\n - You will be unable to sign into google while using this version. (See: https://github.com/CinemaMod/mcef/issues/61)" +
-                    "\n - JCEF Processes created by MCEF may linger in the background and eat up your CPU Resources. Even after minecraft is shut down. (See: https://github.com/CinemaMod/mcef/issues/63)");
+            LOGGER.warn("""
+                    You are using a version of MCEF that is known to have critical bugs
+                    It is strongly recomended to update MCEF to the latest version
+                     - You will be unable to sign into google while using this version. (See: https://github.com/CinemaMod/mcef/issues/61)
+                     - JCEF Processes created by MCEF may linger in the background and eat up your CPU Resources. Even after minecraft is shut down. (See: https://github.com/CinemaMod/mcef/issues/63)""");
         }
     }
 }

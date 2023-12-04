@@ -75,7 +75,7 @@ public class BrowserScreen extends Screen {
     }
 
     private void updateTabSize() {
-        if (tabButtons.size() > 0) {
+        if (!tabButtons.isEmpty()) {
             int size = Math.min(100, (this.width - (BROWSER_DRAW_OFFSET * 2) - 15) / tabButtons.size() - 5);
             for (TabButton tabButton : tabButtons) {
                 tabButton.setWidth(Math.max(15, size));
