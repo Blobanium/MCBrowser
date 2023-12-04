@@ -210,31 +210,36 @@ public class BrowserScreen extends Screen {
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if (Screen.hasControlDown() && (keyCode == GLFW.GLFW_KEY_TAB || keyCode == GLFW.GLFW_KEY_T)) {
-            if (keyCode == GLFW.GLFW_KEY_TAB) {
-                if (Screen.hasShiftDown()) {
-                    if (activeTab == 0) {
-                        setActiveTab(tabs.size() - 1);
-                    } else {
-                        setActiveTab(activeTab - 1);
+            final int CTRL_T = GLFW.GLFW_MOD_CONTROL + GLFW.GLFW_KEY_T;
+            final int CTRL_SHIFT_T = GLFW.GLFW_MOD_CONTROL + GLFW.GLFW_MOD_SHIFT + GLFW.GLFW_KEY_T;
+            final int CTRL_TAB = GLFW.GLFW_MOD_CONTROL + GLFW.GLFW_KEY_TAB;
+            final int CTRL_SHIFT_TAB = GLFW.GLFW_MOD_CONTROL + GLFW.GLFW_MOD_SHIFT + GLFW.GLFW_KEY_TAB;
+
+            switch (keyCode + modifiers){
+                case CTRL_T -> openNewTab();
+                case CTRL_SHIFT_T -> {
+                    if (!closedTabs.isEmpty()) {
+                        int lastTab = closedTabs.size() - 1;
+                        openNewTab(closedTabs.get(lastTab));
+                        closedTabs.remove(lastTab);
                     }
-                } else {
+                }
+                case CTRL_TAB -> {
                     if (activeTab == tabs.size() - 1) {
                         setActiveTab(0);
                     } else {
                         setActiveTab(activeTab + 1);
                     }
                 }
-            } else if (keyCode == GLFW.GLFW_KEY_T) {
-                if (Screen.hasShiftDown()) {
-                    if (!closedTabs.isEmpty()) {
-                        int lastTab = closedTabs.size() - 1;
-                        openNewTab(closedTabs.get(lastTab));
-                        closedTabs.remove(lastTab);
+                case CTRL_SHIFT_TAB -> {
+                    if (activeTab == 0) {
+                        setActiveTab(tabs.size() - 1);
+                    } else {
+                        setActiveTab(activeTab - 1);
                     }
-                } else {
-                    openNewTab();
                 }
             }
+
             setFocus();
             return true;
         }
