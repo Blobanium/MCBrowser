@@ -215,14 +215,26 @@ public class BrowserScreen extends Screen {
             final int CTRL_TAB = GLFW.GLFW_MOD_CONTROL + GLFW.GLFW_KEY_TAB;
             final int CTRL_SHIFT_TAB = GLFW.GLFW_MOD_CONTROL + GLFW.GLFW_MOD_SHIFT + GLFW.GLFW_KEY_TAB;
 
+
+            //TODO: Convert to switch once Code Climate fixes an analysis bug with switches.
             if(keyCode+modifiers == CTRL_T){
                 openNewTab();
-            }else if(keyCode+modifiers == CTRL_SHIFT_T){
-                ctrlShiftTFunction();
+            }else if(keyCode+modifiers == CTRL_SHIFT_T && !closedTabs.isEmpty()){
+                int lastTab = closedTabs.size() - 1;
+                openNewTab(closedTabs.get(lastTab));
+                closedTabs.remove(lastTab);
             }else if(keyCode+modifiers == CTRL_TAB){
-                ctrlTabFunction();
+                if (activeTab == tabs.size() - 1) {
+                    setActiveTab(0);
+                } else {
+                    setActiveTab(activeTab + 1);
+                }
             }else if(keyCode+modifiers == CTRL_SHIFT_TAB){
-                ctrlShiftTabFunction();
+                if (activeTab == 0) {
+                    setActiveTab(tabs.size() - 1);
+                } else {
+                    setActiveTab(activeTab - 1);
+                }
             }
 
             setFocus();
@@ -240,30 +252,6 @@ public class BrowserScreen extends Screen {
             return true;
         } else {
             return this.getFocused() != null && this.getFocused().keyPressed(keyCode, scanCode, modifiers);
-        }
-    }
-
-    private void ctrlShiftTFunction(){
-        if (!closedTabs.isEmpty()) {
-            int lastTab = closedTabs.size() - 1;
-            openNewTab(closedTabs.get(lastTab));
-            closedTabs.remove(lastTab);
-        }
-    }
-
-    private void ctrlTabFunction(){
-        if (activeTab == tabs.size() - 1) {
-            setActiveTab(0);
-        } else {
-            setActiveTab(activeTab + 1);
-        }
-    }
-
-    private void ctrlShiftTabFunction(){
-        if (activeTab == 0) {
-            setActiveTab(tabs.size() - 1);
-        } else {
-            setActiveTab(activeTab - 1);
         }
     }
 
