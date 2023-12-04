@@ -8,7 +8,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.*;
-import net.minecraft.client.util.InputUtil;
 import net.minecraft.text.Text;
 import org.lwjgl.glfw.GLFW;
 
@@ -241,16 +240,7 @@ public class BrowserScreen extends Screen {
                 return true;
             }
         }
-        if (!urlBox.isFocused()) {
-            if (MCBrowser.getConfig().asyncBrowserInput) {
-                CompletableFuture.runAsync(() -> getCurrentTab().sendKeyPress(keyCode, scanCode, modifiers));
-            } else {
-                getCurrentTab().sendKeyPress(keyCode, scanCode, modifiers);
-            }
-        }
-
-        //Set Focus
-        setFocus();
+        sendKeyActivityAndSetFocus(keyCode, scanCode, modifiers, true);
 
         // Make sure screen isn't sending the enter key if the buttons aren't focused.
         if (!isButtonsFocused() && keyCode == GLFW.GLFW_KEY_ENTER) {
@@ -267,15 +257,35 @@ public class BrowserScreen extends Screen {
 
     @Override
     public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
-        if (!Screen.hasControlDown() || keyCode != GLFW.GLFW_KEY_TAB) {
+        sendKeyActivityAndSetFocus(keyCode, scanCode, modifiers, false);
+        return super.keyReleased(keyCode, scanCode, modifiers);
+    }
+
+    private void sendKeyActivityAndSetFocus(int keyCode, int scanCode, int modifiers, boolean isPress){
+        if (getFlag(keyCode, isPress)) {
             if (MCBrowser.getConfig().asyncBrowserInput) {
-                CompletableFuture.runAsync(() -> getCurrentTab().sendKeyRelease(keyCode, scanCode, modifiers));
+                CompletableFuture.runAsync(() -> sendKeyPressRelease(keyCode, scanCode, modifiers, isPress));
             } else {
-                getCurrentTab().sendKeyRelease(keyCode, scanCode, modifiers);
+                sendKeyPressRelease(keyCode, scanCode, modifiers, isPress);
             }
         }
         setFocus();
-        return super.keyReleased(keyCode, scanCode, modifiers);
+    }
+
+    private void sendKeyPressRelease(int keyCode, int scanCode, int modifiers, boolean isPress){
+        if(isPress){
+            getCurrentTab().sendKeyPress(keyCode, scanCode, modifiers);
+        }else{
+            getCurrentTab().sendKeyRelease(keyCode, scanCode, modifiers);
+        }
+    }
+
+    private boolean getFlag(int keyCode, boolean isPress){
+        if(isPress){
+            return !urlBox.isFocused();
+        }else{
+            return !Screen.hasControlDown() || keyCode != GLFW.GLFW_KEY_TAB;
+        }
     }
 
     @Override
