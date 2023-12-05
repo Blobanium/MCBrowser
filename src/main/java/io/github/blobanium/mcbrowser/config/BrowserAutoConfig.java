@@ -6,9 +6,12 @@ import me.shedaniel.autoconfig.annotation.ConfigEntry;
 
 @Config(name = "mcbrowser")
 public class BrowserAutoConfig implements ConfigData {
+    @ConfigEntry.Gui.Tooltip
     public boolean openLinkInBrowser = true;
+    @ConfigEntry.Gui.Tooltip
     public String homePage = "https://www.google.com";
 
+    @ConfigEntry.Gui.Tooltip
     public boolean asyncBrowserInput = true;
 
     @ConfigEntry.Gui.Tooltip
