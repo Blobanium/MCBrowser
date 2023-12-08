@@ -17,6 +17,7 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URL;
+import java.util.concurrent.CompletableFuture;
 
 public class TabButton extends PressableWidget {
     int tab;
@@ -139,12 +140,14 @@ public class TabButton extends PressableWidget {
             return;
         }
         TabManager.tabs.get(tab).initIcon(currentUrl);
-        try {
-            BufferedImage bufferedImage = ImageIO.read(new URL(BrowserTabIcon.apiUrl + currentUrl));
-            TabManager.tabs.get(tab).getIcon().setSize(bufferedImage.getWidth());
-        } catch (IOException e) {
-            MCBrowser.LOGGER.warn("Could not find size of ico for " + currentUrl);
-        }
+        CompletableFuture.runAsync(() -> {
+            try {
+                BufferedImage bufferedImage = ImageIO.read(new URL(BrowserTabIcon.apiUrl + currentUrl));
+                TabManager.tabs.get(tab).getIcon().setSize(bufferedImage.getWidth());
+            } catch (IOException e) {
+                MCBrowser.LOGGER.warn("Could not find size of ico for " + currentUrl);
+            }
+        });
     }
 
     public void resetIco() {
