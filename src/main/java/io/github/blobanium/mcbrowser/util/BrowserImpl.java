@@ -7,25 +7,14 @@ import io.github.blobanium.mcbrowser.MCBrowser;
 import net.minecraft.client.render.*;
 
 public class BrowserImpl extends MCEFBrowser {
-    private String urlCache;
-    private int tickCache;
-
     public BrowserImpl(MCEFClient client, String url, boolean transparent) {
         super(client, url, transparent);
-        this.tickCache = MCBrowser.tickCounter;
     }
 
     //Improves performance by limiting each getURL call to one tick for each instance.
     @Override
     public String getURL(){
-        if(urlCache == null || MCBrowser.tickCounter != tickCache) {
-            String url = super.getURL();
-            tickCache = MCBrowser.tickCounter;
-            urlCache = url;
-            return url;
-        }else{
-            return urlCache;
-        }
+        return BrowserCaches.urlCache.getOrDefault(this.getIdentifier(), super.getURL());
     }
 
     protected static final int Z_SHIFT = -1;

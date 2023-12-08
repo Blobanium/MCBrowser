@@ -17,9 +17,4 @@ public class MinecraftClientMixin {
         }
         TabManager.reset();
     }
-
-    @Inject(at = @At("HEAD"), method = "tick")
-    private void tick(CallbackInfo ci){
-        MCBrowser.tickCounter++;
-    }
 }

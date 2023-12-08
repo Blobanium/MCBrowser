@@ -1,5 +1,6 @@
 package io.github.blobanium.mcbrowser.mixin;
 
+import io.github.blobanium.mcbrowser.util.BrowserCaches;
 import io.github.blobanium.mcbrowser.util.BrowserImpl;
 import io.github.blobanium.mcbrowser.util.BrowserScreenHelper;
 import io.github.blobanium.mcbrowser.util.TabManager;
@@ -26,6 +27,7 @@ public class CefClientMixin {
                 }
             }
         }
+        BrowserCaches.urlCache.put(browser.getIdentifier(), url);
     }
 
     @Inject(at = @At("HEAD"), method = "onTooltip", remap = false)
