@@ -17,6 +17,11 @@ public class BrowserImpl extends MCEFBrowser {
         return BrowserCaches.urlCache.getOrDefault(this.getIdentifier(), super.getURL());
     }
 
+    @Override
+    public boolean isLoading(){
+        return BrowserCaches.isLoadingCache.getOrDefault(this.getIdentifier(), super.isLoading());
+    }
+
     protected static final int Z_SHIFT = -1;
 
     public void render(int x, int y, int width, int height) {

@@ -38,6 +38,7 @@ public class CefClientMixin {
     @Inject(at = @At("HEAD"), method = "onLoadingStateChange", remap = false)
     public void onLoadingStateChange(CefBrowser browser, boolean isLoading, boolean canGoBack, boolean canGoForward, CallbackInfo ci) {
         BrowserScreenHelper.instance.updateWidgets();
+        BrowserCaches.isLoadingCache.put(browser.getIdentifier(), isLoading);
     }
 
     @Inject(at = @At("HEAD"), method = "onTitleChange", remap = false)
