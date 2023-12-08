@@ -24,6 +24,8 @@ public class MCBrowser implements ClientModInitializer {
 
     private static boolean firstOpen = true;
 
+    public static int tickCounter = 0;
+
     @Override
     public void onInitializeClient() {
         AutoConfig.register(BrowserAutoConfig.class, GsonConfigSerializer::new);
