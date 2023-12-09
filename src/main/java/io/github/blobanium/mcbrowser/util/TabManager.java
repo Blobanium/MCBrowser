@@ -17,6 +17,8 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
+import static io.github.blobanium.mcbrowser.util.BrowserScreenHelper.Keybinds.*;
+
 public class TabManager {
     public static List<TabHolder> tabs = new ArrayList<>();
     public static List<String> closedTabs = new ArrayList<>();
@@ -143,5 +145,28 @@ public class TabManager {
 
     public static String getCurrentUrl() {
         return getCurrentTab().getURL();
+    }
+
+    public static void tabControl(int keyCodeModifiers){
+        //TODO: Convert to switch once Code Climate fixes an analysis bug with switches.
+        if(keyCodeModifiers == CTRL_T){
+            openNewTab();
+        }else if(keyCodeModifiers == CTRL_SHIFT_T && !closedTabs.isEmpty()){
+            int lastTab = closedTabs.size() - 1;
+            openNewTab(closedTabs.get(lastTab));
+            closedTabs.remove(lastTab);
+        }else if(keyCodeModifiers == CTRL_TAB){
+            if (activeTab == tabs.size() - 1) {
+                setActiveTab(0);
+            } else {
+                setActiveTab(activeTab + 1);
+            }
+        }else if(keyCodeModifiers == CTRL_SHIFT_TAB){
+            if (activeTab == 0) {
+                setActiveTab(tabs.size() - 1);
+            } else {
+                setActiveTab(activeTab - 1);
+            }
+        }
     }
 }

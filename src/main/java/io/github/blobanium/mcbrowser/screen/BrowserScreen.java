@@ -14,8 +14,6 @@ import org.lwjgl.glfw.GLFW;
 import java.util.ArrayList;
 import java.util.concurrent.CompletableFuture;
 
-import static io.github.blobanium.mcbrowser.util.BrowserScreenHelper.Keybinds.*;
-
 
 public class BrowserScreen extends Screen {
     public static final int BROWSER_DRAW_OFFSET = 50;
@@ -211,26 +209,7 @@ public class BrowserScreen extends Screen {
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if (Screen.hasControlDown() && (keyCode == GLFW.GLFW_KEY_TAB || keyCode == GLFW.GLFW_KEY_T)) {
 
-            //TODO: Convert to switch once Code Climate fixes an analysis bug with switches.
-            if(keyCode+modifiers == CTRL_T){
-                TabManager.openNewTab();
-            }else if(keyCode+modifiers == CTRL_SHIFT_T && !TabManager.closedTabs.isEmpty()){
-                int lastTab = TabManager.closedTabs.size() - 1;
-                TabManager.openNewTab(TabManager.closedTabs.get(lastTab));
-                TabManager.closedTabs.remove(lastTab);
-            }else if(keyCode+modifiers == CTRL_TAB){
-                if (TabManager.activeTab == TabManager.tabs.size() - 1) {
-                    TabManager.setActiveTab(0);
-                } else {
-                    TabManager.setActiveTab(TabManager.activeTab + 1);
-                }
-            }else if(keyCode+modifiers == CTRL_SHIFT_TAB){
-                if (TabManager.activeTab == 0) {
-                    TabManager.setActiveTab(TabManager.tabs.size() - 1);
-                } else {
-                    TabManager.setActiveTab(TabManager.activeTab - 1);
-                }
-            }
+            TabManager.tabControl(keyCode+modifiers);
 
             setFocus();
             return true;
