@@ -139,4 +139,11 @@ public class BrowserScreenHelper {
             instance.specialButton.setMessage(action.getButtonText());
         }
     }
+
+    public static class Keybinds{
+        public static final int CTRL_T = GLFW.GLFW_MOD_CONTROL + GLFW.GLFW_KEY_T;
+        public static final int CTRL_SHIFT_T = GLFW.GLFW_MOD_CONTROL + GLFW.GLFW_MOD_SHIFT + GLFW.GLFW_KEY_T;
+        public static final int CTRL_TAB = GLFW.GLFW_MOD_CONTROL + GLFW.GLFW_KEY_TAB;
+        public static final int CTRL_SHIFT_TAB = GLFW.GLFW_MOD_CONTROL + GLFW.GLFW_MOD_SHIFT + GLFW.GLFW_KEY_TAB;
+    }
 }

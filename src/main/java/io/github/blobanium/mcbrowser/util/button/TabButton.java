@@ -52,9 +52,7 @@ public class TabButton extends PressableWidget {
 
     @Override
     public void renderButton(DrawContext context, int mouseX, int mouseY, float delta) {
-        if (this.getX() > BrowserScreenHelper.instance.width - BrowserScreen.BROWSER_DRAW_OFFSET - 35) {
-            return;
-        }
+        if (this.getX() > BrowserScreenHelper.instance.width - BrowserScreen.BROWSER_DRAW_OFFSET - 35) { return; }
         TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
         context.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha);
         RenderSystem.enableBlend();
@@ -62,14 +60,10 @@ public class TabButton extends PressableWidget {
         boolean hoveringClose = (mouseX >= this.getX() + (this.getWidth() - 15)) && (mouseX <= this.getX() + this.getWidth()) && (mouseY >= this.getY()) && (mouseY <= this.getY() + this.getHeight());
         int mainTextureOffset = selected ? 2 : 1;
         int closeTextureOffset = hoveringClose ? 2 : 1;
-        if (this.getWidth() > this.getHeight()) {
-            context.drawNineSlicedTexture(WIDGETS_TEXTURE, this.getX(), this.getY(), this.getWidth(), this.getHeight(), 20, 4, 200, 20, 0, 46 + mainTextureOffset * 20);
-        }
+        if (this.getWidth() > this.getHeight()) { context.drawNineSlicedTexture(WIDGETS_TEXTURE, this.getX(), this.getY(), this.getWidth(), this.getHeight(), 20, 4, 200, 20, 0, 46 + mainTextureOffset * 20); }
         context.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         String name = TabManager.tabs.get(tab).getTitle();
-        if (name == null || name.isEmpty()) {
-            name = "Loading...";
-        }
+        if (name == null || name.isEmpty()) { name = "Loading..."; }
         drawScrollableText(context, textRenderer, Text.of(name), this.getX() + 2 + 15, this.getY(), this.getX() + this.getWidth() - (!tooSmall || selected ? 17 : 2), this.getY() + this.getHeight(), 16777215 | MathHelper.ceil(this.alpha * 255.0F) << 24);
 
         context.fill(this.getX(), this.getY(), this.getX() + this.getHeight(), this.getY() + this.getHeight(), 0xFFFFFFFF);
@@ -80,9 +74,7 @@ public class TabButton extends PressableWidget {
             context.drawText(textRenderer, cross, this.getX() + this.getWidth() - 8 - textRenderer.getWidth(cross) / 2, this.getY() + 4, 0xFFFFFFFF, true);
         }
 
-        if (selected) {
-            context.fill(this.getX(), this.getY() + this.getHeight(), this.getX() + this.getWidth(), this.getY() + this.getHeight() + 2, 0xFFFFFFFF);
-        }
+        if (selected) { context.fill(this.getX(), this.getY() + this.getHeight(), this.getX() + this.getWidth(), this.getY() + this.getHeight() + 2, 0xFFFFFFFF); }
     }
 
     public void renderIco() {

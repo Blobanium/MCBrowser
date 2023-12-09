@@ -14,6 +14,8 @@ import org.lwjgl.glfw.GLFW;
 import java.util.ArrayList;
 import java.util.concurrent.CompletableFuture;
 
+import static io.github.blobanium.mcbrowser.util.BrowserScreenHelper.Keybinds.*;
+
 
 public class BrowserScreen extends Screen {
     public static final int BROWSER_DRAW_OFFSET = 50;
@@ -208,11 +210,6 @@ public class BrowserScreen extends Screen {
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if (Screen.hasControlDown() && (keyCode == GLFW.GLFW_KEY_TAB || keyCode == GLFW.GLFW_KEY_T)) {
-            final int CTRL_T = GLFW.GLFW_MOD_CONTROL + GLFW.GLFW_KEY_T;
-            final int CTRL_SHIFT_T = GLFW.GLFW_MOD_CONTROL + GLFW.GLFW_MOD_SHIFT + GLFW.GLFW_KEY_T;
-            final int CTRL_TAB = GLFW.GLFW_MOD_CONTROL + GLFW.GLFW_KEY_TAB;
-            final int CTRL_SHIFT_TAB = GLFW.GLFW_MOD_CONTROL + GLFW.GLFW_MOD_SHIFT + GLFW.GLFW_KEY_TAB;
-
 
             //TODO: Convert to switch once Code Climate fixes an analysis bug with switches.
             if(keyCode+modifiers == CTRL_T){
@@ -238,6 +235,7 @@ public class BrowserScreen extends Screen {
             setFocus();
             return true;
         }
+
         sendKeyActivityAndSetFocus(keyCode, scanCode, modifiers, true);
 
         // Make sure screen isn't sending the enter key if the buttons aren't focused.
