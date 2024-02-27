@@ -1,6 +1,5 @@
 package io.github.blobanium.mcbrowser.screen;
 
-import io.github.blobanium.mcbrowser.MCBrowser;
 import io.github.blobanium.mcbrowser.feature.specialbutton.*;
 import io.github.blobanium.mcbrowser.util.*;
 import io.github.blobanium.mcbrowser.util.button.*;
@@ -12,8 +11,6 @@ import net.minecraft.text.Text;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
-import java.util.concurrent.CompletableFuture;
-
 
 public class BrowserScreen extends Screen {
     public static final int BROWSER_DRAW_OFFSET = 50;
@@ -182,11 +179,7 @@ public class BrowserScreen extends Screen {
 
     @Override
     public void mouseMoved(double mouseX, double mouseY) {
-        if (MCBrowser.getConfig().asyncBrowserInput) {
-            CompletableFuture.runAsync(() -> TabManager.getCurrentTab().sendMouseMove(BrowserScreenHelper.mouseX(mouseX, BROWSER_DRAW_OFFSET), BrowserScreenHelper.mouseY(mouseY, BROWSER_DRAW_OFFSET)));
-        } else {
-            TabManager.getCurrentTab().sendMouseMove(BrowserScreenHelper.mouseX(mouseX, BROWSER_DRAW_OFFSET), BrowserScreenHelper.mouseY(mouseY, BROWSER_DRAW_OFFSET));
-        }
+        BrowserScreenHelper.runAsyncIfEnabled(() -> TabManager.getCurrentTab().sendMouseMove(BrowserScreenHelper.mouseX(mouseX, BROWSER_DRAW_OFFSET), BrowserScreenHelper.mouseY(mouseY, BROWSER_DRAW_OFFSET)));
         super.mouseMoved(mouseX, mouseY);
     }
 
@@ -198,11 +191,7 @@ public class BrowserScreen extends Screen {
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
-        if (MCBrowser.getConfig().asyncBrowserInput) {
-            CompletableFuture.runAsync(() -> TabManager.getCurrentTab().sendMouseWheel(BrowserScreenHelper.mouseX(mouseX, BROWSER_DRAW_OFFSET), BrowserScreenHelper.mouseY(mouseY, BROWSER_DRAW_OFFSET), delta, 0));
-        } else {
-            TabManager.getCurrentTab().sendMouseWheel(BrowserScreenHelper.mouseX(mouseX, BROWSER_DRAW_OFFSET), BrowserScreenHelper.mouseY(mouseY, BROWSER_DRAW_OFFSET), delta, 0);
-        }
+        BrowserScreenHelper.runAsyncIfEnabled(() -> TabManager.getCurrentTab().sendMouseWheel(BrowserScreenHelper.mouseX(mouseX, BROWSER_DRAW_OFFSET), BrowserScreenHelper.mouseY(mouseY, BROWSER_DRAW_OFFSET), delta, 0));
         return super.mouseScrolled(mouseX, mouseY, delta);
     }
 
@@ -239,11 +228,7 @@ public class BrowserScreen extends Screen {
 
     private void sendKeyActivityAndSetFocus(int keyCode, int scanCode, int modifiers, boolean isPress){
         if (getFlag(keyCode, isPress)) {
-            if (MCBrowser.getConfig().asyncBrowserInput) {
-                CompletableFuture.runAsync(() -> sendKeyPressRelease(keyCode, scanCode, modifiers, isPress));
-            } else {
-                sendKeyPressRelease(keyCode, scanCode, modifiers, isPress);
-            }
+            BrowserScreenHelper.runAsyncIfEnabled(() -> sendKeyPressRelease(keyCode, scanCode, modifiers, isPress));
         }
         setFocus();
     }
@@ -267,11 +252,7 @@ public class BrowserScreen extends Screen {
     @Override
     public boolean charTyped(char codePoint, int modifiers) {
         if (codePoint == (char) 0) return false;
-        if (MCBrowser.getConfig().asyncBrowserInput) {
-            CompletableFuture.runAsync(() -> TabManager.getCurrentTab().sendKeyTyped(codePoint, modifiers));
-        } else {
-            TabManager.getCurrentTab().sendKeyTyped(codePoint, modifiers);
-        }
+        BrowserScreenHelper.runAsyncIfEnabled(() -> TabManager.getCurrentTab().sendKeyTyped(codePoint, modifiers));
         setFocus();
         return super.charTyped(codePoint, modifiers);
     }
@@ -316,11 +297,7 @@ public class BrowserScreen extends Screen {
             } else if (button == GLFW.GLFW_MOUSE_BUTTON_5 && TabManager.getCurrentTab().canGoForward() && !isClick) {
                 TabManager.getCurrentTab().goForward();
             } else {
-                if (MCBrowser.getConfig().asyncBrowserInput) {
-                    CompletableFuture.runAsync(() -> sendMousePressOrRelease(mouseX, mouseY, button, isClick));
-                } else {
-                    sendMousePressOrRelease(mouseX, mouseY, button, isClick);
-                }
+                BrowserScreenHelper.runAsyncIfEnabled(() -> sendMousePressOrRelease(mouseX, mouseY, button, isClick));
             }
         }
         setFocus();

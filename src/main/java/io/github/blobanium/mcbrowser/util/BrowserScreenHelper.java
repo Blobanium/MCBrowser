@@ -15,6 +15,7 @@ import org.lwjgl.glfw.GLFW;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.concurrent.CompletableFuture;
 
 public class BrowserScreenHelper {
     //Mouse position
@@ -141,5 +142,13 @@ public class BrowserScreenHelper {
         public static final int CTRL_SHIFT_T = GLFW.GLFW_MOD_CONTROL + GLFW.GLFW_MOD_SHIFT + GLFW.GLFW_KEY_T;
         public static final int CTRL_TAB = GLFW.GLFW_MOD_CONTROL + GLFW.GLFW_KEY_TAB;
         public static final int CTRL_SHIFT_TAB = GLFW.GLFW_MOD_CONTROL + GLFW.GLFW_MOD_SHIFT + GLFW.GLFW_KEY_TAB;
+    }
+
+    public static void runAsyncIfEnabled(Runnable runnable){
+        if (MCBrowser.getConfig().asyncBrowserInput) {
+            CompletableFuture.runAsync(runnable);
+        } else {
+            runnable.run();
+        }
     }
 }
