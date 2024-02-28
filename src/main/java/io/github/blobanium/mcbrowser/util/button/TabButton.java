@@ -157,14 +157,18 @@ public class TabButton extends PressableWidget {
                 open();
                 return true;
             }
-            if (mouseX > this.getX() + this.getWidth() - 15) {
-                close();
-            } else {
-                open();
-            }
+            openOrClose(!(mouseX > this.getX() + this.getWidth() - 15));
             return true;
         }
         return false;
+    }
+
+    private void openOrClose(boolean action){
+        if(action){
+            open();
+        }else{
+            close();
+        }
     }
 
     public void open() {
