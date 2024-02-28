@@ -1,5 +1,6 @@
 package io.github.blobanium.mcbrowser.screen;
 
+import io.github.blobanium.mcbrowser.MCBrowser;
 import io.github.blobanium.mcbrowser.feature.specialbutton.*;
 import io.github.blobanium.mcbrowser.util.*;
 import io.github.blobanium.mcbrowser.util.button.*;
@@ -29,6 +30,9 @@ public class BrowserScreen extends Screen {
     public ButtonWidget specialButton;
 
     private ButtonWidget openInBrowserButton;
+
+    private int previousLimit;
+    private boolean isFpsLowered = false;
 
     public BrowserScreen(Text title) {
         super(title);
@@ -81,6 +85,15 @@ public class BrowserScreen extends Screen {
     @Override
     protected void init() {
         super.init();
+
+        if(MCBrowser.getConfig().limitBrowserFramerate){
+            if(MinecraftClient.getInstance().getWindow().getFramerateLimit() > MCBrowser.getConfig().browserFPS){
+                previousLimit = MinecraftClient.getInstance().getWindow().getFramerateLimit();
+                MinecraftClient.getInstance().getWindow().setFramerateLimit(MCBrowser.getConfig().browserFPS);
+                isFpsLowered = true;
+            }
+        }
+
         BrowserScreenHelper.instance = this;
         BrowserScreenHelper.tooltipText = null;
 
@@ -146,6 +159,9 @@ public class BrowserScreen extends Screen {
         BrowserScreenHelper.instance = null;
         for (TabButton tabButton : tabButtons) {
             tabButton.resetIco();
+        }
+        if(isFpsLowered){
+            MinecraftClient.getInstance().getWindow().setFramerateLimit(previousLimit);
         }
         super.close();
     }

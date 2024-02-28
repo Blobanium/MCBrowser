@@ -24,4 +24,9 @@ public class BrowserAutoConfig implements ConfigData {
     @ConfigEntry.Gui.Tooltip
     @ConfigEntry.Gui.RequiresRestart
     public boolean enableMediaStream = false;
+
+    @ConfigEntry.Gui.Tooltip
+    public boolean limitBrowserFramerate=false;
+
+    public int browserFPS = 60;
 }
