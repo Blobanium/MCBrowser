@@ -22,10 +22,12 @@ public class NewTabButton extends PressableWidget {
 
     @Override
     public void onPress() {
+        //Required for Implementation
     }
 
     @Override
     protected void appendClickableNarrations(NarrationMessageBuilder builder) {
+        //Required for Implementation
     }
 
     @Override

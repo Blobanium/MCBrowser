@@ -41,10 +41,12 @@ public class TabButton extends PressableWidget {
 
     @Override
     public void onPress() {
+        //Required For Implementation
     }
 
     @Override
     protected void appendClickableNarrations(NarrationMessageBuilder builder) {
+        //Required For Implementation
     }
 
     private final boolean selected = TabManager.activeTab == tab;

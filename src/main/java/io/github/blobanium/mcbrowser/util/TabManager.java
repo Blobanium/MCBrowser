@@ -91,11 +91,9 @@ public class TabManager {
         for (TabHolder tab : tabs) {
             urls.add(tab.getUrl());
         }
-        try {
-            FileWriter fileWriter = new FileWriter(FabricLoader.getInstance().getConfigDir().resolve("MCBrowser") + "\\tabs" + ".json");
+        try (FileWriter fileWriter = new FileWriter(FabricLoader.getInstance().getConfigDir().resolve("MCBrowser") + "\\tabs" + ".json")){
             Gson gson = new GsonBuilder().setPrettyPrinting().create();
             gson.toJson(urls, fileWriter);
-            fileWriter.close();
         } catch (IOException e) {
             MCBrowser.LOGGER.error("Could not save opened tabs for MCBrowser", e);
             return;
@@ -114,8 +112,7 @@ public class TabManager {
     public static void loadTabsFromJson() {
         String filename = FabricLoader.getInstance().getConfigDir().resolve("MCBrowser") + "\\tabs" + ".json";
         if (new File(filename).exists()) {
-            try {
-                FileReader fileReader = new FileReader(filename);
+            try (FileReader fileReader = new FileReader(filename)){
                 Type type = new TypeToken<ArrayList<String>>() {}.getType();
                 Gson gson = new Gson();
                 ArrayList<String> urls = gson.fromJson(fileReader, type);
