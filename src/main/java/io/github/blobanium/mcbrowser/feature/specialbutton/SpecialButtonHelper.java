@@ -1,5 +1,6 @@
 package io.github.blobanium.mcbrowser.feature.specialbutton;
 
+import io.github.blobanium.mcbrowser.MCBrowser;
 
 public class SpecialButtonHelper {
 
@@ -9,7 +10,7 @@ public class SpecialButtonHelper {
                 SpecialButtonActions.getFromUrlConstantValue(url).getOnExecute().run();
             }
         }catch (IllegalArgumentException e){
-            e.printStackTrace();
+            MCBrowser.LOGGER.error("An error occurred with specialButtons, please report this to the dev", e);
         }
     }
 

@@ -3,7 +3,6 @@ package io.github.blobanium.mcbrowser.util;
 import com.cinemamod.mcef.MCEFBrowser;
 import com.cinemamod.mcef.MCEFClient;
 import com.mojang.blaze3d.systems.RenderSystem;
-import io.github.blobanium.mcbrowser.MCBrowser;
 import net.minecraft.client.render.*;
 
 public class BrowserImpl extends MCEFBrowser {

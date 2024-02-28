@@ -3,6 +3,7 @@ package io.github.blobanium.mcbrowser.feature.specialbutton;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import io.github.blobanium.mcbrowser.MCBrowser;
 import io.github.blobanium.mcbrowser.util.TabManager;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.MinecraftVersion;
@@ -61,7 +62,7 @@ public class SpecialButtonAction {
                 sendToastMessage(Text.translatable("mcbrowser.download.toast.complete"), getTranslation(END_DL_DESCRIPTION, action));
             } catch (IOException e) {
                 sendToastMessage(Text.translatable("mcbrowser.download.toast.failed"), Text.translatable("mcbrowser.download.toast.failed.description"));
-                e.printStackTrace();
+                MCBrowser.LOGGER.error("Failed to download file", e);
             }
         });
     }

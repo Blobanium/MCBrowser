@@ -97,8 +97,7 @@ public class TabManager {
             gson.toJson(urls, fileWriter);
             fileWriter.close();
         } catch (IOException e) {
-            MCBrowser.LOGGER.error("Could not save opened tabs for MCBrowser");
-            e.printStackTrace();
+            MCBrowser.LOGGER.error("Could not save opened tabs for MCBrowser", e);
             return;
         }
         MCBrowser.LOGGER.info("Successfully saved tabs for MCBrowser");
@@ -128,8 +127,7 @@ public class TabManager {
                     }
                 }
             } catch (IOException e) {
-                MCBrowser.LOGGER.error("Could not read list of tabs from \"" + filename + "\"");
-                e.printStackTrace();
+                MCBrowser.LOGGER.error("Could not read list of tabs from \"" + filename + "\"", e);
             }
         }
     }

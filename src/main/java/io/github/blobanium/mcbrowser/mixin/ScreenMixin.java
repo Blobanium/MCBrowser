@@ -21,8 +21,7 @@ public class ScreenMixin {
                 ci.cancel();
             }
         } catch (MalformedURLException e) {
-            MCBrowser.LOGGER.error("Opening in browser. Failed to convert to URL");
-            e.printStackTrace();
+            MCBrowser.LOGGER.error("Opening in browser. Failed to convert to URL", e);
         }
     }
 }

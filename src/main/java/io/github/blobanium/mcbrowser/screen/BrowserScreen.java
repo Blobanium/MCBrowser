@@ -21,7 +21,6 @@ public class BrowserScreen extends Screen {
     public ButtonWidget forwardButton;
     public ButtonWidget backButton;
     public ReloadButton reloadButton;
-    private ButtonWidget homeButton;
     private PressableWidget[] navigationButtons;
     private ClickableWidget[] uiElements;
     public ArrayList<TabButton> tabButtons = new ArrayList<>();
@@ -106,7 +105,7 @@ public class BrowserScreen extends Screen {
         backButton = BrowserScreenHelper.initButton(Text.of("\u25C0"), button -> TabManager.getCurrentTab().goBack(), BROWSER_DRAW_OFFSET, BROWSER_DRAW_OFFSET);
         forwardButton = BrowserScreenHelper.initButton(Text.of("\u25B6"), button -> TabManager.getCurrentTab().goForward(), BROWSER_DRAW_OFFSET + 20, BROWSER_DRAW_OFFSET);
         reloadButton = new ReloadButton(BROWSER_DRAW_OFFSET + 40, BROWSER_DRAW_OFFSET - 20, 15, 15);
-        homeButton = BrowserScreenHelper.initButton(Text.of("\u2302"), button -> BrowserScreenHelper.homeButtonAction(), BROWSER_DRAW_OFFSET + 60, BROWSER_DRAW_OFFSET);
+        ButtonWidget homeButton = BrowserScreenHelper.initButton(Text.of("\u2302"), button -> BrowserScreenHelper.homeButtonAction(), BROWSER_DRAW_OFFSET + 60, BROWSER_DRAW_OFFSET);
         specialButton = ButtonWidget.builder(Text.of(""), button -> SpecialButtonHelper.onPress(TabManager.getCurrentUrl())).dimensions(BROWSER_DRAW_OFFSET, height - BROWSER_DRAW_OFFSET + 5, 150, 15).build();
         openInBrowserButton = ButtonWidget.builder(Text.of("Open In External Browser"), button -> BrowserScreenHelper.openInBrowser()).dimensions(width - 200, height - BROWSER_DRAW_OFFSET + 5, 150, 15).build();
 
