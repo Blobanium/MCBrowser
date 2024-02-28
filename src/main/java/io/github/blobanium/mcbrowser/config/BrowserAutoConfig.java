@@ -28,5 +28,6 @@ public class BrowserAutoConfig implements ConfigData {
     @ConfigEntry.Gui.Tooltip
     public boolean limitBrowserFramerate=false;
 
+    @ConfigEntry.Gui.Tooltip
     public int browserFPS = 60;
 }
