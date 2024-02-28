@@ -85,12 +85,10 @@ public class BrowserScreen extends Screen {
     protected void init() {
         super.init();
 
-        if(MCBrowser.getConfig().limitBrowserFramerate){
-            if(MinecraftClient.getInstance().getWindow().getFramerateLimit() > MCBrowser.getConfig().browserFPS){
+        if(MCBrowser.getConfig().limitBrowserFramerate && MinecraftClient.getInstance().getWindow().getFramerateLimit() > MCBrowser.getConfig().browserFPS){
                 previousLimit = MinecraftClient.getInstance().getWindow().getFramerateLimit();
                 MinecraftClient.getInstance().getWindow().setFramerateLimit(MCBrowser.getConfig().browserFPS);
                 isFpsLowered = true;
-            }
         }
 
         BrowserScreenHelper.instance = this;

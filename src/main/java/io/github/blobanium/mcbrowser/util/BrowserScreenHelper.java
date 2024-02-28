@@ -70,7 +70,7 @@ public class BrowserScreenHelper {
             browser.createImmediately();
             return browser;
         } else {
-            throw new RuntimeException("Chromium Embedded Framework was never initialized.");
+            throw new IllegalStateException("Chromium Embedded Framework was never initialized.");
         }
     }
 
@@ -81,7 +81,7 @@ public class BrowserScreenHelper {
             icon.createImmediately();
             return icon;
         } else {
-            throw new RuntimeException("Chromium Embedded Framework was never initialized.");
+            throw new IllegalStateException("Chromium Embedded Framework was never initialized.");
         }
     }
 

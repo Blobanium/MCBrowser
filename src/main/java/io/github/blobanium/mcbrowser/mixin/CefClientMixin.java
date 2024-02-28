@@ -20,12 +20,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class CefClientMixin {
     @Inject(at = @At("HEAD"), method = "onAddressChange", remap = false)
     public void onAddressChange(CefBrowser browser, CefFrame frame, String url, CallbackInfo ci) {
-        if (url != null) {
-            if (!(browser instanceof BrowserTabIcon)) {
-                if (browser instanceof BrowserImpl) {
-                    BrowserScreenHelper.onUrlChange();
-                }
-            }
+        if (url != null && !(browser instanceof BrowserTabIcon) && (browser instanceof BrowserImpl)) {
+            BrowserScreenHelper.onUrlChange();
         }
         BrowserCaches.urlCache.put(browser.getIdentifier(), url);
     }

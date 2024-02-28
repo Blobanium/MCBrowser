@@ -120,7 +120,7 @@ public class TabButton extends PressableWidget {
             siteUrl = siteUrl.substring(siteUrl.indexOf("://") + 3);
         }
         if (siteUrl.contains("/")) {
-            siteUrl = siteUrl.substring(0, siteUrl.indexOf("/"));
+            siteUrl = siteUrl.substring(0, siteUrl.indexOf('/'));
         }
         return icoUrl.startsWith(siteUrl);
     }
