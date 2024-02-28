@@ -117,8 +117,7 @@ public class TabManager {
         if (new File(filename).exists()) {
             try {
                 FileReader fileReader = new FileReader(filename);
-                Type type = new TypeToken<ArrayList<String>>() {
-                }.getType();
+                Type type = new TypeToken<ArrayList<String>>() {}.getType();
                 Gson gson = new Gson();
                 ArrayList<String> urls = gson.fromJson(fileReader, type);
                 fileReader.close();
