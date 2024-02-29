@@ -4,6 +4,7 @@ import com.cinemamod.mcef.MCEFBrowser;
 import com.cinemamod.mcef.MCEFClient;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.render.*;
+import org.lwjgl.glfw.GLFW;
 
 import static io.github.blobanium.mcbrowser.screen.BrowserScreen.BD_OFFSET;
 
@@ -49,11 +50,19 @@ public class BrowserImpl extends MCEFBrowser {
         }
     }
 
-    public void sendMousePressRelease(double mouseX, double mouseY, int button, boolean isClick) {
-        if (isClick) {
-            sendMousePress(BrowserUtil.mouseX(mouseX, BD_OFFSET), BrowserUtil.mouseY(mouseY, BD_OFFSET), button);
-        } else {
-            sendMouseRelease(BrowserUtil.mouseX(mouseX, BD_OFFSET), BrowserUtil.mouseY(mouseY, BD_OFFSET), button);
-        }
+    public void mouseButtonControl(double mouseX, double mouseY, int button, boolean isClick) {
+            if (button == GLFW.GLFW_MOUSE_BUTTON_4 && canGoBack() && !isClick) {
+                goBack();
+            } else if (button == GLFW.GLFW_MOUSE_BUTTON_5 && canGoForward() && !isClick) {
+                goForward();
+            } else {
+                BrowserUtil.runAsyncIfEnabled(() -> {
+                    if (isClick) {
+                        sendMousePress(BrowserUtil.mouseX(mouseX, BD_OFFSET), BrowserUtil.mouseY(mouseY, BD_OFFSET), button);
+                    } else {
+                        sendMouseRelease(BrowserUtil.mouseX(mouseX, BD_OFFSET), BrowserUtil.mouseY(mouseY, BD_OFFSET), button);
+                    }
+                });
+            }
     }
 }

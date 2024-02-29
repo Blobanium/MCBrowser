@@ -142,13 +142,9 @@ public class BrowserScreen extends Screen {
         super.resize(minecraft, i, j);
         resizeBrowser();
         updateWidgets();
-        for (TabButton tabButton : tabButtons) {
-            remove(tabButton);
-        }
+        for (TabButton tabButton : tabButtons) { remove(tabButton); }
         tabButtons = tempList;
-        for (TabButton tabButton : tabButtons) {
-            addSelectableChild(tabButton);
-        }
+        for (TabButton tabButton : tabButtons) { addSelectableChild(tabButton); }
         updateTabSize();
 
         for (ClickableWidget widget : uiElements) {
@@ -187,13 +183,13 @@ public class BrowserScreen extends Screen {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        mouseButtonControl(mouseX, mouseY, button, true);
+        mouseButtonControlImpl(mouseX, mouseY, button, true);
         return super.mouseClicked(mouseX, mouseY, button);
     }
 
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
-        mouseButtonControl(mouseX, mouseY, button, false);
+        mouseButtonControlImpl(mouseX, mouseY, button, false);
         return super.mouseReleased(mouseX, mouseY, button);
     }
 
@@ -302,15 +298,9 @@ public class BrowserScreen extends Screen {
         }
     }
 
-    private void mouseButtonControl(double mouseX, double mouseY, int button, boolean isClick) {
+    private void mouseButtonControlImpl(double mouseX, double mouseY, int button, boolean isClick) {
         if (mouseX > BD_OFFSET && mouseX < this.width - BD_OFFSET && mouseY > BD_OFFSET && mouseY < this.height - BD_OFFSET) {
-            if (button == GLFW.GLFW_MOUSE_BUTTON_4 && currentTab.canGoBack() && !isClick) {
-                currentTab.goBack();
-            } else if (button == GLFW.GLFW_MOUSE_BUTTON_5 && currentTab.canGoForward() && !isClick) {
-                currentTab.goForward();
-            } else {
-                BrowserUtil.runAsyncIfEnabled(() -> currentTab.sendMousePressRelease(mouseX, mouseY, button, isClick));
-            }
+            currentTab.mouseButtonControl(mouseX, mouseY, button, isClick);
         }
         setFocus();
     }
