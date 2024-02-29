@@ -7,27 +7,27 @@ import me.shedaniel.autoconfig.annotation.ConfigEntry;
 @Config(name = "mcbrowser")
 public class BrowserAutoConfig implements ConfigData {
     @ConfigEntry.Gui.Tooltip
-    public final boolean openLinkInBrowser = true;
+    public boolean openLinkInBrowser = true;
     @ConfigEntry.Gui.Tooltip
-    public final String homePage = "https://www.google.com";
+    public String homePage = "https://www.google.com";
 
     @ConfigEntry.Gui.Tooltip
-    public final boolean asyncBrowserInput = true;
-
-    @ConfigEntry.Gui.Tooltip
-    @ConfigEntry.Gui.RequiresRestart
-    public final boolean saveCookies = false;
-
-    @ConfigEntry.Gui.Tooltip
-    public final boolean saveTabs = true;
+    public boolean asyncBrowserInput = true;
 
     @ConfigEntry.Gui.Tooltip
     @ConfigEntry.Gui.RequiresRestart
-    public final boolean enableMediaStream = false;
+    public boolean saveCookies = false;
 
     @ConfigEntry.Gui.Tooltip
-    public final boolean limitBrowserFramerate=false;
+    public boolean saveTabs = true;
 
     @ConfigEntry.Gui.Tooltip
-    public final int browserFPS = 60;
+    @ConfigEntry.Gui.RequiresRestart
+    public boolean enableMediaStream = false;
+
+    @ConfigEntry.Gui.Tooltip
+    public boolean limitBrowserFramerate=false;
+
+    @ConfigEntry.Gui.Tooltip
+    public int browserFPS = 60;
 }
