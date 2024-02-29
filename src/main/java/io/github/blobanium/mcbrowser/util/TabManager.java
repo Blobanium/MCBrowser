@@ -4,6 +4,7 @@ import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import io.github.blobanium.mcbrowser.MCBrowser;
+import io.github.blobanium.mcbrowser.feature.BrowserFeatureUtil;
 import io.github.blobanium.mcbrowser.screen.BrowserScreen;
 import java.io.File;
 import java.io.FileReader;
@@ -30,7 +31,7 @@ public class TabManager {
     }
 
     public static void openNewTab() {
-        openNewTab(io.github.blobanium.mcbrowser.feature.BrowserUtil.prediffyURL(MCBrowser.getConfig().homePage));
+        openNewTab(BrowserFeatureUtil.prediffyURL(MCBrowser.getConfig().homePage));
     }
 
     public static void openNewTab(String url) {

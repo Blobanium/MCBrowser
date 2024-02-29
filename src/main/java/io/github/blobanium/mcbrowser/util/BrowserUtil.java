@@ -2,6 +2,7 @@ package io.github.blobanium.mcbrowser.util;
 
 import com.cinemamod.mcef.MCEF;
 import io.github.blobanium.mcbrowser.MCBrowser;
+import io.github.blobanium.mcbrowser.feature.BrowserFeatureUtil;
 import io.github.blobanium.mcbrowser.feature.specialbutton.SpecialButtonActions;
 import io.github.blobanium.mcbrowser.screen.BrowserScreen;
 import io.github.blobanium.mcbrowser.util.button.BrowserTabIcon;
@@ -95,7 +96,7 @@ public class BrowserUtil {
                         }
                     }
                     if (keyCode == GLFW.GLFW_KEY_ENTER) {
-                        TabManager.getCurrentTab().loadURL(io.github.blobanium.mcbrowser.feature.BrowserUtil.prediffyURL(getText()));
+                        TabManager.getCurrentTab().loadURL(BrowserFeatureUtil.prediffyURL(getText()));
                         setFocused(false);
                     }
                 }
@@ -112,12 +113,12 @@ public class BrowserUtil {
         try {
             Util.getOperatingSystem().open(new URL(TabManager.getCurrentUrl()));
         } catch (MalformedURLException e) {
-            throw new RuntimeException(e);
+            MCBrowser.LOGGER.fatal("Unable to open Browser", e);
         }
     }
 
     public static void homeButtonAction(){
-        String prediffyedHomePage = io.github.blobanium.mcbrowser.feature.BrowserUtil.prediffyURL(MCBrowser.getConfig().homePage);
+        String prediffyedHomePage = BrowserFeatureUtil.prediffyURL(MCBrowser.getConfig().homePage);
         instance.urlBox.setText(prediffyedHomePage);
         TabManager.getCurrentTab().loadURL(prediffyedHomePage);
     }

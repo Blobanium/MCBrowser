@@ -1,6 +1,6 @@
 package io.github.blobanium.mcbrowser.feature;
 
-public class BrowserUtil {
+public class BrowserFeatureUtil {
     public static String prediffyURL(String url){
         //See if it has the scheme (aka where it says "http" or https), were only doing this because there are URL schemes other than http and https.
         if(url.contains("://")){

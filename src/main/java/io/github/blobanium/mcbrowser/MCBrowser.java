@@ -3,7 +3,7 @@ package io.github.blobanium.mcbrowser;
 import com.cinemamod.mcef.MCEF;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import io.github.blobanium.mcbrowser.config.BrowserAutoConfig;
-import io.github.blobanium.mcbrowser.feature.BrowserUtil;
+import io.github.blobanium.mcbrowser.feature.BrowserFeatureUtil;
 import io.github.blobanium.mcbrowser.screen.BrowserScreen;
 import io.github.blobanium.mcbrowser.util.TabHolder;
 import io.github.blobanium.mcbrowser.util.TabManager;
@@ -41,7 +41,7 @@ public class MCBrowser implements ClientModInitializer {
                     }).then(ClientCommandManager.literal("url")
                             .then(ClientCommandManager.argument("url", StringArgumentType.greedyString())
                                     .executes(context -> {
-                                        TabManager.openNewTab(BrowserUtil.prediffyURL(StringArgumentType.getString(context, "url")));
+                                        TabManager.openNewTab(BrowserFeatureUtil.prediffyURL(StringArgumentType.getString(context, "url")));
                                         return 0;
                                     }))
                     ).then(ClientCommandManager.literal("close")
@@ -63,7 +63,7 @@ public class MCBrowser implements ClientModInitializer {
         }
         firstOpen = false;
         if (TabManager.tabs.isEmpty()) {
-            TabManager.tabs.add(new TabHolder(BrowserUtil.prediffyURL(getConfig().homePage)));
+            TabManager.tabs.add(new TabHolder(BrowserFeatureUtil.prediffyURL(getConfig().homePage)));
         }
         minecraft.send(() -> minecraft.setScreen(new BrowserScreen(Text.literal("Basic Browser"))));
     }
