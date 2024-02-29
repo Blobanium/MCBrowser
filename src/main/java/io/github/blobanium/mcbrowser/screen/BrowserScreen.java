@@ -1,6 +1,7 @@
 package io.github.blobanium.mcbrowser.screen;
 
 import io.github.blobanium.mcbrowser.MCBrowser;
+import io.github.blobanium.mcbrowser.config.BrowserAutoConfig;
 import io.github.blobanium.mcbrowser.feature.specialbutton.*;
 import io.github.blobanium.mcbrowser.util.*;
 import io.github.blobanium.mcbrowser.util.button.*;
@@ -90,9 +91,10 @@ public class BrowserScreen extends Screen {
         super.init();
 
         Window window = MinecraftClient.getInstance().getWindow();
-        if(MCBrowser.getConfig().limitBrowserFramerate && window.getFramerateLimit() > MCBrowser.getConfig().browserFPS){
+        BrowserAutoConfig config = MCBrowser.getConfig();
+        if(config.limitBrowserFramerate && window.getFramerateLimit() > config.browserFPS){
                 previousLimit = window.getFramerateLimit();
-                window.setFramerateLimit(MCBrowser.getConfig().browserFPS);
+                window.setFramerateLimit(config.browserFPS);
                 isFpsLowered = true;
         }
 
