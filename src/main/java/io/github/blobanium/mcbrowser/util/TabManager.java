@@ -4,7 +4,6 @@ import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import io.github.blobanium.mcbrowser.MCBrowser;
-import io.github.blobanium.mcbrowser.feature.BrowserUtil;
 import io.github.blobanium.mcbrowser.screen.BrowserScreen;
 import net.fabricmc.loader.api.FabricLoader;
 
@@ -18,7 +17,7 @@ import java.util.List;
 
 import net.minecraft.client.MinecraftClient;
 
-import static io.github.blobanium.mcbrowser.util.BrowserScreenHelper.Keybinds.*;
+import static io.github.blobanium.mcbrowser.util.BrowserUtil.Keybinds.*;
 
 public class TabManager {
     public static List<TabHolder> tabs = new ArrayList<>();
@@ -28,12 +27,12 @@ public class TabManager {
     public static void setActiveTab(int index) {
         activeTab = index;
         if (MinecraftClient.getInstance().currentScreen instanceof BrowserScreen) {
-            BrowserScreenHelper.instance.updateWidgets();
+            BrowserUtil.instance.updateWidgets();
         }
     }
 
     public static void openNewTab() {
-        openNewTab(BrowserUtil.prediffyURL(MCBrowser.getConfig().homePage));
+        openNewTab(io.github.blobanium.mcbrowser.feature.BrowserUtil.prediffyURL(MCBrowser.getConfig().homePage));
     }
 
     public static void openNewTab(String url) {
@@ -48,27 +47,27 @@ public class TabManager {
         tabs.add(index, new TabHolder(url));
         setActiveTab(setActive);
         if (MinecraftClient.getInstance().currentScreen instanceof BrowserScreen) {
-            BrowserScreenHelper.instance.addTab(index);
+            BrowserUtil.instance.addTab(index);
         } else {
             MCBrowser.openBrowser();
         }
     }
 
     public static void closeTab(int index) {
-        if (BrowserScreenHelper.instance != null) {
-            BrowserScreenHelper.instance.removeTab(index);
+        if (BrowserUtil.instance != null) {
+            BrowserUtil.instance.removeTab(index);
         }
         closedTabs.add(tabs.get(index).getUrl());
         tabs.get(index).close();
         tabs.remove(index);
-        if (tabs.isEmpty() && BrowserScreenHelper.instance != null) {
-            BrowserScreenHelper.instance.close();
+        if (tabs.isEmpty() && BrowserUtil.instance != null) {
+            BrowserUtil.instance.close();
             return;
         }
         if (index <= activeTab && activeTab != 0) {
             setActiveTab(activeTab - 1);
-        } else if (BrowserScreenHelper.instance != null) {
-            BrowserScreenHelper.instance.updateWidgets();
+        } else if (BrowserUtil.instance != null) {
+            BrowserUtil.instance.updateWidgets();
         }
     }
 

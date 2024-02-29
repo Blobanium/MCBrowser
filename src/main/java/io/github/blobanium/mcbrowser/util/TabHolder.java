@@ -17,7 +17,7 @@ public class TabHolder {
         if (browser != null) {
             browser.close();
         }
-        browser = BrowserScreenHelper.createBrowser(holderUrl);
+        browser = BrowserUtil.createBrowser(holderUrl);
         init = true;
     }
 
@@ -34,7 +34,7 @@ public class TabHolder {
         if (url.contains("://")) {
             parsedUrl = url.substring(url.indexOf("://") + 3);
         }
-        icon = BrowserScreenHelper.createIcon(parsedUrl);
+        icon = BrowserUtil.createIcon(parsedUrl);
     }
 
     public BrowserImpl getBrowser() {

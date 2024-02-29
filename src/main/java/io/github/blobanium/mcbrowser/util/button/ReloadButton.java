@@ -1,7 +1,7 @@
 package io.github.blobanium.mcbrowser.util.button;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import io.github.blobanium.mcbrowser.util.BrowserScreenHelper;
+import io.github.blobanium.mcbrowser.util.BrowserUtil;
 import io.github.blobanium.mcbrowser.util.TabManager;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
@@ -43,8 +43,8 @@ public class ReloadButton extends PressableWidget {
                 TabManager.copyTab(TabManager.activeTab);
                 return true;
             } else {
-                if (BrowserScreenHelper.instance != null) {
-                    BrowserScreenHelper.instance.urlBox.setText(TabManager.getCurrentTab().getURL());
+                if (BrowserUtil.instance != null) {
+                    BrowserUtil.instance.urlBox.setText(TabManager.getCurrentTab().getURL());
                 }
                 reloadOrStopLoadPage();
             }

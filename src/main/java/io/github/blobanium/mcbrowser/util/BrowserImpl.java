@@ -51,9 +51,9 @@ public class BrowserImpl extends MCEFBrowser {
 
     public void sendMousePressRelease(double mouseX, double mouseY, int button, boolean isClick) {
         if (isClick) {
-            sendMousePress(BrowserScreenHelper.mouseX(mouseX, BD_OFFSET), BrowserScreenHelper.mouseY(mouseY, BD_OFFSET), button);
+            sendMousePress(BrowserUtil.mouseX(mouseX, BD_OFFSET), BrowserUtil.mouseY(mouseY, BD_OFFSET), button);
         } else {
-            sendMouseRelease(BrowserScreenHelper.mouseX(mouseX, BD_OFFSET), BrowserScreenHelper.mouseY(mouseY, BD_OFFSET), button);
+            sendMouseRelease(BrowserUtil.mouseX(mouseX, BD_OFFSET), BrowserUtil.mouseY(mouseY, BD_OFFSET), button);
         }
     }
 }

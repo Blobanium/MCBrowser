@@ -96,21 +96,21 @@ public class BrowserScreen extends Screen {
                 isFpsLowered = true;
         }
 
-        BrowserScreenHelper.instance = this;
-        BrowserScreenHelper.tooltipText = null;
+        BrowserUtil.instance = this;
+        BrowserUtil.tooltipText = null;
 
         newTabButton = new NewTabButton(BD_OFFSET, BD_OFFSET - 40, 15, 15, Text.of("+"));
         initTabs();
         updateTabSize();
 
-        urlBox = BrowserScreenHelper.initUrlBox(BD_OFFSET, width);
+        urlBox = BrowserUtil.initUrlBox(BD_OFFSET, width);
 
-        backButton = BrowserScreenHelper.initButton(Text.of("◀"), button -> currentTab.goBack(), BD_OFFSET, BD_OFFSET);
-        forwardButton = BrowserScreenHelper.initButton(Text.of("▶"), button -> currentTab.goForward(), BD_OFFSET + 20, BD_OFFSET);
+        backButton = BrowserUtil.initButton(Text.of("◀"), button -> currentTab.goBack(), BD_OFFSET, BD_OFFSET);
+        forwardButton = BrowserUtil.initButton(Text.of("▶"), button -> currentTab.goForward(), BD_OFFSET + 20, BD_OFFSET);
         reloadButton = new ReloadButton(BD_OFFSET + 40, BD_OFFSET - 20, 15, 15);
-        ButtonWidget homeButton = BrowserScreenHelper.initButton(Text.of("⌂"), button -> BrowserScreenHelper.homeButtonAction(), BD_OFFSET + 60, BD_OFFSET);
+        ButtonWidget homeButton = BrowserUtil.initButton(Text.of("⌂"), button -> BrowserUtil.homeButtonAction(), BD_OFFSET + 60, BD_OFFSET);
         specialButton = ButtonWidget.builder(Text.of(""), button -> SpecialButtonHelper.onPress(TabManager.getCurrentUrl())).dimensions(BD_OFFSET, height - BD_OFFSET + 5, 150, 15).build();
-        openInBrowserButton = ButtonWidget.builder(Text.of("Open In External Browser"), button -> BrowserScreenHelper.openInBrowser()).dimensions(width - 200, height - BD_OFFSET + 5, 150, 15).build();
+        openInBrowserButton = ButtonWidget.builder(Text.of("Open In External Browser"), button -> BrowserUtil.openInBrowser()).dimensions(width - 200, height - BD_OFFSET + 5, 150, 15).build();
 
         navigationButtons = new PressableWidget[]{forwardButton, backButton, reloadButton, homeButton};
         uiElements = new ClickableWidget[]{forwardButton, backButton, reloadButton, homeButton, urlBox, specialButton, openInBrowserButton, newTabButton};
@@ -130,7 +130,7 @@ public class BrowserScreen extends Screen {
         if (action != null) {
             specialButton.setMessage(action.getButtonText());
         }
-        currentTab.resize(BrowserScreenHelper.scaleX(width, BD_OFFSET), BrowserScreenHelper.scaleY(height, BD_OFFSET));
+        currentTab.resize(BrowserUtil.scaleX(width, BD_OFFSET), BrowserUtil.scaleY(height, BD_OFFSET));
     }
 
     @Override
@@ -158,7 +158,7 @@ public class BrowserScreen extends Screen {
 
     @Override
     public void close() {
-        BrowserScreenHelper.instance = null;
+        BrowserUtil.instance = null;
         for (TabButton tabButton : tabButtons) {
             tabButton.resetIco();
         }
@@ -178,8 +178,8 @@ public class BrowserScreen extends Screen {
             resizeBrowser();
         }
         renderButtons(context, mouseX, mouseY, delta);
-        if (BrowserScreenHelper.tooltipText != null && BrowserScreenHelper.tooltipText.getBytes().length != 0) {
-            setTooltip(Text.of(BrowserScreenHelper.tooltipText));
+        if (BrowserUtil.tooltipText != null && BrowserUtil.tooltipText.getBytes().length != 0) {
+            setTooltip(Text.of(BrowserUtil.tooltipText));
         }
     }
 
@@ -197,19 +197,19 @@ public class BrowserScreen extends Screen {
 
     @Override
     public void mouseMoved(double mouseX, double mouseY) {
-        BrowserScreenHelper.runAsyncIfEnabled(() -> currentTab.sendMouseMove(BrowserScreenHelper.mouseX(mouseX, BD_OFFSET), BrowserScreenHelper.mouseY(mouseY, BD_OFFSET)));
+        BrowserUtil.runAsyncIfEnabled(() -> currentTab.sendMouseMove(BrowserUtil.mouseX(mouseX, BD_OFFSET), BrowserUtil.mouseY(mouseY, BD_OFFSET)));
         super.mouseMoved(mouseX, mouseY);
     }
 
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
-        BrowserScreenHelper.updateMouseLocation(mouseX, mouseY);
+        BrowserUtil.updateMouseLocation(mouseX, mouseY);
         return super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
     }
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
-        BrowserScreenHelper.runAsyncIfEnabled(() -> currentTab.sendMouseWheel(BrowserScreenHelper.mouseX(mouseX, BD_OFFSET), BrowserScreenHelper.mouseY(mouseY, BD_OFFSET), delta, 0));
+        BrowserUtil.runAsyncIfEnabled(() -> currentTab.sendMouseWheel(BrowserUtil.mouseX(mouseX, BD_OFFSET), BrowserUtil.mouseY(mouseY, BD_OFFSET), delta, 0));
         return super.mouseScrolled(mouseX, mouseY, delta);
     }
 
@@ -246,7 +246,7 @@ public class BrowserScreen extends Screen {
 
     private void sendKeyActivityAndSetFocus(int keyCode, int scanCode, int modifiers, boolean isPress){
         if (getFlag(keyCode, isPress)) {
-            BrowserScreenHelper.runAsyncIfEnabled(() -> currentTab.sendKeyPressRelease(keyCode, scanCode, modifiers, isPress));
+            BrowserUtil.runAsyncIfEnabled(() -> currentTab.sendKeyPressRelease(keyCode, scanCode, modifiers, isPress));
         }
         setFocus();
     }
@@ -262,7 +262,7 @@ public class BrowserScreen extends Screen {
     @Override
     public boolean charTyped(char codePoint, int modifiers) {
         if (codePoint == (char) 0) return false;
-        BrowserScreenHelper.runAsyncIfEnabled(() -> currentTab.sendKeyTyped(codePoint, modifiers));
+        BrowserUtil.runAsyncIfEnabled(() -> currentTab.sendKeyTyped(codePoint, modifiers));
         setFocus();
         return super.charTyped(codePoint, modifiers);
     }
@@ -272,7 +272,7 @@ public class BrowserScreen extends Screen {
     public void setFocus() {
         boolean browserFocus = true;
         for (ClickableWidget widget : uiElements) {
-            boolean mouseOver = widget.isMouseOver(BrowserScreenHelper.lastMouseX, BrowserScreenHelper.lastMouseY);
+            boolean mouseOver = widget.isMouseOver(BrowserUtil.lastMouseX, BrowserUtil.lastMouseY);
             widget.setFocused(mouseOver);
             if (mouseOver) {
                 browserFocus = false;
@@ -284,11 +284,11 @@ public class BrowserScreen extends Screen {
     private void resizeBrowser() {
         if (width > 100 && height > 100) {
             for (TabHolder tab : TabManager.tabs) {
-                tab.getBrowser().resize(BrowserScreenHelper.scaleX(width, BD_OFFSET), BrowserScreenHelper.scaleY(height, BD_OFFSET));
+                tab.getBrowser().resize(BrowserUtil.scaleX(width, BD_OFFSET), BrowserUtil.scaleY(height, BD_OFFSET));
             }
         }
         if (this.urlBox != null) {
-            urlBox.setWidth(BrowserScreenHelper.getUrlBoxWidth(width, BD_OFFSET));
+            urlBox.setWidth(BrowserUtil.getUrlBoxWidth(width, BD_OFFSET));
         }
 
         if (this.specialButton != null) {
@@ -307,7 +307,7 @@ public class BrowserScreen extends Screen {
             } else if (button == GLFW.GLFW_MOUSE_BUTTON_5 && currentTab.canGoForward() && !isClick) {
                 currentTab.goForward();
             } else {
-                BrowserScreenHelper.runAsyncIfEnabled(() -> currentTab.sendMousePressRelease(mouseX, mouseY, button, isClick));
+                BrowserUtil.runAsyncIfEnabled(() -> currentTab.sendMousePressRelease(mouseX, mouseY, button, isClick));
             }
         }
         setFocus();

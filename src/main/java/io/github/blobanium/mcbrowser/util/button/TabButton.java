@@ -3,7 +3,7 @@ package io.github.blobanium.mcbrowser.util.button;
 import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.blobanium.mcbrowser.MCBrowser;
 import io.github.blobanium.mcbrowser.screen.BrowserScreen;
-import io.github.blobanium.mcbrowser.util.BrowserScreenHelper;
+import io.github.blobanium.mcbrowser.util.BrowserUtil;
 import io.github.blobanium.mcbrowser.util.TabManager;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
@@ -54,7 +54,7 @@ public class TabButton extends PressableWidget {
 
     @Override
     public void renderButton(DrawContext context, int mouseX, int mouseY, float delta) {
-        if (this.getX() > BrowserScreenHelper.instance.width - BrowserScreen.BD_OFFSET - 35) { return; }
+        if (this.getX() > BrowserUtil.instance.width - BrowserScreen.BD_OFFSET - 35) { return; }
         TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
         context.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha);
         RenderSystem.enableBlend();
@@ -147,7 +147,7 @@ public class TabButton extends PressableWidget {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (this.getX() > BrowserScreenHelper.instance.width - BrowserScreen.BD_OFFSET - 35) {
+        if (this.getX() > BrowserUtil.instance.width - BrowserScreen.BD_OFFSET - 35) {
             return false;
         }
         if (this.clicked(mouseX, mouseY)) {

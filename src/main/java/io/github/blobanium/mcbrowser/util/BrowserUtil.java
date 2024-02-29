@@ -2,7 +2,6 @@ package io.github.blobanium.mcbrowser.util;
 
 import com.cinemamod.mcef.MCEF;
 import io.github.blobanium.mcbrowser.MCBrowser;
-import io.github.blobanium.mcbrowser.feature.BrowserUtil;
 import io.github.blobanium.mcbrowser.feature.specialbutton.SpecialButtonActions;
 import io.github.blobanium.mcbrowser.screen.BrowserScreen;
 import io.github.blobanium.mcbrowser.util.button.BrowserTabIcon;
@@ -17,7 +16,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.concurrent.CompletableFuture;
 
-public class BrowserScreenHelper {
+public class BrowserUtil {
     //Mouse position
     public static double lastMouseX;
     public static double lastMouseY;
@@ -86,7 +85,7 @@ public class BrowserScreenHelper {
     }
 
     public static TextFieldWidget initUrlBox(int offset, int width) {
-        TextFieldWidget urlBox = new TextFieldWidget(MinecraftClient.getInstance().textRenderer, offset + 80, offset - 20, BrowserScreenHelper.getUrlBoxWidth(width, offset), 15, Text.of("")) {
+        TextFieldWidget urlBox = new TextFieldWidget(MinecraftClient.getInstance().textRenderer, offset + 80, offset - 20, BrowserUtil.getUrlBoxWidth(width, offset), 15, Text.of("")) {
             @Override
             public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
                 if (isFocused()) {
@@ -97,7 +96,7 @@ public class BrowserScreenHelper {
                         }
                     }
                     if (keyCode == GLFW.GLFW_KEY_ENTER) {
-                        TabManager.getCurrentTab().loadURL(BrowserUtil.prediffyURL(getText()));
+                        TabManager.getCurrentTab().loadURL(io.github.blobanium.mcbrowser.feature.BrowserUtil.prediffyURL(getText()));
                         setFocused(false);
                     }
                 }
@@ -119,7 +118,7 @@ public class BrowserScreenHelper {
     }
 
     public static void homeButtonAction(){
-        String prediffyedHomePage = BrowserUtil.prediffyURL(MCBrowser.getConfig().homePage);
+        String prediffyedHomePage = io.github.blobanium.mcbrowser.feature.BrowserUtil.prediffyURL(MCBrowser.getConfig().homePage);
         instance.urlBox.setText(prediffyedHomePage);
         TabManager.getCurrentTab().loadURL(prediffyedHomePage);
     }
