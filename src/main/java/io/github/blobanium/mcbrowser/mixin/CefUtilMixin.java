@@ -1,14 +1,13 @@
 package io.github.blobanium.mcbrowser.mixin;
 
 import io.github.blobanium.mcbrowser.MCBrowser;
+import java.util.ArrayList;
+import java.util.List;
 import net.fabricmc.loader.api.FabricLoader;
 import org.cef.CefSettings;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Mixin(targets = "com.cinemamod.mcef.CefUtil")
 public class CefUtilMixin {

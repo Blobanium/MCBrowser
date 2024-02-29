@@ -5,16 +5,15 @@ import io.github.blobanium.mcbrowser.MCBrowser;
 import io.github.blobanium.mcbrowser.feature.specialbutton.SpecialButtonActions;
 import io.github.blobanium.mcbrowser.screen.BrowserScreen;
 import io.github.blobanium.mcbrowser.util.button.BrowserTabIcon;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.concurrent.CompletableFuture;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.text.Text;
 import net.minecraft.util.Util;
 import org.lwjgl.glfw.GLFW;
-
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.concurrent.CompletableFuture;
 
 public class BrowserUtil {
     //Mouse position

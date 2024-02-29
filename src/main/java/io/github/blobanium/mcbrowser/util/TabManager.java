@@ -5,8 +5,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import io.github.blobanium.mcbrowser.MCBrowser;
 import io.github.blobanium.mcbrowser.screen.BrowserScreen;
-import net.fabricmc.loader.api.FabricLoader;
-
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -14,7 +12,7 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
-
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
 
 import static io.github.blobanium.mcbrowser.util.BrowserUtil.Keybinds.*;
