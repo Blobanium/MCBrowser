@@ -8,7 +8,7 @@ import net.minecraft.client.gui.widget.PressableWidget;
 import net.minecraft.text.Text;
 
 public class NewTabButton extends PressableWidget {
-    int startX;
+    final int startX;
 
     public NewTabButton(int startX, int y, int width, int height, Text text) {
         super(0, y, width, height, text);

@@ -3,7 +3,7 @@ package io.github.blobanium.mcbrowser.util;
 import io.github.blobanium.mcbrowser.util.button.BrowserTabIcon;
 
 public class TabHolder {
-    public String holderUrl;
+    public final String holderUrl;
     BrowserImpl browser;
     BrowserTabIcon icon = null;
     private boolean init = false;

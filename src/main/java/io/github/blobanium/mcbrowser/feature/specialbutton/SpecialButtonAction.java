@@ -97,6 +97,7 @@ public class SpecialButtonAction {
             };
 
             //Reserved for future usage.
+            //noinspection UnnecessaryDefault
             default -> throw new IllegalStateException("Unexpected action value: " + action);
         };
     }
@@ -107,6 +108,7 @@ public class SpecialButtonAction {
             case MODRINTH_RP -> new URL("https://api.modrinth.com/v2/project/" + getModrinthSlugFromUrl(TabManager.getCurrentUrl()) + "/version?game_versions=[%22" + MinecraftVersion.CURRENT.getName() + "%22]");
 
             //Reserved for future usage.
+            //noinspection UnnecessaryDefault
             default -> throw new IllegalStateException("Unexpected action value: " + action);
         };
     }

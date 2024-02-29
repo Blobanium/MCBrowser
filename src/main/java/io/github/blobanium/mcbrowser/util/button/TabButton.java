@@ -21,7 +21,7 @@ import java.util.concurrent.CompletableFuture;
 
 public class TabButton extends PressableWidget {
     int tab;
-    int startX;
+    final int startX;
 
     public TabButton(int startX, int y, int width, int height, int tab) {
         super(0, y, width, height, null);

@@ -18,8 +18,8 @@ import net.minecraft.client.MinecraftClient;
 import static io.github.blobanium.mcbrowser.util.BrowserUtil.Keybinds.*;
 
 public class TabManager {
-    public static List<TabHolder> tabs = new ArrayList<>();
-    public static List<String> closedTabs = new ArrayList<>();
+    public static final List<TabHolder> tabs = new ArrayList<>();
+    public static final List<String> closedTabs = new ArrayList<>();
     public static int activeTab = 0;
 
     public static void setActiveTab(int index) {

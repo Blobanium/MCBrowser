@@ -34,24 +34,22 @@ public class MCBrowser implements ClientModInitializer {
         }
 
         for (String command : new String[]{"browser", "br"}) {
-            ClientCommandRegistrationCallback.EVENT.register(((dispatcher, registryAccess) -> {
-                dispatcher.register(ClientCommandManager.literal(command)
-                        .executes(context -> {
-                            openBrowser();
-                            return 0;
-                        }).then(ClientCommandManager.literal("url")
-                                .then(ClientCommandManager.argument("url", StringArgumentType.greedyString())
-                                        .executes(context -> {
-                                            TabManager.openNewTab(BrowserUtil.prediffyURL(StringArgumentType.getString(context, "url")));
-                                            return 0;
-                                        }))
-                        ).then(ClientCommandManager.literal("close")
-                                .executes(context -> {
-                                    TabManager.reset();
-                                    return 0;
-                                })
-                        ));
-            }));
+            ClientCommandRegistrationCallback.EVENT.register(((dispatcher, registryAccess) -> dispatcher.register(ClientCommandManager.literal(command)
+                    .executes(context -> {
+                        openBrowser();
+                        return 0;
+                    }).then(ClientCommandManager.literal("url")
+                            .then(ClientCommandManager.argument("url", StringArgumentType.greedyString())
+                                    .executes(context -> {
+                                        TabManager.openNewTab(BrowserUtil.prediffyURL(StringArgumentType.getString(context, "url")));
+                                        return 0;
+                                    }))
+                    ).then(ClientCommandManager.literal("close")
+                            .executes(context -> {
+                                TabManager.reset();
+                                return 0;
+                            })
+                    ))));
         }
         runCompatabilityCheck();
     }
@@ -75,6 +73,8 @@ public class MCBrowser implements ClientModInitializer {
     }
 
     private static void runCompatabilityCheck(){
+        //We Already Require MCEF by default.
+        //noinspection OptionalGetWithoutIsPresent
         String mcefVersion = FabricLoader.getInstance().getModContainer("mcef").get().getMetadata().getVersion().getFriendlyString();
 
         if(mcefVersion.contains("2.1.0")){
