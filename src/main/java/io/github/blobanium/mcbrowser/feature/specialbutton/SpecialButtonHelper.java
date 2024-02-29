@@ -7,6 +7,7 @@ public class SpecialButtonHelper {
     public static void onPress(String url){
         try {
             if(SpecialButtonActions.getFromUrlConstantValue(url) != null) {
+                //noinspection DataFlowIssue
                 SpecialButtonActions.getFromUrlConstantValue(url).getOnExecute().run();
             }
         }catch (IllegalArgumentException e){

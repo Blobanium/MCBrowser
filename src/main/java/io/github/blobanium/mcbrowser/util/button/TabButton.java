@@ -69,7 +69,7 @@ public class TabButton extends PressableWidget {
         renderIco();
         if (!tooSmall || selected) {
             context.drawNineSlicedTexture(WIDGETS_TEXTURE, this.getX() + (this.getWidth() - 15), this.getY(), 15, this.getHeight(), 20, 4, 200, 20, 0, 46 + ((mouseX >= this.getX() + (this.getWidth() - 15)) && (mouseX <= this.getX() + this.getWidth()) && (mouseY >= this.getY()) && (mouseY <= this.getY() + this.getHeight()) ? 2 : 1) * 20);
-            String cross = "\u274C";
+            String cross = "❌";
             context.drawText(textRenderer, cross, this.getX() + this.getWidth() - 8 - textRenderer.getWidth(cross) / 2, this.getY() + 4, 0xFFFFFFFF, true);
         }
 
