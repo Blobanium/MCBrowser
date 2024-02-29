@@ -17,7 +17,7 @@ public class NewTabButton extends PressableWidget {
 
     @Override
     public int getX() {
-        return Math.min(BrowserScreenHelper.instance.width - BrowserScreen.BROWSER_DRAW_OFFSET - 15, startX + ((BrowserScreenHelper.instance.tabButtons.size()) * 105));
+        return Math.min(BrowserScreenHelper.instance.width - BrowserScreen.BD_OFFSET - 15, startX + ((BrowserScreenHelper.instance.tabButtons.size()) * 105));
     }
 
     @Override

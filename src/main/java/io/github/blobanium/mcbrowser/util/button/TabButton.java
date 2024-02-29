@@ -54,7 +54,7 @@ public class TabButton extends PressableWidget {
 
     @Override
     public void renderButton(DrawContext context, int mouseX, int mouseY, float delta) {
-        if (this.getX() > BrowserScreenHelper.instance.width - BrowserScreen.BROWSER_DRAW_OFFSET - 35) { return; }
+        if (this.getX() > BrowserScreenHelper.instance.width - BrowserScreen.BD_OFFSET - 35) { return; }
         TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
         context.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha);
         RenderSystem.enableBlend();
@@ -147,7 +147,7 @@ public class TabButton extends PressableWidget {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (this.getX() > BrowserScreenHelper.instance.width - BrowserScreen.BROWSER_DRAW_OFFSET - 35) {
+        if (this.getX() > BrowserScreenHelper.instance.width - BrowserScreen.BD_OFFSET - 35) {
             return false;
         }
         if (this.clicked(mouseX, mouseY)) {

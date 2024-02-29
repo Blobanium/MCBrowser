@@ -8,6 +8,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.*;
+import net.minecraft.client.util.Window;
 import net.minecraft.text.Text;
 import org.lwjgl.glfw.GLFW;
 
@@ -33,6 +34,8 @@ public class BrowserScreen extends Screen {
 
     private int previousLimit;
     private boolean isFpsLowered = false;
+
+    private BrowserImpl currentTab = TabManager.getCurrentTab();
 
     public BrowserScreen(Text title) {
         super(title);
@@ -86,9 +89,10 @@ public class BrowserScreen extends Screen {
     protected void init() {
         super.init();
 
-        if(MCBrowser.getConfig().limitBrowserFramerate && MinecraftClient.getInstance().getWindow().getFramerateLimit() > MCBrowser.getConfig().browserFPS){
-                previousLimit = MinecraftClient.getInstance().getWindow().getFramerateLimit();
-                MinecraftClient.getInstance().getWindow().setFramerateLimit(MCBrowser.getConfig().browserFPS);
+        Window window = MinecraftClient.getInstance().getWindow();
+        if(MCBrowser.getConfig().limitBrowserFramerate && window.getFramerateLimit() > MCBrowser.getConfig().browserFPS){
+                previousLimit = window.getFramerateLimit();
+                window.setFramerateLimit(MCBrowser.getConfig().browserFPS);
                 isFpsLowered = true;
         }
 
@@ -101,8 +105,8 @@ public class BrowserScreen extends Screen {
 
         urlBox = BrowserScreenHelper.initUrlBox(BD_OFFSET, width);
 
-        backButton = BrowserScreenHelper.initButton(Text.of("◀"), button -> TabManager.getCurrentTab().goBack(), BD_OFFSET, BD_OFFSET);
-        forwardButton = BrowserScreenHelper.initButton(Text.of("▶"), button -> TabManager.getCurrentTab().goForward(), BD_OFFSET + 20, BD_OFFSET);
+        backButton = BrowserScreenHelper.initButton(Text.of("◀"), button -> currentTab.goBack(), BD_OFFSET, BD_OFFSET);
+        forwardButton = BrowserScreenHelper.initButton(Text.of("▶"), button -> currentTab.goForward(), BD_OFFSET + 20, BD_OFFSET);
         reloadButton = new ReloadButton(BD_OFFSET + 40, BD_OFFSET - 20, 15, 15);
         ButtonWidget homeButton = BrowserScreenHelper.initButton(Text.of("⌂"), button -> BrowserScreenHelper.homeButtonAction(), BD_OFFSET + 60, BD_OFFSET);
         specialButton = ButtonWidget.builder(Text.of(""), button -> SpecialButtonHelper.onPress(TabManager.getCurrentUrl())).dimensions(BD_OFFSET, height - BD_OFFSET + 5, 150, 15).build();
@@ -117,16 +121,16 @@ public class BrowserScreen extends Screen {
     }
 
     public void updateWidgets() {
-        urlBox.setText(TabManager.getCurrentTab().getURL());
+        urlBox.setText(currentTab.getURL());
         urlBox.setCursorToStart();
-        backButton.active = TabManager.getCurrentTab().canGoBack();
-        forwardButton.active = TabManager.getCurrentTab().canGoForward();
-        reloadButton.setMessage(Text.of(TabManager.getCurrentTab().isLoading() ? "❌" : "⟳"));
+        backButton.active = currentTab.canGoBack();
+        forwardButton.active = currentTab.canGoForward();
+        reloadButton.setMessage(Text.of(currentTab.isLoading() ? "❌" : "⟳"));
         SpecialButtonActions action = SpecialButtonActions.getFromUrlConstantValue(TabManager.getCurrentUrl());
         if (action != null) {
             specialButton.setMessage(action.getButtonText());
         }
-        TabManager.getCurrentTab().resize(BrowserScreenHelper.scaleX(width, BD_OFFSET), BrowserScreenHelper.scaleY(height, BD_OFFSET));
+        currentTab.resize(BrowserScreenHelper.scaleX(width, BD_OFFSET), BrowserScreenHelper.scaleY(height, BD_OFFSET));
     }
 
     @Override
@@ -168,7 +172,7 @@ public class BrowserScreen extends Screen {
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
         super.render(context, mouseX, mouseY, delta);
         if (TabManager.getCurrentTabHolder().isInit()) {
-            TabManager.getCurrentTab().render(BD_OFFSET, BD_OFFSET, this.width - BD_OFFSET * 2, this.height - BD_OFFSET * 2);
+            currentTab.render(BD_OFFSET, BD_OFFSET, this.width - BD_OFFSET * 2, this.height - BD_OFFSET * 2);
         } else {
             TabManager.getCurrentTabHolder().init();
             resizeBrowser();
@@ -193,7 +197,7 @@ public class BrowserScreen extends Screen {
 
     @Override
     public void mouseMoved(double mouseX, double mouseY) {
-        BrowserScreenHelper.runAsyncIfEnabled(() -> TabManager.getCurrentTab().sendMouseMove(BrowserScreenHelper.mouseX(mouseX, BD_OFFSET), BrowserScreenHelper.mouseY(mouseY, BD_OFFSET)));
+        BrowserScreenHelper.runAsyncIfEnabled(() -> currentTab.sendMouseMove(BrowserScreenHelper.mouseX(mouseX, BD_OFFSET), BrowserScreenHelper.mouseY(mouseY, BD_OFFSET)));
         super.mouseMoved(mouseX, mouseY);
     }
 
@@ -205,7 +209,7 @@ public class BrowserScreen extends Screen {
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
-        BrowserScreenHelper.runAsyncIfEnabled(() -> TabManager.getCurrentTab().sendMouseWheel(BrowserScreenHelper.mouseX(mouseX, BD_OFFSET), BrowserScreenHelper.mouseY(mouseY, BD_OFFSET), delta, 0));
+        BrowserScreenHelper.runAsyncIfEnabled(() -> currentTab.sendMouseWheel(BrowserScreenHelper.mouseX(mouseX, BD_OFFSET), BrowserScreenHelper.mouseY(mouseY, BD_OFFSET), delta, 0));
         return super.mouseScrolled(mouseX, mouseY, delta);
     }
 
@@ -249,9 +253,9 @@ public class BrowserScreen extends Screen {
 
     private void sendKeyPressRelease(int keyCode, int scanCode, int modifiers, boolean isPress){
         if(isPress){
-            TabManager.getCurrentTab().sendKeyPress(keyCode, scanCode, modifiers);
+            currentTab.sendKeyPress(keyCode, scanCode, modifiers);
         }else{
-            TabManager.getCurrentTab().sendKeyRelease(keyCode, scanCode, modifiers);
+            currentTab.sendKeyRelease(keyCode, scanCode, modifiers);
         }
     }
 
@@ -266,7 +270,7 @@ public class BrowserScreen extends Screen {
     @Override
     public boolean charTyped(char codePoint, int modifiers) {
         if (codePoint == (char) 0) return false;
-        BrowserScreenHelper.runAsyncIfEnabled(() -> TabManager.getCurrentTab().sendKeyTyped(codePoint, modifiers));
+        BrowserScreenHelper.runAsyncIfEnabled(() -> currentTab.sendKeyTyped(codePoint, modifiers));
         setFocus();
         return super.charTyped(codePoint, modifiers);
     }
@@ -282,7 +286,7 @@ public class BrowserScreen extends Screen {
                 browserFocus = false;
             }
         }
-        TabManager.getCurrentTab().setFocus(browserFocus);
+        currentTab.setFocus(browserFocus);
     }
 
     private void resizeBrowser() {
@@ -306,10 +310,10 @@ public class BrowserScreen extends Screen {
 
     private void mouseButtonControl(double mouseX, double mouseY, int button, boolean isClick) {
         if (mouseX > BD_OFFSET && mouseX < this.width - BD_OFFSET && mouseY > BD_OFFSET && mouseY < this.height - BD_OFFSET) {
-            if (button == GLFW.GLFW_MOUSE_BUTTON_4 && TabManager.getCurrentTab().canGoBack() && !isClick) {
-                TabManager.getCurrentTab().goBack();
-            } else if (button == GLFW.GLFW_MOUSE_BUTTON_5 && TabManager.getCurrentTab().canGoForward() && !isClick) {
-                TabManager.getCurrentTab().goForward();
+            if (button == GLFW.GLFW_MOUSE_BUTTON_4 && currentTab.canGoBack() && !isClick) {
+                currentTab.goBack();
+            } else if (button == GLFW.GLFW_MOUSE_BUTTON_5 && currentTab.canGoForward() && !isClick) {
+                currentTab.goForward();
             } else {
                 BrowserScreenHelper.runAsyncIfEnabled(() -> sendMousePressOrRelease(mouseX, mouseY, button, isClick));
             }
@@ -319,9 +323,9 @@ public class BrowserScreen extends Screen {
 
     private void sendMousePressOrRelease(double mouseX, double mouseY, int button, boolean isClick) {
         if (isClick) {
-            TabManager.getCurrentTab().sendMousePress(BrowserScreenHelper.mouseX(mouseX, BD_OFFSET), BrowserScreenHelper.mouseY(mouseY, BD_OFFSET), button);
+            currentTab.sendMousePress(BrowserScreenHelper.mouseX(mouseX, BD_OFFSET), BrowserScreenHelper.mouseY(mouseY, BD_OFFSET), button);
         } else {
-            TabManager.getCurrentTab().sendMouseRelease(BrowserScreenHelper.mouseX(mouseX, BD_OFFSET), BrowserScreenHelper.mouseY(mouseY, BD_OFFSET), button);
+            currentTab.sendMouseRelease(BrowserScreenHelper.mouseX(mouseX, BD_OFFSET), BrowserScreenHelper.mouseY(mouseY, BD_OFFSET), button);
         }
     }
 
