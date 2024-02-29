@@ -133,7 +133,7 @@ public class TabButton extends PressableWidget {
         TabManager.tabs.get(tab).initIcon(currentUrl);
         CompletableFuture.runAsync(() -> {
             try {
-                BufferedImage bufferedImage = ImageIO.read(new URL(BrowserTabIcon.apiUrl + currentUrl));
+                BufferedImage bufferedImage = ImageIO.read(new URL(BrowserTabIcon.API_URL + currentUrl));
                 TabManager.tabs.get(tab).getIcon().setSize(bufferedImage.getWidth());
             } catch (IOException e) {
                 MCBrowser.LOGGER.warn("Could not find size of ico for " + currentUrl);
