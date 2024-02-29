@@ -5,6 +5,11 @@ import io.github.blobanium.mcbrowser.MCBrowser;
 import io.github.blobanium.mcbrowser.screen.BrowserScreen;
 import io.github.blobanium.mcbrowser.util.BrowserUtil;
 import io.github.blobanium.mcbrowser.util.TabManager;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.net.URL;
+import java.util.concurrent.CompletableFuture;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
@@ -12,13 +17,6 @@ import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.PressableWidget;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
-
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.net.URL;
-import java.util.concurrent.CompletableFuture;
-
 public class TabButton extends PressableWidget {
     int tab;
     final int startX;
@@ -55,7 +53,6 @@ public class TabButton extends PressableWidget {
     @Override
     public void renderButton(DrawContext context, int mouseX, int mouseY, float delta) {
         if (this.getX() > BrowserUtil.instance.width - BrowserScreen.BD_OFFSET - 35) { return; }
-        TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
         context.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha);
         RenderSystem.enableBlend();
         RenderSystem.enableDepthTest();
@@ -63,6 +60,7 @@ public class TabButton extends PressableWidget {
         context.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         String name = TabManager.tabs.get(tab).getTitle();
         if (name == null || name.isEmpty()) { name = "Loading..."; }
+        TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
         drawScrollableText(context, textRenderer, Text.of(name), this.getX() + 2 + 15, this.getY(), this.getX() + this.getWidth() - (!tooSmall || selected ? 17 : 2), this.getY() + this.getHeight(), 16777215 | MathHelper.ceil(this.alpha * 255.0F) << 24);
 
         context.fill(this.getX(), this.getY(), this.getX() + this.getHeight(), this.getY() + this.getHeight(), 0xFFFFFFFF);
