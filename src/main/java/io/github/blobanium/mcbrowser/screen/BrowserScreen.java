@@ -246,17 +246,9 @@ public class BrowserScreen extends Screen {
 
     private void sendKeyActivityAndSetFocus(int keyCode, int scanCode, int modifiers, boolean isPress){
         if (getFlag(keyCode, isPress)) {
-            BrowserScreenHelper.runAsyncIfEnabled(() -> sendKeyPressRelease(keyCode, scanCode, modifiers, isPress));
+            BrowserScreenHelper.runAsyncIfEnabled(() -> currentTab.sendKeyPressRelease(keyCode, scanCode, modifiers, isPress));
         }
         setFocus();
-    }
-
-    private void sendKeyPressRelease(int keyCode, int scanCode, int modifiers, boolean isPress){
-        if(isPress){
-            currentTab.sendKeyPress(keyCode, scanCode, modifiers);
-        }else{
-            currentTab.sendKeyRelease(keyCode, scanCode, modifiers);
-        }
     }
 
     private boolean getFlag(int keyCode, boolean isPress){
@@ -315,18 +307,10 @@ public class BrowserScreen extends Screen {
             } else if (button == GLFW.GLFW_MOUSE_BUTTON_5 && currentTab.canGoForward() && !isClick) {
                 currentTab.goForward();
             } else {
-                BrowserScreenHelper.runAsyncIfEnabled(() -> sendMousePressOrRelease(mouseX, mouseY, button, isClick));
+                BrowserScreenHelper.runAsyncIfEnabled(() -> currentTab.sendMousePressRelease(mouseX, mouseY, button, isClick));
             }
         }
         setFocus();
-    }
-
-    private void sendMousePressOrRelease(double mouseX, double mouseY, int button, boolean isClick) {
-        if (isClick) {
-            currentTab.sendMousePress(BrowserScreenHelper.mouseX(mouseX, BD_OFFSET), BrowserScreenHelper.mouseY(mouseY, BD_OFFSET), button);
-        } else {
-            currentTab.sendMouseRelease(BrowserScreenHelper.mouseX(mouseX, BD_OFFSET), BrowserScreenHelper.mouseY(mouseY, BD_OFFSET), button);
-        }
     }
 
     private boolean isButtonsFocused() {

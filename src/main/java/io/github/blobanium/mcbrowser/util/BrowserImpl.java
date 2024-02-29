@@ -5,6 +5,8 @@ import com.cinemamod.mcef.MCEFClient;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.render.*;
 
+import static io.github.blobanium.mcbrowser.screen.BrowserScreen.BD_OFFSET;
+
 public class BrowserImpl extends MCEFBrowser {
     public BrowserImpl(MCEFClient client, String url, boolean transparent) {
         super(client, url, transparent);
@@ -37,5 +39,21 @@ public class BrowserImpl extends MCEFBrowser {
         t.draw();
         RenderSystem.setShaderTexture(0, 0);
         RenderSystem.enableDepthTest();
+    }
+
+    public void sendKeyPressRelease(int keyCode, int scanCode, int modifiers, boolean isPress){
+        if(isPress){
+            sendKeyPress(keyCode, scanCode, modifiers);
+        }else{
+            sendKeyRelease(keyCode, scanCode, modifiers);
+        }
+    }
+
+    public void sendMousePressRelease(double mouseX, double mouseY, int button, boolean isClick) {
+        if (isClick) {
+            sendMousePress(BrowserScreenHelper.mouseX(mouseX, BD_OFFSET), BrowserScreenHelper.mouseY(mouseY, BD_OFFSET), button);
+        } else {
+            sendMouseRelease(BrowserScreenHelper.mouseX(mouseX, BD_OFFSET), BrowserScreenHelper.mouseY(mouseY, BD_OFFSET), button);
+        }
     }
 }
