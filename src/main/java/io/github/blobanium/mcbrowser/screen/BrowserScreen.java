@@ -123,7 +123,7 @@ public class BrowserScreen extends Screen {
 
     public void updateWidgets() {
         urlBox.setText(currentTab.getURL());
-        urlBox.setCursorToStart();
+        urlBox.setCursorToStart(false);
         backButton.active = currentTab.canGoBack();
         forwardButton.active = currentTab.canGoForward();
         reloadButton.setMessage(Text.of(currentTab.isLoading() ? "❌" : "⟳"));
@@ -174,7 +174,7 @@ public class BrowserScreen extends Screen {
             TabManager.getCurrentTabHolder().init();
             resizeBrowser();
         }
-        renderButtons(context, mouseX, mouseY, delta);
+        renderWidgets(context, mouseX, mouseY, delta);
         if (BrowserUtil.tooltipText != null && BrowserUtil.tooltipText.getBytes().length != 0) {
             setTooltip(Text.of(BrowserUtil.tooltipText));
         }
@@ -205,9 +205,9 @@ public class BrowserScreen extends Screen {
     }
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
-        BrowserUtil.runAsyncIfEnabled(() -> currentTab.sendMouseWheel(BrowserUtil.mouseX(mouseX, BD_OFFSET), BrowserUtil.mouseY(mouseY, BD_OFFSET), delta, 0));
-        return super.mouseScrolled(mouseX, mouseY, delta);
+    public boolean mouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount) {
+        BrowserUtil.runAsyncIfEnabled(() -> currentTab.sendMouseWheel(BrowserUtil.mouseX(mouseX, BD_OFFSET), BrowserUtil.mouseY(mouseY, BD_OFFSET), verticalAmount, 0));
+        return super.mouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount);
     }
 
     @Override
@@ -315,8 +315,8 @@ public class BrowserScreen extends Screen {
 
     //Rendering Override
 
-    private void renderButtons(DrawContext context, int mouseX, int mouseY, float delta){
-        urlBox.renderButton(context, mouseX, mouseY, delta);
+    private void renderWidgets(DrawContext context, int mouseX, int mouseY, float delta){
+        urlBox.renderWidget(context, mouseX, mouseY, delta);
         for (PressableWidget button : navigationButtons) {
             button.render(context, mouseX, mouseY, delta);
         }

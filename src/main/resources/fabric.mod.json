@@ -29,13 +29,13 @@
   },
   "recommends": {
     "fabric": "*",
-    "mcef": ">=2.1.1-1.20.1"
+    "mcef": ">=2.1.5-1.21"
   },
   "depends": {
     "fabricloader": ">=${loader_version}",
     "minecraft": "${minecraft_version}",
     "mcef": ">=2.1.0-1.20.1",
-    "cloth-config": "11.*.*",
+    "cloth-config": "15.*.*",
     "fabric-command-api-v2": "*",
     "fabric-lifecycle-events-v1": "*"
   }

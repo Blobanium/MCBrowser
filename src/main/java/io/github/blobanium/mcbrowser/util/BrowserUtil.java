@@ -6,8 +6,8 @@ import io.github.blobanium.mcbrowser.feature.BrowserFeatureUtil;
 import io.github.blobanium.mcbrowser.feature.specialbutton.SpecialButtonActions;
 import io.github.blobanium.mcbrowser.screen.BrowserScreen;
 import io.github.blobanium.mcbrowser.util.button.BrowserTabIcon;
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.concurrent.CompletableFuture;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -111,8 +111,8 @@ public class BrowserUtil {
     //Button related Methods
     public static void openInBrowser(){
         try {
-            Util.getOperatingSystem().open(new URL(TabManager.getCurrentUrl()));
-        } catch (MalformedURLException e) {
+            Util.getOperatingSystem().open(new URI(TabManager.getCurrentUrl()));
+        } catch (URISyntaxException e) {
             MCBrowser.LOGGER.fatal("Unable to open Browser", e);
         }
     }
@@ -129,7 +129,7 @@ public class BrowserUtil {
             instance.urlBox.setFocused(false);
         }
         instance.urlBox.setText(TabManager.getCurrentUrl());
-        instance.urlBox.setCursorToStart();
+        instance.urlBox.setCursorToStart(false);
         SpecialButtonActions action = SpecialButtonActions.getFromUrlConstantValue(TabManager.getCurrentUrl());
         if (action != null) {
             instance.specialButton.setMessage(action.getButtonText());

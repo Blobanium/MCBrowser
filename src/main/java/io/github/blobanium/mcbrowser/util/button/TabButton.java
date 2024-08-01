@@ -13,11 +13,16 @@ import java.util.concurrent.CompletableFuture;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.screen.ButtonTextures;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.PressableWidget;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 public class TabButton extends PressableWidget {
+    private static final ButtonTextures TEXTURES = new ButtonTextures(
+            Identifier.ofVanilla("widget/button"), Identifier.ofVanilla("widget/button_disabled"), Identifier.ofVanilla("widget/button_highlighted")
+    );
     int tab;
     final int startX;
 
@@ -51,12 +56,14 @@ public class TabButton extends PressableWidget {
     private final boolean tooSmall = this.getWidth() < this.getHeight() * 3;
 
     @Override
-    public void renderButton(DrawContext context, int mouseX, int mouseY, float delta) {
+    public void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
+        Identifier texture = TEXTURES.get(this.isNarratable(), this.isFocused());
+
         if (this.getX() > BrowserUtil.instance.width - BrowserScreen.BD_OFFSET - 35) { return; }
         context.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha);
         RenderSystem.enableBlend();
         RenderSystem.enableDepthTest();
-        if (this.getWidth() > this.getHeight()) { context.drawNineSlicedTexture(WIDGETS_TEXTURE, this.getX(), this.getY(), this.getWidth(), this.getHeight(), 20, 4, 200, 20, 0, 46 + (selected ? 2 : 1) * 20); }
+        if (this.getWidth() > this.getHeight()) { context.drawGuiTexture(texture, this.getX(), this.getY(), this.getWidth(), this.getHeight(), 20, 4, 200, 20); }
         context.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         String name = TabManager.tabs.get(tab).getTitle();
         if (name == null || name.isEmpty()) { name = "Loading..."; }
@@ -66,7 +73,7 @@ public class TabButton extends PressableWidget {
         context.fill(this.getX(), this.getY(), this.getX() + this.getHeight(), this.getY() + this.getHeight(), 0xFFFFFFFF);
         renderIco();
         if (!tooSmall || selected) {
-            context.drawNineSlicedTexture(WIDGETS_TEXTURE, this.getX() + (this.getWidth() - 15), this.getY(), 15, this.getHeight(), 20, 4, 200, 20, 0, 46 + ((mouseX >= this.getX() + (this.getWidth() - 15)) && (mouseX <= this.getX() + this.getWidth()) && (mouseY >= this.getY()) && (mouseY <= this.getY() + this.getHeight()) ? 2 : 1) * 20);
+            context.drawGuiTexture(texture, this.getX() + (this.getWidth() - 15), this.getY(), 15, this.getHeight(), 20, 4, 200, 20);
             String cross = "❌";
             context.drawText(textRenderer, cross, this.getX() + this.getWidth() - 8 - textRenderer.getWidth(cross) / 2, this.getY() + 4, 0xFFFFFFFF, true);
         }
