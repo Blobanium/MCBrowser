@@ -46,7 +46,7 @@ public class ReloadButton extends PressableWidget {
         context.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         RenderSystem.enableBlend();
         RenderSystem.enableDepthTest();
-        context.drawGuiTexture(texture, 20, 4, 200, 20,  this.getX(), this.getY(), this.getWidth(), this.getHeight());
+        context.drawGuiTexture(texture,  this.getX(), this.getY(), this.getWidth(), this.getHeight());
         context.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         drawScrollableText(context, minecraftClient.textRenderer, Text.of(TabManager.getCurrentTab().isLoading() ? "❌" : "⟳"), this.getX() + 2, this.getY(), this.getX() + this.getWidth() - 2, this.getY() + this.getHeight(), 16777215 | MathHelper.ceil(this.alpha * 255.0F) << 24);
     }

@@ -63,7 +63,7 @@ public class TabButton extends PressableWidget {
         context.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha);
         RenderSystem.enableBlend();
         RenderSystem.enableDepthTest();
-        if (this.getWidth() > this.getHeight()) { context.drawGuiTexture(texture, 20, 4, 200, 20, this.getX(), this.getY(), this.getWidth(), this.getHeight()); }
+        if (this.getWidth() > this.getHeight()) { context.drawGuiTexture(texture, this.getX(), this.getY(), this.getWidth(), this.getHeight()); }
         context.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         String name = TabManager.tabs.get(tab).getTitle();
         if (name == null || name.isEmpty()) { name = "Loading..."; }
@@ -73,7 +73,7 @@ public class TabButton extends PressableWidget {
         context.fill(this.getX(), this.getY(), this.getX() + this.getHeight(), this.getY() + this.getHeight(), 0xFFFFFFFF);
         renderIco();
         if (!tooSmall || selected) {
-            context.drawGuiTexture(texture, 20, 4, 200, 20, this.getX() + (this.getWidth() - 15), this.getY(), 15, this.getHeight());
+            context.drawGuiTexture(texture, this.getX() + (this.getWidth() - 15), this.getY(), 15, this.getHeight());
             String cross = "❌";
             context.drawText(textRenderer, cross, this.getX() + this.getWidth() - 8 - textRenderer.getWidth(cross) / 2, this.getY() + 4, 0xFFFFFFFF, true);
         }
