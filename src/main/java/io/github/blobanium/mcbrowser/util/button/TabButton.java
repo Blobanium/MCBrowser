@@ -185,4 +185,10 @@ public class TabButton extends PressableWidget {
     public void close() {
         TabManager.closeTab(tab);
     }
+
+    @Override
+    public boolean isHovered(){
+        setFocused(super.isHovered());
+        return super.isHovered();
+    }
 }

@@ -68,6 +68,12 @@ public class ReloadButton extends PressableWidget {
         return false;
     }
 
+    @Override
+    public boolean isHovered(){
+        setFocused(super.isHovered());
+        return super.isHovered();
+    }
+
     public void reloadOrStopLoadPage() {
         if (TabManager.getCurrentTab().isLoading()) {
             TabManager.getCurrentTab().stopLoad();
