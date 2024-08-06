@@ -80,7 +80,7 @@ public class SpecialButtonAction {
     }
 
     private static void sendToastMessage(Text title, Text description) {
-        MinecraftClient.getInstance().getToastManager().add(new SystemToast(SystemToast.Type.TUTORIAL_HINT, title, description));
+        MinecraftClient.getInstance().getToastManager().add(new SystemToast(new SystemToast.Type(), title, description));
     }
 
     private static MutableText getTranslation(byte type, SpecialButtonActions action) {
