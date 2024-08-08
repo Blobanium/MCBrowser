@@ -25,7 +25,8 @@ public class TabManager {
 
     public static void setActiveTab(int index) {
         activeTab = index;
-        if (MinecraftClient.getInstance().currentScreen instanceof BrowserScreen) {
+        if (MinecraftClient.getInstance().currentScreen instanceof BrowserScreen screen) {
+            screen.currentTab = getCurrentTab();
             BrowserUtil.instance.updateWidgets();
         }
     }
