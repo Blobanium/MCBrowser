@@ -35,7 +35,7 @@ public class BrowserScreen extends Screen {
     private int previousLimit;
     private boolean isFpsLowered = false;
 
-    private final BrowserImpl currentTab = TabManager.getCurrentTab();
+    public BrowserImpl currentTab = TabManager.getCurrentTab();
 
     public BrowserScreen(Text title) {
         super(title);
