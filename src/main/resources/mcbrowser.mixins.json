@@ -6,7 +6,7 @@
   "mixins": [
     "CefClientMixin",
     "CefUtilMixin",
-    "ScreenMixin"
+    "UtilOperatingSystemMixin"
   ],
   "client": [
     "MinecraftClientMixin"
