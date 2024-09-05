@@ -55,7 +55,7 @@ public class BrowserScreen extends Screen {
 
     public void removeTab(int index) {
         remove(tabButtons.get(index));
-        tabButtons.get(index).resetIco();
+        tabButtons.get(index).resetIcon();
         tabButtons.remove(index);
         updateTabButtonsIndexes(index);
         updateTabSize();
@@ -157,7 +157,7 @@ public class BrowserScreen extends Screen {
     public void close() {
         BrowserUtil.instance = null;
         for (TabButton tabButton : tabButtons) {
-            tabButton.resetIco();
+            tabButton.resetIcon();
         }
         if(isFpsLowered){
             MinecraftClient.getInstance().getWindow().setFramerateLimit(previousLimit);
