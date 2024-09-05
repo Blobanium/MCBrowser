@@ -19,23 +19,12 @@ import net.minecraft.client.gui.widget.PressableWidget;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
-
 public class TabButton extends PressableWidget {
     private static final ButtonTextures TEXTURES = new ButtonTextures(
-            Identifier.ofVanilla("widget/button"),
-            Identifier.ofVanilla("widget/button_disabled"),
-            Identifier.ofVanilla("widget/button_highlighted")
+            Identifier.ofVanilla("widget/button"), Identifier.ofVanilla("widget/button_disabled"), Identifier.ofVanilla("widget/button_highlighted")
     );
-
-    private static final int ICON_SIZE_OFFSET = 2;
-    private static final int CROSS_SIZE = 15;
-    private static final int BD_OFFSET_THRESHOLD = 35;
-    private static final int NARRATION_ALPHA = 255;
-    private static final String LOADING_TEXT = "Loading...";
-    private static final String CROSS_TEXT = "❌";
-
-    private int tab;
-    private final int startX;
+    int tab;
+    final int startX;
 
     public TabButton(int startX, int y, int width, int height, int tab) {
         super(0, y, width, height, null);
@@ -51,6 +40,7 @@ public class TabButton extends PressableWidget {
     public void setTab(int tab) {
         this.tab = tab;
     }
+
 
     @Override
     public void onPress() {
@@ -68,64 +58,33 @@ public class TabButton extends PressableWidget {
     @Override
     public void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
         Identifier texture = TEXTURES.get(this.isNarratable(), this.isFocused());
-        if (isButtonOffScreen()) return;
 
-        setupRenderingContext(context);
-
-        if (this.getWidth() > this.getHeight()) {
-            context.drawGuiTexture(texture, this.getX(), this.getY(), this.getWidth(), this.getHeight());
-        }
-
-        String tabTitle = getTabTitle();
-        TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
-        drawScrollableText(context, textRenderer, Text.of(tabTitle), this.getX() + CROSS_SIZE, this.getY(),
-                this.getX() + this.getWidth() - getOffset(), this.getY() + this.getHeight(), calculateColor());
-
-        context.fill(this.getX(), this.getY(), this.getX() + this.getHeight(), this.getY() + this.getHeight(), 0xFFFFFFFF);
-        renderIcon(context);
-
-        if (!tooSmall || selected) {
-            context.drawGuiTexture(texture, this.getX() + (this.getWidth() - CROSS_SIZE), this.getY(), CROSS_SIZE, this.getHeight());
-            drawCross(context, textRenderer);
-        }
-
-        if (selected) {
-            context.fill(this.getX(), this.getY() + this.getHeight(), this.getX() + this.getWidth(), this.getY() + this.getHeight() + ICON_SIZE_OFFSET, 0xFFFFFFFF);
-        }
-    }
-
-    private boolean isButtonOffScreen() {
-        return this.getX() > BrowserUtil.instance.width - BrowserScreen.BD_OFFSET - BD_OFFSET_THRESHOLD;
-    }
-
-    private void setupRenderingContext(DrawContext context) {
+        if (this.getX() > BrowserUtil.instance.width - BrowserScreen.BD_OFFSET - 35) { return; }
         context.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha);
         RenderSystem.enableBlend();
         RenderSystem.enableDepthTest();
-    }
-
-    private String getTabTitle() {
+        if (this.getWidth() > this.getHeight()) { context.drawGuiTexture(texture, this.getX(), this.getY(), this.getWidth(), this.getHeight()); }
+        context.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         String name = TabManager.tabs.get(tab).getTitle();
-        return (name == null || name.isEmpty()) ? LOADING_TEXT : name;
+        if (name == null || name.isEmpty()) { name = "Loading..."; }
+        TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
+        drawScrollableText(context, textRenderer, Text.of(name), this.getX() + 2 + 15, this.getY(), this.getX() + this.getWidth() - (!tooSmall || selected ? 17 : 2), this.getY() + this.getHeight(), 16777215 | MathHelper.ceil(this.alpha * 255.0F) << 24);
+
+        context.fill(this.getX(), this.getY(), this.getX() + this.getHeight(), this.getY() + this.getHeight(), 0xFFFFFFFF);
+        renderIco();
+        if (!tooSmall || selected) {
+            context.drawGuiTexture(texture, this.getX() + (this.getWidth() - 15), this.getY(), 15, this.getHeight());
+            String cross = "❌";
+            context.drawText(textRenderer, cross, this.getX() + this.getWidth() - 8 - textRenderer.getWidth(cross) / 2, this.getY() + 4, 0xFFFFFFFF, true);
+        }
+
+        if (selected) { context.fill(this.getX(), this.getY() + this.getHeight(), this.getX() + this.getWidth(), this.getY() + this.getHeight() + 2, 0xFFFFFFFF); }
     }
 
-    private int getOffset() {
-        return (!tooSmall || selected) ? 17 : 2;
-    }
-
-    private int calculateColor() {
-        return 16777215 | MathHelper.ceil(this.alpha * NARRATION_ALPHA) << 24;
-    }
-
-    private void drawCross(DrawContext context, TextRenderer textRenderer) {
-        int xPos = this.getX() + this.getWidth() - 8 - textRenderer.getWidth(CROSS_TEXT) / 2;
-        context.drawText(textRenderer, CROSS_TEXT, xPos, this.getY() + 4, 0xFFFFFFFF, true);
-    }
-
-    private void renderIcon(DrawContext context) {
+    public void renderIco() {
         BrowserTabIcon ico = TabManager.tabs.get(tab).getIcon();
         if (ico == null) {
-            initIcon();
+            initIco();
             return;
         }
         if (!TabManager.tabs.get(tab).isInit()) {
@@ -136,18 +95,18 @@ public class TabButton extends PressableWidget {
         String icoUrl = ico.getURL();
         if (!icoUrl.isEmpty() && !browserUrl.isEmpty()) {
             if (!icoUrl.endsWith(browserUrl)) {
-                if (isIconForUrl(icoUrl, browserUrl)) {
+                if (isIcoForUrl(icoUrl, browserUrl)) {
                     ico.render(this.getX() + 1, this.getY() + 1, this.getHeight() - 2, this.getHeight() - 2);
                     return;
                 }
-                resetIcon();
+                resetIco();
             } else {
                 ico.render(this.getX() + 1, this.getY() + 1, this.getHeight() - 2, this.getHeight() - 2);
             }
         }
     }
 
-    private boolean isIconForUrl(String icoUrl, String url) {
+    private boolean isIcoForUrl(String icoUrl, String url) {
         int end = icoUrl.length();
         int begin = 0;
         if (icoUrl.contains("&size=")) {
@@ -160,6 +119,7 @@ public class TabButton extends PressableWidget {
         if (icoUrl.contains("://")) {
             icoUrl = icoUrl.substring(icoUrl.indexOf("://") + 3);
         }
+
         String siteUrl = url;
         if (siteUrl.contains("://")) {
             siteUrl = siteUrl.substring(siteUrl.indexOf("://") + 3);
@@ -170,7 +130,7 @@ public class TabButton extends PressableWidget {
         return icoUrl.startsWith(siteUrl);
     }
 
-    private void initIcon() {
+    private void initIco() {
         String currentUrl = TabManager.tabs.get(tab).getUrl();
         if (currentUrl.isEmpty()) {
             return;
@@ -181,18 +141,18 @@ public class TabButton extends PressableWidget {
                 BufferedImage bufferedImage = ImageIO.read(new URL(BrowserTabIcon.API_URL + currentUrl));
                 TabManager.tabs.get(tab).getIcon().setSize(bufferedImage.getWidth());
             } catch (IOException e) {
-                MCBrowser.LOGGER.warn("Could not find size of icon for " + currentUrl);
+                MCBrowser.LOGGER.warn("Could not find size of ico for " + currentUrl);
             }
         });
     }
 
-    public void resetIcon() {
+    public void resetIco() {
         TabManager.tabs.get(tab).resetIcon();
     }
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (isButtonOffScreen()) {
+        if (this.getX() > BrowserUtil.instance.width - BrowserScreen.BD_OFFSET - 35) {
             return false;
         }
         if (this.clicked(mouseX, mouseY)) {
@@ -204,16 +164,16 @@ public class TabButton extends PressableWidget {
                 open();
                 return true;
             }
-            toggleOpenClose(!(mouseX > this.getX() + this.getWidth() - CROSS_SIZE));
+            openOrClose(!(mouseX > this.getX() + this.getWidth() - 15));
             return true;
         }
         return false;
     }
 
-    private void toggleOpenClose(boolean action) {
-        if (action) {
+    private void openOrClose(boolean action){
+        if(action){
             open();
-        } else {
+        }else{
             close();
         }
     }
@@ -227,7 +187,7 @@ public class TabButton extends PressableWidget {
     }
 
     @Override
-    public boolean isHovered() {
+    public boolean isHovered(){
         setFocused(super.isHovered());
         return super.isHovered();
     }
