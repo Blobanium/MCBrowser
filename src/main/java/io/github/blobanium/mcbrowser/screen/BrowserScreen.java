@@ -212,12 +212,27 @@ public class BrowserScreen extends Screen {
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (Screen.hasControlDown() && (keyCode == GLFW.GLFW_KEY_TAB || keyCode == GLFW.GLFW_KEY_T)) {
+        if(Screen.hasControlDown()){
+            if(keyCode == GLFW.GLFW_KEY_TAB || keyCode == GLFW.GLFW_KEY_T){
+                //Tab Functions
+                TabManager.tabControl(keyCode+modifiers);
 
-            TabManager.tabControl(keyCode+modifiers);
+                setFocus();
+                return true;
 
-            setFocus();
-            return true;
+            }else if(keyCode == GLFW.GLFW_KEY_EQUAL || keyCode == GLFW.GLFW_KEY_MINUS || keyCode == GLFW.GLFW_KEY_0){
+                //Zoom Functions
+
+                if(keyCode == GLFW.GLFW_KEY_EQUAL){
+                    currentTab.setZoomLevel(currentTab.getZoomLevel() + 0.5);
+                }else if(keyCode == GLFW.GLFW_KEY_MINUS){
+                    currentTab.setZoomLevel(currentTab.getZoomLevel() - 0.5);
+                }else { //if(keyCode == GLFW.GLFW_KEY_0)
+                    currentTab.setZoomLevel(0.0);
+                }
+
+                return true;
+            }
         }
 
         sendKeyActivityAndSetFocus(keyCode, scanCode, modifiers, true);
