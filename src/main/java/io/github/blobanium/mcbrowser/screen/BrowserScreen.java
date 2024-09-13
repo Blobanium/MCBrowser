@@ -48,16 +48,6 @@ public class BrowserScreen extends Screen {
     private final int ANCHOR_RIGHT = this.width-BD_OFFSET;
     public BrowserScreen(Text title) {
         super(title);
-
-    }
-
-    public void initTabs() {
-        for (TabHolder tab : TabManager.tabs) {
-            int index = TabManager.tabs.indexOf(tab);
-            TabButton tabButton = new TabButton(BD_OFFSET, BD_OFFSET - 40, 100, 15, index);
-            tabButtons.add(tabButton);
-        }
-        for (TabButton tabButton : tabButtons) addSelectableChild(tabButton);
     }
 
     public void removeTab(int index) {
@@ -106,9 +96,18 @@ public class BrowserScreen extends Screen {
         BrowserUtil.tooltipText = null;
 
         newTabButton = new NewTabButton(BD_OFFSET, BD_OFFSET - 40, 15, 15, Text.of("+"));
-        initTabs();
+        for (TabHolder tab : TabManager.tabs) {
+            int index = TabManager.tabs.indexOf(tab);
+            TabButton tabButton = new TabButton(BD_OFFSET, BD_OFFSET - 40, 100, 15, index);
+            tabButtons.add(tabButton);
+        }
+        for (TabButton tabButton : tabButtons) addSelectableChild(tabButton);
         updateTabSize();
+        initElements();
+        updateWidgets();
+    }
 
+    public void initElements() {
         urlBox = BrowserUtil.initUrlBox(BD_OFFSET, width);
 
         backButton = BrowserUtil.initButton(Text.of("◀"), button -> currentTab.goBack(), BD_OFFSET, BD_OFFSET, 1);
@@ -126,7 +125,6 @@ public class BrowserScreen extends Screen {
         zoomElements = new ClickableWidget[]{zoomInButton, zoomOutButton, zoomDetails};
         uiElements = new ClickableWidget[]{forwardButton, backButton, reloadButton, homeButton, urlBox, specialButton, openInBrowserButton, newTabButton, zoomDetails, zoomInButton, zoomOutButton};
         for (ClickableWidget widget : uiElements) addSelectableChild(widget);
-        updateWidgets();
     }
 
     public void updateWidgets() {
@@ -173,6 +171,19 @@ public class BrowserScreen extends Screen {
         }
         renderWidgets(context, mouseX, mouseY, delta);
         if (BrowserUtil.tooltipText != null && BrowserUtil.tooltipText.getBytes().length != 0) setTooltip(Text.of(BrowserUtil.tooltipText));
+    }
+
+    private void renderWidgets(DrawContext context, int mouseX, int mouseY, float delta){
+        urlBox.renderWidget(context, mouseX, mouseY, delta);
+        for (PressableWidget button : navigationButtons) button.render(context, mouseX, mouseY, delta);
+        if (SpecialButtonHelper.isOnCompatableSite(TabManager.getCurrentUrl())) specialButton.render(context, mouseX, mouseY, delta);
+        for (TabButton tabButton : tabButtons) tabButton.render(context, mouseX, mouseY, delta);
+        for (ClickableWidget zoom :zoomElements) if (BrowserUtil.ZoomActions.shouldRenderZoomElements()) {
+            if (zoom.isMouseOver(mouseX, mouseY)) BrowserUtil.ZoomActions.resetLastTimeCalled();
+            zoom.render(context, mouseX, mouseY, delta);
+        }
+        newTabButton.render(context, mouseX, mouseY, delta);
+        openInBrowserButton.render(context, mouseX, mouseY, delta);
     }
 
     @Override
@@ -279,21 +290,6 @@ public class BrowserScreen extends Screen {
     private void mouseButtonControlImpl(double mouseX, double mouseY, int button, boolean isClick) {
         if (mouseX > BD_OFFSET && mouseX < this.width - BD_OFFSET && mouseY > BD_OFFSET && mouseY < this.height - BD_OFFSET) currentTab.mouseButtonControl(mouseX, mouseY, button, isClick);
         setFocus();
-    }
-
-    //Rendering Override
-
-    private void renderWidgets(DrawContext context, int mouseX, int mouseY, float delta){
-        urlBox.renderWidget(context, mouseX, mouseY, delta);
-        for (PressableWidget button : navigationButtons) button.render(context, mouseX, mouseY, delta);
-        if (SpecialButtonHelper.isOnCompatableSite(TabManager.getCurrentUrl())) specialButton.render(context, mouseX, mouseY, delta);
-        for (TabButton tabButton : tabButtons) tabButton.render(context, mouseX, mouseY, delta);
-        for (ClickableWidget zoom :zoomElements) if (BrowserUtil.ZoomActions.shouldRenderZoomElements()) {
-                if (zoom.isMouseOver(mouseX, mouseY)) BrowserUtil.ZoomActions.resetLastTimeCalled();
-                zoom.render(context, mouseX, mouseY, delta);
-        }
-        newTabButton.render(context, mouseX, mouseY, delta);
-        openInBrowserButton.render(context, mouseX, mouseY, delta);
     }
 
     private void zoomControl(byte zoomAction){
