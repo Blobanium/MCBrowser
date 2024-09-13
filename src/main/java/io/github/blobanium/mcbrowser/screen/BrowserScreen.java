@@ -6,6 +6,8 @@ import io.github.blobanium.mcbrowser.feature.specialbutton.*;
 import io.github.blobanium.mcbrowser.util.*;
 import io.github.blobanium.mcbrowser.util.button.*;
 import java.util.ArrayList;
+import java.util.Arrays;
+
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
@@ -226,7 +228,7 @@ public class BrowserScreen extends Screen {
         sendKeyActivityAndSetFocus(keyCode, scanCode, modifiers, true);
 
         // Make sure screen isn't sending the enter key if the buttons aren't focused.
-        if (!isButtonsFocused() && keyCode == GLFW.GLFW_KEY_ENTER) return true;
+        if (Arrays.stream(uiElements).noneMatch(ClickableWidget::isFocused) && keyCode == GLFW.GLFW_KEY_ENTER) return true;
 
         if (keyCode == 256 && this.shouldCloseOnEsc()) { //Removed tab selection functional
             this.close();
@@ -243,16 +245,8 @@ public class BrowserScreen extends Screen {
     }
 
     private void sendKeyActivityAndSetFocus(int keyCode, int scanCode, int modifiers, boolean isPress){
-        if (getFlag(keyCode, isPress)) BrowserUtil.runAsyncIfEnabled(() -> currentTab.sendKeyPressRelease(keyCode, scanCode, modifiers, isPress));
+        if (isPress ? !urlBox.isFocused() : !Screen.hasControlDown() || keyCode != GLFW.GLFW_KEY_TAB) BrowserUtil.runAsyncIfEnabled(() -> currentTab.sendKeyPressRelease(keyCode, scanCode, modifiers, isPress));
         setFocus();
-    }
-
-    private boolean getFlag(int keyCode, boolean isPress){
-        if(isPress){
-            return !urlBox.isFocused();
-        }else{
-            return !Screen.hasControlDown() || keyCode != GLFW.GLFW_KEY_TAB;
-        }
     }
 
     @Override
@@ -285,11 +279,6 @@ public class BrowserScreen extends Screen {
     private void mouseButtonControlImpl(double mouseX, double mouseY, int button, boolean isClick) {
         if (mouseX > BD_OFFSET && mouseX < this.width - BD_OFFSET && mouseY > BD_OFFSET && mouseY < this.height - BD_OFFSET) currentTab.mouseButtonControl(mouseX, mouseY, button, isClick);
         setFocus();
-    }
-
-    private boolean isButtonsFocused() {
-        for (ClickableWidget widget : uiElements) if (widget.isFocused()) return true;
-        return false;
     }
 
     //Rendering Override
