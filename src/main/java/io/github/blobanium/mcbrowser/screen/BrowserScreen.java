@@ -25,6 +25,7 @@ public class BrowserScreen extends Screen {
     public ReloadButton reloadButton;
     private PressableWidget[] navigationButtons;
     private ClickableWidget[] uiElements;
+    private ClickableWidget[] zoomElements;
     public ArrayList<TabButton> tabButtons = new ArrayList<>();
     private NewTabButton newTabButton = null;
 
@@ -32,11 +33,17 @@ public class BrowserScreen extends Screen {
 
     private ButtonWidget openInBrowserButton;
 
+    public TextWidget zoomDetails;
+    public ButtonWidget zoomInButton;
+    public ButtonWidget zoomOutButton;
+
+
     private int previousLimit;
     private boolean isFpsLowered = false;
 
     public BrowserImpl currentTab = TabManager.getCurrentTab();
 
+    private final int ANCHOR_RIGHT = this.width-BD_OFFSET;
     public BrowserScreen(Text title) {
         super(title);
 
@@ -113,8 +120,14 @@ public class BrowserScreen extends Screen {
         specialButton = ButtonWidget.builder(Text.of(""), button -> SpecialButtonHelper.onPress(TabManager.getCurrentUrl())).dimensions(BD_OFFSET, height - BD_OFFSET + 5, 150, 15).build();
         openInBrowserButton = ButtonWidget.builder(Text.of("Open In External Browser"), button -> BrowserUtil.openInBrowser()).dimensions(width - 200, height - BD_OFFSET + 5, 150, 15).build();
 
+        zoomDetails = new TextWidget(BrowserUtil.getZoomLevelText(currentTab.getZoomLevel()), MinecraftClient.getInstance().textRenderer);
+        zoomDetails.setPosition(width-50-zoomDetails.getWidth(), BD_OFFSET - 49);
+        zoomInButton = ButtonWidget.builder(Text.of("+"), button -> zoomControl(BrowserUtil.ZoomActions.INCREASE)).dimensions(width - 65, BD_OFFSET - 40, 15, 15).build();
+        zoomOutButton = ButtonWidget.builder(Text.of("-"), button -> zoomControl(BrowserUtil.ZoomActions.DECREASE)).dimensions(width - 85, BD_OFFSET - 40, 15 ,15).build();
+
         navigationButtons = new PressableWidget[]{forwardButton, backButton, reloadButton, homeButton};
-        uiElements = new ClickableWidget[]{forwardButton, backButton, reloadButton, homeButton, urlBox, specialButton, openInBrowserButton, newTabButton};
+        zoomElements = new ClickableWidget[]{zoomInButton, zoomOutButton, zoomDetails};
+        uiElements = new ClickableWidget[]{forwardButton, backButton, reloadButton, homeButton, urlBox, specialButton, openInBrowserButton, newTabButton, zoomDetails, zoomInButton, zoomOutButton};
         for (ClickableWidget widget : uiElements) {
             addSelectableChild(widget);
         }
@@ -224,13 +237,12 @@ public class BrowserScreen extends Screen {
                 //Zoom Functions
 
                 if(keyCode == GLFW.GLFW_KEY_EQUAL){
-                    currentTab.setZoomLevel(currentTab.getZoomLevel() + 0.5);
+                    zoomControl(BrowserUtil.ZoomActions.INCREASE);
                 }else if(keyCode == GLFW.GLFW_KEY_MINUS){
-                    currentTab.setZoomLevel(currentTab.getZoomLevel() - 0.5);
+                    zoomControl(BrowserUtil.ZoomActions.DECREASE);
                 }else { //if(keyCode == GLFW.GLFW_KEY_0)
-                    currentTab.setZoomLevel(0.0);
+                    zoomControl(BrowserUtil.ZoomActions.RESET);
                 }
-
                 return true;
             }
         }
@@ -341,8 +353,30 @@ public class BrowserScreen extends Screen {
         for (TabButton tabButton : tabButtons) {
             tabButton.render(context, mouseX, mouseY, delta);
         }
+        for (ClickableWidget zoom :zoomElements){
+            if(BrowserUtil.ZoomActions.shouldRenderZoomElements()) {
+                if (zoom.isMouseOver(mouseX, mouseY)) {
+                    BrowserUtil.ZoomActions.resetLastTimeCalled();
+                }
+                zoom.render(context, mouseX, mouseY, delta);
+            }
+        }
         newTabButton.render(context, mouseX, mouseY, delta);
         openInBrowserButton.render(context, mouseX, mouseY, delta);
+    }
+
+    private void zoomControl(byte zoomAction){
+        if(zoomAction == BrowserUtil.ZoomActions.INCREASE){
+            currentTab.setZoomLevel(currentTab.getZoomLevel() + 0.5);
+        }else if(zoomAction == BrowserUtil.ZoomActions.DECREASE){
+            currentTab.setZoomLevel(currentTab.getZoomLevel() - 0.5);
+        }else if(zoomAction == BrowserUtil.ZoomActions.RESET){
+            currentTab.setZoomLevel(0.0);
+        }else{
+            throw new IllegalArgumentException("Invalid zoom action value: " + zoomAction);
+        }
+        zoomDetails.setMessage(BrowserUtil.getZoomLevelText(currentTab.getZoomLevel()));
+        BrowserUtil.ZoomActions.resetLastTimeCalled();
     }
 }
 

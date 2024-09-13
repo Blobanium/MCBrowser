@@ -12,6 +12,7 @@ import java.util.concurrent.CompletableFuture;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Util;
 import org.lwjgl.glfw.GLFW;
@@ -148,6 +149,30 @@ public class BrowserUtil {
             CompletableFuture.runAsync(runnable);
         } else {
             runnable.run();
+        }
+    }
+
+    public static int zoomLevelToZoomPercentage(double zoomLevel) {
+        return (int) Math.round(Math.pow(1.2, zoomLevel) * 100);
+    }
+
+    public static MutableText getZoomLevelText(double zoomLevel){
+        return Text.translatable("mcbrowser.zoom.percent", zoomLevelToZoomPercentage(zoomLevel));
+    }
+
+    public static class ZoomActions{
+        public static final byte INCREASE = 0x00;
+        public static final byte DECREASE = 0x01;
+        public static final byte RESET = 0x02;
+
+        public static long lastTimeCalled = 0;
+
+        public static void resetLastTimeCalled(){
+            lastTimeCalled = System.currentTimeMillis();
+        }
+
+        public static boolean shouldRenderZoomElements(){
+            return System.currentTimeMillis() <= lastTimeCalled + 2500;
         }
     }
 }
