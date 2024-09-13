@@ -27,9 +27,9 @@ public class BrowserUtil {
     public static String tooltipText;
 
     //Navigation initialization methods
-    public static ButtonWidget initButton(Text message, ButtonWidget.PressAction onPress, int positionX, int offset, int buttonLevel) {
+    public static ButtonWidget initButton(Text message, ButtonWidget.PressAction onPress, int positionX, int buttonLevel) {
         return ButtonWidget.builder(message, onPress)
-                .dimensions(positionX, offset - (20 * buttonLevel), 15, 15)
+                .dimensions(positionX, BrowserScreen.BD_OFFSET - (20 * buttonLevel), 15, 15)
                 .build();
     }
 
@@ -92,9 +92,7 @@ public class BrowserUtil {
                 if (isFocused()) {
                     for (TabHolder tab : TabManager.tabs) {
                         BrowserImpl browser = tab.getBrowser();
-                        if (browser != null) {
-                            tab.getBrowser().setFocus(false);
-                        }
+                        if (browser != null) browser.setFocus(false);
                     }
                     if (keyCode == GLFW.GLFW_KEY_ENTER) {
                         TabManager.getCurrentTab().loadURL(BrowserFeatureUtil.prediffyURL(getText()));

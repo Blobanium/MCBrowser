@@ -110,16 +110,16 @@ public class BrowserScreen extends Screen {
     public void initElements() {
         urlBox = BrowserUtil.initUrlBox(BD_OFFSET, width);
 
-        backButton = BrowserUtil.initButton(Text.of("◀"), button -> currentTab.goBack(), BD_OFFSET, BD_OFFSET, 1);
-        forwardButton = BrowserUtil.initButton(Text.of("▶"), button -> currentTab.goForward(), BD_OFFSET + 20, BD_OFFSET, 1);
+        backButton = BrowserUtil.initButton(Text.of("◀"), button -> currentTab.goBack(), BD_OFFSET, 1);
+        forwardButton = BrowserUtil.initButton(Text.of("▶"), button -> currentTab.goForward(), BD_OFFSET + 20, 1);
         reloadButton = new ReloadButton(BD_OFFSET + 40, BD_OFFSET - 20, 15, 15);
-        ButtonWidget homeButton = BrowserUtil.initButton(Text.of("⌂"), button -> BrowserUtil.homeButtonAction(), BD_OFFSET + 60, BD_OFFSET, 1);
+        ButtonWidget homeButton = BrowserUtil.initButton(Text.of("⌂"), button -> BrowserUtil.homeButtonAction(), BD_OFFSET + 60, 1);
         specialButton = ButtonWidget.builder(Text.of(""), button -> SpecialButtonHelper.onPress(TabManager.getCurrentUrl())).dimensions(BD_OFFSET, height - BD_OFFSET + 5, 150, 15).build();
         openInBrowserButton = ButtonWidget.builder(Text.of("Open In External Browser"), button -> BrowserUtil.openInBrowser()).dimensions(width - 200, height - BD_OFFSET + 5, 150, 15).build();
         zoomDetails = new TextWidget(BrowserUtil.getZoomLevelText(currentTab.getZoomLevel()), MinecraftClient.getInstance().textRenderer);
         zoomDetails.setPosition(width-50-zoomDetails.getWidth(), BD_OFFSET - 49);
-        zoomInButton = BrowserUtil.initButton(Text.of("+"), button -> zoomControl(BrowserUtil.ZoomActions.INCREASE), width - 65, BD_OFFSET, 2);
-        zoomOutButton = BrowserUtil.initButton(Text.of("-"), button -> zoomControl(BrowserUtil.ZoomActions.DECREASE), width - 85, BD_OFFSET, 2);
+        zoomInButton = BrowserUtil.initButton(Text.of("+"), button -> zoomControl(BrowserUtil.ZoomActions.INCREASE), width - 65, 2);
+        zoomOutButton = BrowserUtil.initButton(Text.of("-"), button -> zoomControl(BrowserUtil.ZoomActions.DECREASE), width - 85, 2);
 
         navigationButtons = new PressableWidget[]{forwardButton, backButton, reloadButton, homeButton};
         zoomElements = new ClickableWidget[]{zoomInButton, zoomOutButton, zoomDetails};
