@@ -27,9 +27,9 @@ public class BrowserUtil {
     public static String tooltipText;
 
     //Navigation initialization methods
-    public static ButtonWidget initButton(Text message, ButtonWidget.PressAction onPress, int positionX, int offset) {
+    public static ButtonWidget initButton(Text message, ButtonWidget.PressAction onPress, int positionX, int offset, int buttonLevel) {
         return ButtonWidget.builder(message, onPress)
-                .dimensions(positionX, offset - 20, 15, 15)
+                .dimensions(positionX, offset - (20 * buttonLevel), 15, 15)
                 .build();
     }
 
