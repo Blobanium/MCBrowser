@@ -9,7 +9,6 @@ import net.minecraft.text.Text;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import static io.github.blobanium.mcbrowser.util.BrowserUtil.Keybinds.*;
 
 
 /**
@@ -19,32 +18,8 @@ import static io.github.blobanium.mcbrowser.util.BrowserUtil.Keybinds.*;
  * This file serves as a temporary workaround for this issue.
  */
 public class SwitchFunctions {
-
-
-    public static void tabControl(int keyCodeModifiers){
-        //TODO: Convert to switch once Code Climate fixes an analysis bug with switches.
-        if(keyCodeModifiers == CTRL_T){
-            TabManager.openNewTab();
-        }else if(keyCodeModifiers == CTRL_SHIFT_T && !TabManager.closedTabs.isEmpty()){
-            int lastTab = TabManager.closedTabs.size() - 1;
-            TabManager.openNewTab(TabManager.closedTabs.get(lastTab));
-            TabManager.closedTabs.remove(lastTab);
-        }else if(keyCodeModifiers == CTRL_TAB){
-            if (TabManager.activeTab == TabManager.tabs.size() - 1) {
-                TabManager.setActiveTab(0);
-            } else {
-                TabManager.setActiveTab(TabManager.activeTab + 1);
-            }
-        }else if(keyCodeModifiers == CTRL_SHIFT_TAB){
-            if (TabManager.activeTab == 0) {
-                TabManager.setActiveTab(TabManager.tabs.size() - 1);
-            } else {
-                TabManager.setActiveTab(TabManager.activeTab - 1);
-            }
-        }
-    }
-
     public static class SpecialButtonActionSwitches{
+
         public static MutableText getTranslation(byte type, SpecialButtonActions action) {
             return switch (action) {
                 case MODRINTH_MOD -> switch (type) {
