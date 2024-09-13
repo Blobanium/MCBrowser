@@ -221,7 +221,7 @@ public class BrowserScreen extends Screen {
         if(Screen.hasControlDown()){
             if(keyCode == GLFW.GLFW_KEY_TAB || keyCode == GLFW.GLFW_KEY_T){
                 //Tab Functions
-                TabManager.tabControl(keyCode+modifiers);
+                SwitchFunctions.tabControl(keyCode+modifiers);
 
                 setFocus();
                 return true;
