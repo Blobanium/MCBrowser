@@ -5,6 +5,7 @@ import io.github.blobanium.mcbrowser.feature.specialbutton.SpecialButtonActions;
 import net.minecraft.MinecraftVersion;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
+import org.lwjgl.glfw.GLFW;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -18,6 +19,27 @@ import java.net.URL;
  * This file serves as a temporary workaround for this issue.
  */
 public class SwitchFunctions {
+
+    public static boolean ctrlKeyPressedSwitch(int keyCode, int modifiers){
+        switch (keyCode) {
+            case GLFW.GLFW_KEY_TAB:
+            case GLFW.GLFW_KEY_T:
+                // Tab Functions
+                TabManager.tabControl(keyCode + modifiers);
+                BrowserUtil.instance.setFocus();
+                return true;
+            case GLFW.GLFW_KEY_EQUAL:
+                BrowserUtil.instance.zoomControl(BrowserUtil.ZoomActions.INCREASE);
+                return true;
+            case GLFW.GLFW_KEY_MINUS:
+                BrowserUtil.instance.zoomControl(BrowserUtil.ZoomActions.DECREASE);
+                return true;
+            case GLFW.GLFW_KEY_0:
+                BrowserUtil.instance.zoomControl(BrowserUtil.ZoomActions.RESET);
+                return true;
+        }
+        return false;
+    }
     public static class SpecialButtonActionSwitches{
 
         public static MutableText getTranslation(byte type, SpecialButtonActions action) {
