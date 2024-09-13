@@ -94,14 +94,10 @@ public class TabButton extends PressableWidget {
         String browserUrl = TabManager.tabs.get(tab).getBrowser().getURL();
         String icoUrl = ico.getURL();
         if (!icoUrl.isEmpty() && !browserUrl.isEmpty()) {
-            if (!icoUrl.endsWith(browserUrl)) {
-                if (isIcoForUrl(icoUrl, browserUrl)) {
-                    ico.render(this.getX() + 1, this.getY() + 1, this.getHeight() - 2, this.getHeight() - 2);
-                    return;
-                }
-                resetIco();
-            } else {
+            if(icoUrl.endsWith(browserUrl) || isIcoForUrl(icoUrl, browserUrl)){
                 ico.render(this.getX() + 1, this.getY() + 1, this.getHeight() - 2, this.getHeight() - 2);
+            } else {
+                resetIco();
             }
         }
     }
@@ -152,30 +148,22 @@ public class TabButton extends PressableWidget {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (this.getX() > BrowserUtil.instance.width - BrowserScreen.BD_OFFSET - 35) {
+        if ((this.getX() > BrowserUtil.instance.width - BrowserScreen.BD_OFFSET - 35) || !this.clicked(mouseX, mouseY)) {
             return false;
         }
-        if (this.clicked(mouseX, mouseY)) {
-            if (button == 2) {
-                close();
-                return true;
-            }
-            if (tooSmall && !selected) {
-                open();
-                return true;
-            }
-            openOrClose(!(mouseX > this.getX() + this.getWidth() - 15));
+
+        if (button == 2) {
+            close();
             return true;
         }
-        return false;
-    }
 
-    private void openOrClose(boolean action){
-        if(action){
+        if (tooSmall && !selected) {
             open();
-        }else{
-            close();
+            return true;
         }
+
+        if (mouseX <= this.getX() + this.getWidth() - 15) open(); else close();
+        return true;
     }
 
     public void open() {
