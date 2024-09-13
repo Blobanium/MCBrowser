@@ -30,4 +30,7 @@ public class BrowserAutoConfig implements ConfigData {
 
     @ConfigEntry.Gui.Tooltip
     public int browserFPS = 60;
+
+    @ConfigEntry.Gui.Tooltip
+    public double zoomScalingFactor = 0.5;
 }

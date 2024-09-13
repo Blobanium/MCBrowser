@@ -281,8 +281,8 @@ public class BrowserScreen extends Screen {
     }
 
     public void zoomControl(byte zoomAction){
-        if(zoomAction == BrowserUtil.ZoomActions.INCREASE) currentTab.setZoomLevel(currentTab.getZoomLevel() + 0.5);
-        else if(zoomAction == BrowserUtil.ZoomActions.DECREASE) currentTab.setZoomLevel(currentTab.getZoomLevel() - 0.5);
+        if(zoomAction == BrowserUtil.ZoomActions.INCREASE) currentTab.setZoomLevel(currentTab.getZoomLevel() + MCBrowser.getConfig().zoomScalingFactor);
+        else if(zoomAction == BrowserUtil.ZoomActions.DECREASE) currentTab.setZoomLevel(currentTab.getZoomLevel() - MCBrowser.getConfig().zoomScalingFactor);
         else if(zoomAction == BrowserUtil.ZoomActions.RESET) currentTab.setZoomLevel(0.0);
         else throw new IllegalArgumentException("Invalid zoom action value: " + zoomAction);
         zoomDetails.setMessage(BrowserUtil.getZoomLevelText(currentTab.getZoomLevel()));

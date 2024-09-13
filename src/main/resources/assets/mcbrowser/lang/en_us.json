@@ -16,6 +16,8 @@
   "text.autoconfig.mcbrowser.option.limitBrowserFramerate.@Tooltip": "Helps save computational resources in certain scenarios",
   "text.autoconfig.mcbrowser.option.browserFPS": "Limit Framerate FPS",
   "text.autoconfig.mcbrowser.option.browserFPS.@Tooltip": "Sets the framerate when the browser is open. \nThis only works if Limit framerate is turned on.",
+  "text.autoconfig.mcbrowser.option.zoomScalingFactor": "Zoom Scale Factor",
+  "text.autoconfig.mcbrowser.option.zoomScalingFactor.@Tooltip": "Sets how much to zoom in and out",
   "mcbrowser.download.toast.started": "Download Started",
   "mcbrowser.download.toast.complete": "Download Completed!",
   "mcbrowser.download.toast.failed": "Download Failed",
