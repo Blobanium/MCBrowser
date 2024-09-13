@@ -53,19 +53,19 @@ public class ReloadButton extends PressableWidget {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (this.clicked(mouseX, mouseY)) {
-            if (button == 2) {
-                TabManager.copyTab(TabManager.activeTab);
-                return true;
-            } else {
-                if (BrowserUtil.instance != null) {
-                    BrowserUtil.instance.urlBox.setText(TabManager.getCurrentTab().getURL());
-                }
-                reloadOrStopLoadPage();
-            }
-            return true;
+        if (!this.clicked(mouseX, mouseY)) {
+            return false;
         }
-        return false;
+
+        if (button == 2) {
+            TabManager.copyTab(TabManager.activeTab);
+        } else {
+            if (BrowserUtil.instance != null) {
+                BrowserUtil.instance.urlBox.setText(TabManager.getCurrentTab().getURL());
+            }
+            reloadOrStopLoadPage();
+        }
+        return true;
     }
 
     @Override
