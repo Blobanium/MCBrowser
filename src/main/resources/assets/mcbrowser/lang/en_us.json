@@ -1,5 +1,8 @@
 {
   "text.autoconfig.mcbrowser.title": "MCBrowser Config",
+  "text.autoconfig.mcbrowser.category.default": "General Browser Settings",
+  "text.autoconfig.mcbrowser.category.performance": "Performance",
+  "text.autoconfig.mcbrowser.category.privacyandsafety": "Privacy and Safety",
   "text.autoconfig.mcbrowser.option.openLinkInBrowser": "Open Links In MCBrowser",
   "text.autoconfig.mcbrowser.option.openLinkInBrowser.@Tooltip": "Opens MCBrowser instead of your external browser when you go to open a link within Minecraft.",
   "text.autoconfig.mcbrowser.option.homePage": "Default Home Page",

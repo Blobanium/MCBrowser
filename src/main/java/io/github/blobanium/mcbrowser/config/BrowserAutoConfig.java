@@ -11,26 +11,32 @@ public class BrowserAutoConfig implements ConfigData {
     @ConfigEntry.Gui.Tooltip
     public String homePage = "https://www.google.com";
 
+    @ConfigEntry.Category("performance")
     @ConfigEntry.Gui.Tooltip
     public boolean asyncBrowserInput = true;
 
     @ConfigEntry.Gui.Tooltip
-    @ConfigEntry.Gui.RequiresRestart
-    public boolean saveCookies = false;
-
-    @ConfigEntry.Gui.Tooltip
     public boolean saveTabs = true;
 
+    @ConfigEntry.Category("performance")
     @ConfigEntry.Gui.Tooltip
-    @ConfigEntry.Gui.RequiresRestart
-    public boolean enableMediaStream = false;
+    public boolean limitBrowserFramerate = false;
 
-    @ConfigEntry.Gui.Tooltip
-    public boolean limitBrowserFramerate=false;
-
+    @ConfigEntry.Category("performance")
     @ConfigEntry.Gui.Tooltip
     public int browserFPS = 60;
 
     @ConfigEntry.Gui.Tooltip
     public double zoomScalingFactor = 0.5;
+
+    @ConfigEntry.Category("privacyandsafety")
+    @ConfigEntry.Gui.Tooltip
+    @ConfigEntry.Gui.RequiresRestart
+    public boolean saveCookies = false;
+
+    @ConfigEntry.Category("privacyandsafety")
+    @ConfigEntry.Gui.Tooltip
+    @ConfigEntry.Gui.RequiresRestart
+    public boolean enableMediaStream = false;
+
 }
