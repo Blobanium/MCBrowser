@@ -12,8 +12,10 @@ import me.shedaniel.autoconfig.serializer.GsonConfigSerializer;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.toast.SystemToast;
 import net.minecraft.text.Text;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -23,7 +25,7 @@ public class MCBrowser implements ClientModInitializer {
     public static final Logger LOGGER = LogManager.getLogger("MCBrowser");
 
     private static boolean firstOpen = true;
-
+    public static boolean isShuttingDown = false;
 
     @Override
     public void onInitializeClient() {
@@ -85,5 +87,9 @@ public class MCBrowser implements ClientModInitializer {
 //                     - You will be unable to sign into google while using this version. (See: https://github.com/CinemaMod/mcef/issues/61)
 //                     - JCEF Processes created by MCEF may linger in the background and eat up your CPU Resources. Even after minecraft is shut down. (See: https://github.com/CinemaMod/mcef/issues/63)""");
 //        }
+    }
+
+    public static void sendToastMessage(Text title, Text description) {
+        MinecraftClient.getInstance().getToastManager().add(new SystemToast(new SystemToast.Type(), title, description));
     }
 }

@@ -6,8 +6,6 @@ import com.google.gson.JsonObject;
 import io.github.blobanium.mcbrowser.MCBrowser;
 import io.github.blobanium.mcbrowser.util.SwitchFunctions;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.toast.SystemToast;
 import net.minecraft.text.Text;
 import org.apache.commons.io.FileUtils;
 
@@ -32,7 +30,7 @@ public class SpecialButtonAction {
     }
 
     private static void downloadModrinth(SpecialButtonActions action) {
-        sendToastMessage(Text.translatable("mcbrowser.download.toast.started"), SwitchFunctions.SpecialButtonActionSwitches.getTranslation(START_DL_DESCRIPTION, action));
+        MCBrowser.sendToastMessage(Text.translatable("mcbrowser.download.toast.started"), SwitchFunctions.SpecialButtonActionSwitches.getTranslation(START_DL_DESCRIPTION, action));
 
         CompletableFuture.runAsync(() -> {
             try {
@@ -56,9 +54,9 @@ public class SpecialButtonAction {
                 URL downloadURL = new URL(file.get("url").getAsString());
                 FileUtils.copyURLToFile(downloadURL, new File(FabricLoader.getInstance().getGameDir().toFile(), SwitchFunctions.SpecialButtonActionSwitches.getTargetDirectory(action) + cleanseFileUrl(downloadURL.getFile())));
 
-                sendToastMessage(Text.translatable("mcbrowser.download.toast.complete"), SwitchFunctions.SpecialButtonActionSwitches.getTranslation(END_DL_DESCRIPTION, action));
+                MCBrowser.sendToastMessage(Text.translatable("mcbrowser.download.toast.complete"), SwitchFunctions.SpecialButtonActionSwitches.getTranslation(END_DL_DESCRIPTION, action));
             } catch (IOException e) {
-                sendToastMessage(Text.translatable("mcbrowser.download.toast.failed"), Text.translatable("mcbrowser.download.toast.failed.description"));
+                MCBrowser.sendToastMessage(Text.translatable("mcbrowser.download.toast.failed"), Text.translatable("mcbrowser.download.toast.failed.description"));
                 MCBrowser.LOGGER.error("Failed to download file", e);
             }
         });
@@ -75,9 +73,4 @@ public class SpecialButtonAction {
         string = string.substring(string.indexOf("/") + 1);
         return string.split("/")[0];
     }
-
-    private static void sendToastMessage(Text title, Text description) {
-        MinecraftClient.getInstance().getToastManager().add(new SystemToast(new SystemToast.Type(), title, description));
-    }
-
 }

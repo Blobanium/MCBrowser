@@ -39,4 +39,7 @@ public class BrowserAutoConfig implements ConfigData {
     @ConfigEntry.Gui.RequiresRestart
     public boolean enableMediaStream = false;
 
+    @ConfigEntry.Category("privacyandsafety")
+    @ConfigEntry.Gui.Tooltip
+    public boolean allowDownloads = false;
 }

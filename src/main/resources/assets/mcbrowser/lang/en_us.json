@@ -24,10 +24,12 @@
   "mcbrowser.download.toast.started": "Download Started",
   "mcbrowser.download.toast.complete": "Download Completed!",
   "mcbrowser.download.toast.failed": "Download Failed",
+  "mcbrowser.download.toast.disabled": "Downloads are disabled",
   "mcbrowser.download.toast.started.description.mod": "Please wait while your mod downloads.",
   "mcbrowser.download.toast.started.description.rp": "Please wait while your resource pack downloads.",
   "mcbrowser.download.toast.complete.description.mod": "Restart your client for changes to take effect.",
   "mcbrowser.download.toast.complete.description.rp": "Resource Pack can be turned on in Resource Packs Settings",
   "mcbrowser.download.toast.failed.description": "Check your logs for more info",
+  "mcbrowser.download.toast.disabled.description": "\nPlease enable 'Allow downloads' in the mod's settings to start downloading files.",
   "mcbrowser.zoom.percent": "Zoom level: %d%%"
 }

@@ -12,6 +12,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class MinecraftClientMixin {
     @Inject(at = @At(value = "HEAD"), method = "close")
     private void onClose(CallbackInfo ci) {
+        MCBrowser.isShuttingDown = true;
         if (MCBrowser.getConfig().saveTabs) {
             TabManager.saveTabsToJson();
         }
