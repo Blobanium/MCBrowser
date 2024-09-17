@@ -42,4 +42,7 @@ public class BrowserAutoConfig implements ConfigData {
     @ConfigEntry.Category("privacyandsafety")
     @ConfigEntry.Gui.Tooltip
     public boolean allowDownloads = false;
+
+    @ConfigEntry.Gui.Tooltip
+    public boolean killJcefHelperOnClose = true;
 }

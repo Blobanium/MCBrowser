@@ -8,6 +8,10 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+
 @Mixin(MinecraftClient.class)
 public class MinecraftClientMixin {
     @Inject(at = @At(value = "HEAD"), method = "close")
@@ -17,5 +21,46 @@ public class MinecraftClientMixin {
             TabManager.saveTabsToJson();
         }
         TabManager.reset();
+    }
+
+    /**
+     * @author JetbrainsAI
+     * Injected method to be called after the Minecraft client's 'close' method.
+     * This method ensures that any lingering JCEF (Java Chromium Embedded Framework)
+     * helper processes are terminated to prevent CPU resource usage after closing
+     * the Minecraft client.
+     *
+     *
+     * @author Blobanium
+     * The lingering JCEF Processes are due to a bug with the MCEF library and this method
+     * is only implemented as a temporary workaround and will be removed once MCEF corrects
+     * the issue.
+     */
+    @Inject(at = @At("TAIL"), method = "close")
+    private void onAfterClose(CallbackInfo ci){
+        String processName = "jcef_helper.exe";
+        try {
+            ProcessBuilder processBuilder = new ProcessBuilder("tasklist");
+            Process process = processBuilder.start();
+
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            String line;
+            boolean isRunning = false;
+            while ((line = reader.readLine()) != null) {
+                if (line.contains(processName)) {
+                    isRunning = true;
+                    break;
+                }
+            }
+            reader.close();
+
+            if (isRunning && MCBrowser.getConfig().killJcefHelperOnClose) {
+                MCBrowser.LOGGER.warn("JCEF Processes are still running when they should have been shut down, attempting to close them to ensure processes are terminated and dont use up CPU resources after closing minecraft.");
+                ProcessBuilder killProcess = new ProcessBuilder("taskkill", "/IM", processName);
+                killProcess.start();
+            }
+        } catch (IOException e) {
+            MCBrowser.LOGGER.fatal("JCEF Process Check Failed. There still may be lingering processes running in the background and eating up system resources. Please report this error to the developer.", e);
+        }
     }
 }
