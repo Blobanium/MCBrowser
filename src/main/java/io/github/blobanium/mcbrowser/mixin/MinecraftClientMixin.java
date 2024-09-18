@@ -2,6 +2,11 @@ package io.github.blobanium.mcbrowser.mixin;
 
 import io.github.blobanium.mcbrowser.MCBrowser;
 import io.github.blobanium.mcbrowser.util.TabManager;
+import net.fabricmc.loader.api.FabricLoader;
+import net.fabricmc.loader.api.SemanticVersion;
+import net.fabricmc.loader.api.Version;
+import net.fabricmc.loader.api.VersionParsingException;
+import net.fabricmc.loader.api.metadata.version.VersionComparisonOperator;
 import net.minecraft.client.MinecraftClient;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -29,18 +34,23 @@ public class MinecraftClientMixin {
      * This method ensures that any lingering JCEF (Java Chromium Embedded Framework)
      * helper processes are terminated to prevent CPU resource usage after closing
      * the Minecraft client.
-     *
-     *
      * @author Blobanium
      * The lingering JCEF Processes are due to a bug with the MCEF library and this method
      * is only implemented as a temporary workaround and will be removed once MCEF corrects
      * the issue.
      */
     @Inject(at = @At("TAIL"), method = "close")
-    private void onAfterClose(CallbackInfo ci){
-        if (System.getProperty("os.name").toLowerCase().contains("win")) {
-            String processName = "jcef_helper.exe";
-            try {
+    private void onAfterClose(CallbackInfo ci) {
+        try {
+            String mcef = FabricLoader.getInstance().getModContainer("mcef").get().getMetadata().getVersion().toString();
+            SemanticVersion.parse(mcef);
+
+            VersionComparisonOperator operator = VersionComparisonOperator.LESS_EQUAL;
+            String versionToCompare = "2.1.5";
+            Version comparisonVersion = SemanticVersion.parse(versionToCompare);
+
+            if (operator.test(SemanticVersion.parse(mcef), comparisonVersion) && System.getProperty("os.name").toLowerCase().contains("win")) {
+                String processName = "jcef_helper.exe";
                 ProcessBuilder processBuilder = new ProcessBuilder("tasklist");
                 Process process = processBuilder.start();
 
@@ -60,9 +70,9 @@ public class MinecraftClientMixin {
                     ProcessBuilder killProcess = new ProcessBuilder("taskkill", "/IM", processName);
                     killProcess.start();
                 }
-            } catch (IOException e) {
-                MCBrowser.LOGGER.fatal("JCEF Process Check Failed. There still may be lingering processes running in the background and eating up system resources. Please report this error to the developer.", e);
             }
+        } catch (VersionParsingException | IOException e) {
+            MCBrowser.LOGGER.fatal("JCEF Process Check Failed. There still may be lingering processes running in the background and eating up system resources. Please report this error to the developer.", e);
         }
     }
 }
