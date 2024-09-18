@@ -4,7 +4,6 @@ import io.github.blobanium.mcbrowser.MCBrowser;
 import io.github.blobanium.mcbrowser.util.TabManager;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.SemanticVersion;
-import net.fabricmc.loader.api.Version;
 import net.fabricmc.loader.api.VersionParsingException;
 import net.fabricmc.loader.api.metadata.version.VersionComparisonOperator;
 import net.minecraft.client.MinecraftClient;
@@ -42,14 +41,7 @@ public class MinecraftClientMixin {
     @Inject(at = @At("TAIL"), method = "close")
     private void onAfterClose(CallbackInfo ci) {
         try {
-            String mcef = FabricLoader.getInstance().getModContainer("mcef").get().getMetadata().getVersion().toString();
-            SemanticVersion.parse(mcef);
-
-            VersionComparisonOperator operator = VersionComparisonOperator.LESS_EQUAL;
-            String versionToCompare = "2.1.5";
-            Version comparisonVersion = SemanticVersion.parse(versionToCompare);
-
-            if (operator.test(SemanticVersion.parse(mcef), comparisonVersion) && System.getProperty("os.name").toLowerCase().contains("win")) {
+            if (VersionComparisonOperator.LESS_EQUAL.test(SemanticVersion.parse(FabricLoader.getInstance().getModContainer("mcef").get().getMetadata().getVersion().toString()), SemanticVersion.parse("2.1.5")) && System.getProperty("os.name").toLowerCase().contains("win")) {
                 String processName = "jcef_helper.exe";
                 ProcessBuilder processBuilder = new ProcessBuilder("tasklist");
                 Process process = processBuilder.start();
