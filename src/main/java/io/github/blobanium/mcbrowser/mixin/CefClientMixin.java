@@ -6,8 +6,6 @@ import io.github.blobanium.mcbrowser.util.BrowserImpl;
 import io.github.blobanium.mcbrowser.util.BrowserUtil;
 import io.github.blobanium.mcbrowser.util.TabManager;
 import io.github.blobanium.mcbrowser.util.button.BrowserTabIcon;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.toast.SystemToast;
 import net.minecraft.text.Text;
 import org.cef.CefClient;
 import org.cef.browser.CefBrowser;
@@ -15,8 +13,6 @@ import org.cef.browser.CefFrame;
 import org.cef.callback.CefBeforeDownloadCallback;
 import org.cef.callback.CefDownloadItem;
 import org.cef.callback.CefDownloadItemCallback;
-import org.cef.callback.CefFileDialogCallback;
-import org.cef.handler.CefDialogHandler;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Pseudo;
 import org.spongepowered.asm.mixin.injection.At;
@@ -24,7 +20,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import java.util.Vector;
 
 @Pseudo
 @Mixin(CefClient.class)
@@ -56,8 +51,6 @@ public class CefClientMixin {
     @Inject(at = @At("HEAD"), method = "onBeforeDownload", remap = false)
     public void onBeforeDownload(CefBrowser browser, CefDownloadItem downloadItem, String suggestedName, CefBeforeDownloadCallback callback, CallbackInfo ci){
         if(MCBrowser.getConfig().allowDownloads){
-            //TODO: add download code.
-            System.out.println("suggestedname=" + suggestedName);
             MCBrowser.sendToastMessage(Text.translatable("mcbrowser.download.toast.started"), Text.translatable("mcbrowser.download.toast.started.description"));
             callback.Continue(suggestedName, true);
         }else{
@@ -72,7 +65,7 @@ public class CefClientMixin {
         }
         System.out.println("Downloading " + downloadItem.getSuggestedFileName() + " (" + downloadItem.getPercentComplete() + "% Complete  (" + downloadItem.getCurrentSpeed() + " bytes/s))");
         if(downloadItem.isComplete()){
-            MCBrowser.sendToastMessage(Text.translatable("mcbrowser.download.toast.complete"), Text.translatable("mcbrowser.download.toast.completed.description"));
+            MCBrowser.sendToastMessage(Text.translatable("mcbrowser.download.toast.complete"), Text.translatable("mcbrowser.download.toast.completed.description", downloadItem.getSuggestedFileName()));
         }
     }
 
