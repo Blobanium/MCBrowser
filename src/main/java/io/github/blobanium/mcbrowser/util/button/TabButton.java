@@ -137,7 +137,7 @@ public class TabButton extends PressableWidget {
                 BufferedImage bufferedImage = ImageIO.read(new URL(BrowserTabIcon.API_URL + currentUrl));
                 TabManager.tabs.get(tab).getIcon().setSize(bufferedImage.getWidth());
             } catch (IOException e) {
-                MCBrowser.LOGGER.warn("Could not find size of ico for " + currentUrl);
+                MCBrowser.LOGGER.warn("Could not find size of ico for {}", currentUrl, e);
             }
         });
     }

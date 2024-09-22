@@ -124,7 +124,7 @@ public class TabManager {
                     }
                 }
             } catch (IOException e) {
-                MCBrowser.LOGGER.error("Could not read list of tabs from \"" + filename + "\"", e);
+                MCBrowser.LOGGER.error("Could not read list of tabs from \"{}\"", filename, e);
             }
         }
     }
