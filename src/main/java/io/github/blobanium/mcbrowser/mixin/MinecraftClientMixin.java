@@ -59,7 +59,7 @@ public class MinecraftClientMixin {
 
                 if (isRunning && MCBrowser.getConfig().killJcefHelperOnClose) {
                     MCBrowser.LOGGER.warn("JCEF Processes are still running when they should have been shut down, attempting to close them to ensure processes are terminated and dont use up CPU resources after closing minecraft.");
-                    ProcessBuilder killProcess = new ProcessBuilder("taskkill", "/IM", processName);
+                    ProcessBuilder killProcess = new ProcessBuilder("taskkill", "/F", "/IM", processName);
                     killProcess.start();
                 }
             }
