@@ -16,7 +16,7 @@ public class UtilOperatingSystemMixin {
     @Inject(method = "open(Ljava/net/URI;)V", at = @At("HEAD"), cancellable = true)
     private void open(URI uri, CallbackInfo ci){
         try {
-            if (MCBrowser.getConfig().openLinkInBrowser) {
+            if (MCBrowser.getConfig().openLinkInBrowser && (uri.getScheme().equals("http") || uri.getScheme().equals("https"))) {
                 TabManager.openNewTab(uri.toURL().toString());
                 ci.cancel();
             }
