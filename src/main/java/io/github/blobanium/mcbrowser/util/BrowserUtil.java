@@ -26,6 +26,8 @@ public class BrowserUtil {
 
     public static String tooltipText;
 
+    public static boolean openInExternalBrowser = false;
+
     //Navigation initialization methods
     public static ButtonWidget initButton(Text message, ButtonWidget.PressAction onPress, int positionX, int buttonLevel) {
         return ButtonWidget.builder(message, onPress)
@@ -110,6 +112,7 @@ public class BrowserUtil {
     //Button related Methods
     public static void openInBrowser(){
         try {
+            openInExternalBrowser = true;
             Util.getOperatingSystem().open(new URI(TabManager.getCurrentUrl()));
         } catch (URISyntaxException e) {
             MCBrowser.LOGGER.fatal("Unable to open Browser", e);

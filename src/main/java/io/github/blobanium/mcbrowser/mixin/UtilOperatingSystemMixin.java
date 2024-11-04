@@ -1,6 +1,7 @@
 package io.github.blobanium.mcbrowser.mixin;
 
 import io.github.blobanium.mcbrowser.MCBrowser;
+import io.github.blobanium.mcbrowser.util.BrowserUtil;
 import io.github.blobanium.mcbrowser.util.TabManager;
 import net.minecraft.util.Util;
 import org.spongepowered.asm.mixin.Mixin;
@@ -16,10 +17,11 @@ public class UtilOperatingSystemMixin {
     @Inject(method = "open(Ljava/net/URI;)V", at = @At("HEAD"), cancellable = true)
     private void open(URI uri, CallbackInfo ci){
         try {
-            if (MCBrowser.getConfig().openLinkInBrowser && (uri.getScheme().equals("http") || uri.getScheme().equals("https"))) {
+            if (MCBrowser.getConfig().openLinkInBrowser && (uri.getScheme().equals("http") || uri.getScheme().equals("https")) && !BrowserUtil.openInExternalBrowser) {
                 TabManager.openNewTab(uri.toURL().toString());
                 ci.cancel();
             }
+            BrowserUtil.openInExternalBrowser = false;
         } catch (MalformedURLException e) {
             MCBrowser.LOGGER.error("Opening in browser. Failed to convert to URL", e);
         }
