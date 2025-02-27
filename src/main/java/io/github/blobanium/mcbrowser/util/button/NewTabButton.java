@@ -32,7 +32,7 @@ public class NewTabButton extends PressableWidget {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (this.clicked(mouseX, mouseY)) {
+        if (this.isSelected()){
             if (button == 2) {
                 int i = TabManager.activeTab;
                 TabManager.openNewTab();

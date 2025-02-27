@@ -85,11 +85,11 @@ public class BrowserScreen extends Screen {
 
         Window window = MinecraftClient.getInstance().getWindow();
         BrowserAutoConfig config = MCBrowser.getConfig();
-        if(config.limitBrowserFramerate && window.getFramerateLimit() > config.browserFPS){
-                previousLimit = window.getFramerateLimit();
-                window.setFramerateLimit(config.browserFPS);
-                isFpsLowered = true;
-        }
+//        if(config.limitBrowserFramerate && window.getFramerateLimit() > config.browserFPS){
+//                previousLimit = window.getFramerateLimit();
+//                window.setFramerateLimit(config.browserFPS);
+//                isFpsLowered = true;
+//        }
 
         BrowserUtil.instance = this;
         BrowserUtil.tooltipText = null;
@@ -155,7 +155,7 @@ public class BrowserScreen extends Screen {
     public void close() {
         BrowserUtil.instance = null;
         for (TabButton tabButton : tabButtons) tabButton.resetIco();
-        if(isFpsLowered) MinecraftClient.getInstance().getWindow().setFramerateLimit(previousLimit);
+//        if(isFpsLowered) MinecraftClient.getInstance().getWindow().setFramerateLimit(previousLimit);
         super.close();
     }
 
