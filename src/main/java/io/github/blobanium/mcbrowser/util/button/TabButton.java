@@ -60,11 +60,11 @@ public class TabButton extends PressableWidget {
         Identifier texture = TEXTURES.get(this.isNarratable(), this.isFocused());
 
         if (this.getX() > BrowserUtil.instance.width - BrowserScreen.BD_OFFSET - 35) { return; }
-        context.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha);
+        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha);
         RenderSystem.enableBlend();
         RenderSystem.enableDepthTest();
-        if (this.getWidth() > this.getHeight()) { context.drawGuiTexture(texture, this.getX(), this.getY(), this.getWidth(), this.getHeight()); }
-        context.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+//        if (this.getWidth() > this.getHeight()) { context.drawGuiTexture(texture, this.getX(), this.getY(), this.getWidth(), this.getHeight()); }
+        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         String name = TabManager.tabs.get(tab).getTitle();
         if (name == null || name.isEmpty()) { name = "Loading..."; }
         TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
@@ -73,7 +73,7 @@ public class TabButton extends PressableWidget {
         context.fill(this.getX(), this.getY(), this.getX() + this.getHeight(), this.getY() + this.getHeight(), 0xFFFFFFFF);
         renderIco();
         if (!tooSmall || selected) {
-            context.drawGuiTexture(texture, this.getX() + (this.getWidth() - 15), this.getY(), 15, this.getHeight());
+//            context.drawGuiTexture(texture, this.getX() + (this.getWidth() - 15), this.getY(), 15, this.getHeight());
             String cross = "❌";
             context.drawText(textRenderer, cross, this.getX() + this.getWidth() - 8 - textRenderer.getWidth(cross) / 2, this.getY() + 4, 0xFFFFFFFF, true);
         }
@@ -148,7 +148,7 @@ public class TabButton extends PressableWidget {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if ((this.getX() > BrowserUtil.instance.width - BrowserScreen.BD_OFFSET - 35) || !this.clicked(mouseX, mouseY)) {
+        if ((this.getX() > BrowserUtil.instance.width - BrowserScreen.BD_OFFSET - 35) || !this.isSelected()) {
             return false;
         }
 

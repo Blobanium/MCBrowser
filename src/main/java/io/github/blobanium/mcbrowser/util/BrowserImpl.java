@@ -3,6 +3,7 @@ package io.github.blobanium.mcbrowser.util;
 import com.cinemamod.mcef.MCEFBrowser;
 import com.cinemamod.mcef.MCEFClient;
 import com.mojang.blaze3d.systems.RenderSystem;
+import net.minecraft.client.gl.ShaderProgramKeys;
 import net.minecraft.client.render.*;
 import org.lwjgl.glfw.GLFW;
 
@@ -28,7 +29,7 @@ public class BrowserImpl extends MCEFBrowser {
 
     public void render(int x, int y, int width, int height) {
         RenderSystem.disableDepthTest();
-        RenderSystem.setShader(GameRenderer::getPositionTexColorProgram);
+        RenderSystem.setShader(ShaderProgramKeys.POSITION_TEX_COLOR);
         RenderSystem.setShaderTexture(0, this.getRenderer().getTextureID());
         Tessellator t = Tessellator.getInstance();
         BufferBuilder buffer = t.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR);
