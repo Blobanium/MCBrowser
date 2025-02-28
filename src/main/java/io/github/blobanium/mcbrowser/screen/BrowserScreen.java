@@ -12,7 +12,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.*;
-import net.minecraft.client.util.Window;
 import net.minecraft.text.Text;
 import org.lwjgl.glfw.GLFW;
 
@@ -83,13 +82,13 @@ public class BrowserScreen extends Screen {
     protected void init() {
         super.init();
 
-        Window window = MinecraftClient.getInstance().getWindow();
+        MinecraftClient client = MinecraftClient.getInstance();
         BrowserAutoConfig config = MCBrowser.getConfig();
-//        if(config.limitBrowserFramerate && window.getFramerateLimit() > config.browserFPS){
-//                previousLimit = window.getFramerateLimit();
-//                window.setFramerateLimit(config.browserFPS);
-//                isFpsLowered = true;
-//        }
+        if(config.limitBrowserFramerate && client.options.getMaxFps().getValue() > config.browserFPS){
+               previousLimit = client.options.getMaxFps().getValue();
+               client.getInactivityFpsLimiter().setMaxFps(config.browserFPS);
+               isFpsLowered = true;
+        }
 
         BrowserUtil.instance = this;
         BrowserUtil.tooltipText = null;
@@ -155,7 +154,7 @@ public class BrowserScreen extends Screen {
     public void close() {
         BrowserUtil.instance = null;
         for (TabButton tabButton : tabButtons) tabButton.resetIco();
-//        if(isFpsLowered) MinecraftClient.getInstance().getWindow().setFramerateLimit(previousLimit);
+        if(isFpsLowered) MinecraftClient.getInstance().getInactivityFpsLimiter().setMaxFps(previousLimit);
         super.close();
     }
 
