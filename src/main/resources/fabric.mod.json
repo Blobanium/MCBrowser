@@ -13,6 +13,7 @@
   "license": "MIT",
   "icon": "assets/mcbrowser/icon.png",
   "environment": "client",
+  "accessWidener": "mcbrowser.accesswidener",
   "entrypoints": {
     "client": [
       "io.github.blobanium.mcbrowser.MCBrowser"
