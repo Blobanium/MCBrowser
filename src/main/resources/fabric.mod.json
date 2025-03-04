@@ -39,5 +39,8 @@
     "cloth-config": "17.*.*",
     "fabric-command-api-v2": "*",
     "fabric-lifecycle-events-v1": "*"
+  },
+  "conflicts": {
+    "vulkanmod": "*"
   }
 }
