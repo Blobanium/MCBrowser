@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URI;
 import java.util.concurrent.CompletableFuture;
+
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
@@ -60,7 +61,6 @@ public class TabButton extends PressableWidget {
     @Override
     public void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
         Identifier texture = TEXTURES.get(this.isNarratable(), this.isFocused());
-        RenderLayer.getGuiTextured(texture);
 
         if (this.getX() > BrowserUtil.instance.width - BrowserScreen.BD_OFFSET - 35) { return; }
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha);
