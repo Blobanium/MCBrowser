@@ -8,7 +8,9 @@ import net.minecraft.text.Text;
 import org.lwjgl.glfw.GLFW;
 
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.URI;
 
 
 
@@ -61,10 +63,10 @@ public class SwitchFunctions {
             };
         }
 
-        public static URL getTargetURL(SpecialButtonActions action) throws MalformedURLException {
+        public static URL getTargetURL(SpecialButtonActions action) throws MalformedURLException, URISyntaxException {
             return switch (action) {
-                case MODRINTH_MOD -> new URL("https://api.modrinth.com/v2/project/" + SpecialButtonAction.getModrinthSlugFromUrl(TabManager.getCurrentUrl()) + "/version?game_versions=[%22" + MinecraftVersion.CURRENT.getName() + "%22]&loaders=[%22fabric%22]");
-                case MODRINTH_RP -> new URL("https://api.modrinth.com/v2/project/" + SpecialButtonAction.getModrinthSlugFromUrl(TabManager.getCurrentUrl()) + "/version?game_versions=[%22" + MinecraftVersion.CURRENT.getName() + "%22]");
+                case MODRINTH_MOD -> new URI("https://api.modrinth.com/v2/project/" + SpecialButtonAction.getModrinthSlugFromUrl(TabManager.getCurrentUrl()) + "/version?game_versions=[%22" + MinecraftVersion.CURRENT.getName() + "%22]&loaders=[%22fabric%22]").toURL();
+                case MODRINTH_RP -> new URI("https://api.modrinth.com/v2/project/" + SpecialButtonAction.getModrinthSlugFromUrl(TabManager.getCurrentUrl()) + "/version?game_versions=[%22" + MinecraftVersion.CURRENT.getName() + "%22]").toURL();
 
                 //Reserved for future usage.
                 //noinspection UnnecessaryDefault

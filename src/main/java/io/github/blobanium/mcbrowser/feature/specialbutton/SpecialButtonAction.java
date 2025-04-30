@@ -13,7 +13,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.URI;
 import java.util.concurrent.CompletableFuture;
 
 public class SpecialButtonAction {
@@ -51,11 +53,11 @@ public class SpecialButtonAction {
                 JsonObject file = filesArray.get(0).getAsJsonObject();
 
                 //get file
-                URL downloadURL = new URL(file.get("url").getAsString());
+                URL downloadURL = new URI(file.get("url").getAsString()).toURL();
                 FileUtils.copyURLToFile(downloadURL, new File(FabricLoader.getInstance().getGameDir().toFile(), SwitchFunctions.SpecialButtonActionSwitches.getTargetDirectory(action) + cleanseFileUrl(downloadURL.getFile())));
 
                 MCBrowser.sendToastMessage(Text.translatable("mcbrowser.download.toast.complete"), SwitchFunctions.SpecialButtonActionSwitches.getTranslation(END_DL_DESCRIPTION, action));
-            } catch (IOException e) {
+            } catch (IOException | URISyntaxException e) {
                 MCBrowser.sendToastMessage(Text.translatable("mcbrowser.download.toast.failed"), Text.translatable("mcbrowser.download.toast.failed.description"));
                 MCBrowser.LOGGER.error("Failed to download file", e);
             }

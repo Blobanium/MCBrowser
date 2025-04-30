@@ -8,7 +8,8 @@ import io.github.blobanium.mcbrowser.util.TabManager;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.net.URL;
+import java.net.URISyntaxException;
+import java.net.URI;
 import java.util.concurrent.CompletableFuture;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
@@ -136,9 +137,9 @@ public class TabButton extends PressableWidget {
         TabManager.tabs.get(tab).initIcon(currentUrl);
         CompletableFuture.runAsync(() -> {
             try {
-                BufferedImage bufferedImage = ImageIO.read(new URL(BrowserTabIcon.API_URL + currentUrl));
+                BufferedImage bufferedImage = ImageIO.read(new URI(BrowserTabIcon.API_URL + currentUrl).toURL());
                 TabManager.tabs.get(tab).getIcon().setSize(bufferedImage.getWidth());
-            } catch (IOException e) {
+            } catch (IOException | URISyntaxException e) {
                 MCBrowser.LOGGER.warn("Could not find size of ico for {}", currentUrl, e);
             }
         });
