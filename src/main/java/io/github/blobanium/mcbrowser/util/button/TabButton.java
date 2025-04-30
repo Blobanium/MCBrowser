@@ -73,7 +73,7 @@ public class TabButton extends PressableWidget {
         TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
         drawScrollableText(context, textRenderer, Text.of(name), this.getX() + 2 + 15, this.getY(), this.getX() + this.getWidth() - (!tooSmall || selected ? 17 : 2), this.getY() + this.getHeight(), 16777215 | MathHelper.ceil(this.alpha * 255.0F) << 24);
 
-        context.fill(this.getX(), this.getY(), this.getX() + this.getHeight(), this.getY() + this.getHeight(), 0xFFFFFFFF);
+        context.fill(this.getX(), this.getY(), this.getX() + this.getHeight(), this.getY() + this.getHeight(), 0x00FFFFFF);
         renderIco();
         if (!tooSmall || selected) {
             context.drawGuiTexture(RenderLayer.GUI_TEXTURED, texture, this.getX() + (this.getWidth() - 15), this.getY(), 15, this.getHeight());
