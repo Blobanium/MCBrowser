@@ -12,8 +12,6 @@ import me.shedaniel.autoconfig.serializer.GsonConfigSerializer;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.toast.SystemToast;
 import net.minecraft.text.Text;
@@ -53,7 +51,6 @@ public class MCBrowser implements ClientModInitializer {
                             })
                     ))));
         }
-        runCompatabilityCheck();
     }
 
     private static final MinecraftClient minecraft = MinecraftClient.getInstance();
@@ -72,21 +69,6 @@ public class MCBrowser implements ClientModInitializer {
 
     public static BrowserAutoConfig getConfig() {
         return AutoConfig.getConfigHolder(BrowserAutoConfig.class).getConfig();
-    }
-
-    private static void runCompatabilityCheck(){
-        //We Already Require MCEF by default.
-        //noinspection OptionalGetWithoutIsPresent
-        String mcefVersion = FabricLoader.getInstance().getModContainer("mcef").get().getMetadata().getVersion().getFriendlyString();
-
-        // No longer necessary as this is not supported in 1.21
-//        if(mcefVersion.contains("2.1.0")){
-//            LOGGER.warn("""
-//                    You are using a version of MCEF that is known to have critical bugs
-//                    It is strongly recomended to update MCEF to the latest version
-//                     - You will be unable to sign into google while using this version. (See: https://github.com/CinemaMod/mcef/issues/61)
-//                     - JCEF Processes created by MCEF may linger in the background and eat up your CPU Resources. Even after minecraft is shut down. (See: https://github.com/CinemaMod/mcef/issues/63)""");
-//        }
     }
 
     public static void sendToastMessage(Text title, Text description) {
