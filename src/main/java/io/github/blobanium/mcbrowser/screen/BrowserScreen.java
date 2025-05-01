@@ -178,7 +178,10 @@ public class BrowserScreen extends Screen {
         for (TabButton tabButton : tabButtons) tabButton.render(context, mouseX, mouseY, delta);
         for (ClickableWidget zoom :zoomElements) if (BrowserUtil.ZoomActions.shouldRenderZoomElements()) {
             if (zoom.isMouseOver(mouseX, mouseY)) BrowserUtil.ZoomActions.resetLastTimeCalled();
+            zoom.active = true;
             zoom.render(context, mouseX, mouseY, delta);
+        }else{
+            zoom.active = false;
         }
         newTabButton.render(context, mouseX, mouseY, delta);
         openInBrowserButton.render(context, mouseX, mouseY, delta);
