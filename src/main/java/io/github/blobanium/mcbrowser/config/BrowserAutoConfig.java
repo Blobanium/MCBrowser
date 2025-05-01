@@ -45,4 +45,8 @@ public class BrowserAutoConfig implements ConfigData {
 
     @ConfigEntry.Gui.Tooltip
     public boolean killJcefHelperOnClose = true;
+
+    @ConfigEntry.Gui.Tooltip
+    @ConfigEntry.Gui.RequiresRestart
+    public String customSwitches = "";
 }

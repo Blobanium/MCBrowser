@@ -25,6 +25,8 @@
   "text.autoconfig.mcbrowser.option.killJcefHelperOnClose.@Tooltip": "Temporary workaround to prevent lingering JCEF background processes that eat up CPU resources after minecraft is shutdown \nTurning this option off is strongly not recommended unless you are having issues with other applications that utilize JCEF.",
   "text.autoconfig.mcbrowser.option.allowDownloads": "Allow Downloads",
   "text.autoconfig.mcbrowser.option.allowDownloads.@Tooltip": "Allows downloading files to your computer using MCBrowser",
+  "text.autoconfig.mcbrowser.option.customSwitches": "Custom Chromium Switches",
+  "text.autoconfig.mcbrowser.option.customSwitches.@Tooltip": "Use Custom Chromium Switches with MCBrowser \n \n§cWARNING:§f Do not paste anything here if someone told you to. Doing so may compromise privacy and security and give bad actors access to your computer!" ,
   "mcbrowser.download.toast.started": "Download Started",
   "mcbrowser.download.toast.complete": "Download Completed!",
   "mcbrowser.download.toast.failed": "Download Failed",
