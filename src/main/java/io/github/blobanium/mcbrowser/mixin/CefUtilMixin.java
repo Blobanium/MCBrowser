@@ -24,7 +24,6 @@ public class CefUtilMixin {
             Collections.addAll(list, cefswitches);
         }
         args = list.toArray(new String[0]);
-        System.out.println(Arrays.toString(args));
         return args;
     }
 
