@@ -13,7 +13,6 @@
   "license": "MIT",
   "icon": "assets/mcbrowser/icon.png",
   "environment": "client",
-  "accessWidener": "mcbrowser.accesswidener",
   "entrypoints": {
     "client": [
       "io.github.blobanium.mcbrowser.MCBrowser"
@@ -29,13 +28,13 @@
     "modmenu":"*"
   },
   "recommends": {
-    "mcef": ">=2.1.5-1.21"
+    "mcef": ">=2.1.6-1.21.10"
   },
   "depends": {
     "fabricloader": ">=${loader_version}",
-    "minecraft": "1.21.4",
-    "mcef": ">=2.1.0-1.20.1",
-    "cloth-config": "17.*.*",
+    "minecraft": "1.21.10",
+    "mcef": ">=2.1.6-1.21.10",
+    "cloth-config": "20.*.*",
     "fabric": "*"
   },
   "conflicts": {
