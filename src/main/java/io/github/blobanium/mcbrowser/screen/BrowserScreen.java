@@ -9,11 +9,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.Click;
-import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.*;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.tooltip.Tooltip;
-import net.minecraft.client.gui.tooltip.TooltipState;
 import net.minecraft.client.gui.widget.*;
 import net.minecraft.client.input.CharInput;
 import net.minecraft.client.input.KeyInput;
@@ -48,7 +45,6 @@ public class BrowserScreen extends Screen {
     private boolean isFpsLowered = false;
 
     public BrowserImpl currentTab = TabManager.getCurrentTab();
-    private final TooltipState tooltip = new TooltipState();
 
     public BrowserScreen(Text title) {
         super(title);
@@ -176,10 +172,7 @@ public class BrowserScreen extends Screen {
         renderWidgets(context, mouseX, mouseY, delta);
 
         if (BrowserUtil.tooltipText != null && BrowserUtil.tooltipText.getBytes().length != 0){
-            tooltip.setTooltip(Tooltip.of(Text.of(BrowserUtil.tooltipText)));
-            this.tooltip.render(context, mouseX, mouseY, true, true, this.getNavigationFocus());
-        }else {
-            tooltip.setTooltip(null);
+            context.drawTooltip(MinecraftClient.getInstance().textRenderer, Text.of(BrowserUtil.tooltipText), mouseX, mouseY);
         }
     }
 
