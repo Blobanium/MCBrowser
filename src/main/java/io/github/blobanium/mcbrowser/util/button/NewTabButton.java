@@ -3,8 +3,10 @@ package io.github.blobanium.mcbrowser.util.button;
 import io.github.blobanium.mcbrowser.screen.BrowserScreen;
 import io.github.blobanium.mcbrowser.util.BrowserUtil;
 import io.github.blobanium.mcbrowser.util.TabManager;
+import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.PressableWidget;
+import net.minecraft.client.input.AbstractInput;
 import net.minecraft.text.Text;
 
 public class NewTabButton extends PressableWidget {
@@ -21,7 +23,7 @@ public class NewTabButton extends PressableWidget {
     }
 
     @Override
-    public void onPress() {
+    public void onPress(AbstractInput input) {
         //Required for Implementation
     }
 
@@ -31,9 +33,9 @@ public class NewTabButton extends PressableWidget {
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+    public boolean mouseClicked(Click click, boolean doubled) {
         if (this.isSelected()){
-            if (button == 2) {
+            if (click.button() == 2) {
                 int i = TabManager.activeTab;
                 TabManager.openNewTab();
                 TabManager.setActiveTab(i);

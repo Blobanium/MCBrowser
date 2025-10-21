@@ -9,9 +9,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.tooltip.Tooltip;
+import net.minecraft.client.gui.tooltip.TooltipState;
 import net.minecraft.client.gui.widget.*;
+import net.minecraft.client.input.CharInput;
+import net.minecraft.client.input.KeyInput;
 import net.minecraft.text.Text;
 import org.lwjgl.glfw.GLFW;
 
@@ -43,6 +48,7 @@ public class BrowserScreen extends Screen {
     private boolean isFpsLowered = false;
 
     public BrowserImpl currentTab = TabManager.getCurrentTab();
+    private final TooltipState tooltip = new TooltipState();
 
     public BrowserScreen(Text title) {
         super(title);
@@ -162,13 +168,19 @@ public class BrowserScreen extends Screen {
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
         super.render(context, mouseX, mouseY, delta);
         if (TabManager.getCurrentTabHolder().isInit()) {
-            currentTab.render(BD_OFFSET, BD_OFFSET, this.width - BD_OFFSET * 2, this.height - BD_OFFSET * 2);
+            currentTab.render(context, BD_OFFSET, BD_OFFSET, this.width - BD_OFFSET * 2, this.height - BD_OFFSET * 2);
         } else {
             TabManager.getCurrentTabHolder().init();
             resizeBrowser();
         }
         renderWidgets(context, mouseX, mouseY, delta);
-        if (BrowserUtil.tooltipText != null && BrowserUtil.tooltipText.getBytes().length != 0) setTooltip(Text.of(BrowserUtil.tooltipText));
+
+        if (BrowserUtil.tooltipText != null && BrowserUtil.tooltipText.getBytes().length != 0){
+            tooltip.setTooltip(Tooltip.of(Text.of(BrowserUtil.tooltipText)));
+            this.tooltip.render(context, mouseX, mouseY, true, true, this.getNavigationFocus());
+        }else {
+            tooltip.setTooltip(null);
+        }
     }
 
     private void renderWidgets(DrawContext context, int mouseX, int mouseY, float delta){
@@ -188,15 +200,15 @@ public class BrowserScreen extends Screen {
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        mouseButtonControlImpl(mouseX, mouseY, button, true);
-        return super.mouseClicked(mouseX, mouseY, button);
+    public boolean mouseClicked(Click click, boolean doubled) {
+        mouseButtonControlImpl(click, doubled, true);
+        return super.mouseClicked(click, doubled);
     }
 
     @Override
-    public boolean mouseReleased(double mouseX, double mouseY, int button) {
-        mouseButtonControlImpl(mouseX, mouseY, button, false);
-        return super.mouseReleased(mouseX, mouseY, button);
+    public boolean mouseReleased(Click click) {
+        mouseButtonControlImpl(click, false, false);
+        return super.mouseReleased(click);
     }
 
     @Override
@@ -206,9 +218,9 @@ public class BrowserScreen extends Screen {
     }
 
     @Override
-    public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
-        BrowserUtil.updateMouseLocation(mouseX, mouseY);
-        return super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
+    public boolean mouseDragged(Click click, double offsetX, double offsetY) {
+        BrowserUtil.updateMouseLocation(click.x(), click.y());
+        return super.mouseDragged(click, offsetX, offsetY);
     }
 
     @Override
@@ -218,44 +230,44 @@ public class BrowserScreen extends Screen {
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (Screen.hasControlDown() && SwitchFunctions.ctrlKeyPressedSwitch(keyCode, modifiers)) {
+    public boolean keyPressed(KeyInput input) {
+        if (client.isCtrlPressed() && SwitchFunctions.ctrlKeyPressedSwitch(input.getKeycode(), input.modifiers())) {
             return true;
         }
 
-        sendKeyActivityAndSetFocus(keyCode, scanCode, modifiers, true);
+        sendKeyActivityAndSetFocus(input.getKeycode(), input.scancode(), input.modifiers(), true);
 
         // Prevent the enter key if buttons aren’t focused
-        if (Arrays.stream(uiElements).noneMatch(ClickableWidget::isFocused) && keyCode == GLFW.GLFW_KEY_ENTER) {
+        if (Arrays.stream(uiElements).noneMatch(ClickableWidget::isFocused) && input.getKeycode() == GLFW.GLFW_KEY_ENTER) {
             return true;
         }
 
         // Close screen on Esc key
-        if (keyCode == 256 && this.shouldCloseOnEsc()) {
+        if (input.getKeycode() == 256 && this.shouldCloseOnEsc()) {
             this.close();
             return true;
         }
 
-        return this.getFocused() != null && this.getFocused().keyPressed(keyCode, scanCode, modifiers);
+        return this.getFocused() != null && this.getFocused().keyPressed(input);
     }
 
     @Override
-    public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
-        sendKeyActivityAndSetFocus(keyCode, scanCode, modifiers, false);
-        return super.keyReleased(keyCode, scanCode, modifiers);
+    public boolean keyReleased(KeyInput input) {
+        sendKeyActivityAndSetFocus(input.getKeycode(), input.scancode(), input.modifiers(), false);
+        return super.keyReleased(input);
     }
 
     private void sendKeyActivityAndSetFocus(int keyCode, int scanCode, int modifiers, boolean isPress){
-        if (isPress ? !urlBox.isFocused() : !Screen.hasControlDown() || keyCode != GLFW.GLFW_KEY_TAB) BrowserUtil.runAsyncIfEnabled(() -> currentTab.sendKeyPressRelease(keyCode, scanCode, modifiers, isPress));
+        if (isPress ? !urlBox.isFocused() : ! client.isCtrlPressed() || keyCode != GLFW.GLFW_KEY_TAB) BrowserUtil.runAsyncIfEnabled(() -> currentTab.sendKeyPressRelease(keyCode, scanCode, modifiers, isPress));
         setFocus();
     }
 
     @Override
-    public boolean charTyped(char codePoint, int modifiers) {
-        if(codePoint == (char) 0) return false;
-        BrowserUtil.runAsyncIfEnabled(() -> currentTab.sendKeyTyped(codePoint, modifiers));
+    public boolean charTyped(CharInput input) {
+        if(input.codepoint() == (char) 0) return false;
+        BrowserUtil.runAsyncIfEnabled(() -> currentTab.sendKeyTyped((char) input.codepoint(), input.modifiers()));
         setFocus();
-        return super.charTyped(codePoint, modifiers);
+        return super.charTyped(input);
     }
 
 
@@ -277,8 +289,8 @@ public class BrowserScreen extends Screen {
         if (this.openInBrowserButton != null) openInBrowserButton.setPosition(width - 200, height - BD_OFFSET + 5);
     }
 
-    private void mouseButtonControlImpl(double mouseX, double mouseY, int button, boolean isClick) {
-        if (mouseX > BD_OFFSET && mouseX < this.width - BD_OFFSET && mouseY > BD_OFFSET && mouseY < this.height - BD_OFFSET) currentTab.mouseButtonControl(mouseX, mouseY, button, isClick);
+    private void mouseButtonControlImpl(Click click, boolean isDouble, boolean isClick) {
+        if (click.x() > BD_OFFSET && click.x() < this.width - BD_OFFSET && click.y() > BD_OFFSET && click.y() < this.height - BD_OFFSET) currentTab.mouseButtonControl(click, isDouble, isClick);
         setFocus();
     }
 

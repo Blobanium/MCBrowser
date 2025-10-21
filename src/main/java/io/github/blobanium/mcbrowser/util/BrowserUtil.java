@@ -12,6 +12,7 @@ import java.util.concurrent.CompletableFuture;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.client.input.KeyInput;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Util;
@@ -90,18 +91,18 @@ public class BrowserUtil {
     public static TextFieldWidget initUrlBox(int offset, int width) {
         TextFieldWidget urlBox = new TextFieldWidget(MinecraftClient.getInstance().textRenderer, offset + 80, offset - 20, BrowserUtil.getUrlBoxWidth(width, offset), 15, Text.of("")) {
             @Override
-            public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+            public boolean keyPressed(KeyInput input) {
                 if (isFocused()) {
                     for (TabHolder tab : TabManager.tabs) {
                         BrowserImpl browser = tab.getBrowser();
                         if (browser != null) browser.setFocus(false);
                     }
-                    if (keyCode == GLFW.GLFW_KEY_ENTER) {
+                    if (input.getKeycode() == GLFW.GLFW_KEY_ENTER) {
                         TabManager.getCurrentTab().loadURL(BrowserFeatureUtil.prediffyURL(getText()));
                         setFocused(false);
                     }
                 }
-                return super.keyPressed(keyCode, scanCode, modifiers);
+                return super.keyPressed(input);
             }
 
         };

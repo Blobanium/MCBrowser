@@ -65,8 +65,8 @@ public class SwitchFunctions {
 
         public static URL getTargetURL(SpecialButtonActions action) throws MalformedURLException, URISyntaxException {
             return switch (action) {
-                case MODRINTH_MOD -> new URI("https://api.modrinth.com/v2/project/" + SpecialButtonAction.getModrinthSlugFromUrl(TabManager.getCurrentUrl()) + "/version?game_versions=[%22" + MinecraftVersion.CURRENT.getName() + "%22]&loaders=[%22fabric%22]").toURL();
-                case MODRINTH_RP -> new URI("https://api.modrinth.com/v2/project/" + SpecialButtonAction.getModrinthSlugFromUrl(TabManager.getCurrentUrl()) + "/version?game_versions=[%22" + MinecraftVersion.CURRENT.getName() + "%22]").toURL();
+                case MODRINTH_MOD -> new URI("https://api.modrinth.com/v2/project/" + SpecialButtonAction.getModrinthSlugFromUrl(TabManager.getCurrentUrl()) + "/version?game_versions=[%22" + MinecraftVersion.create().name() + "%22]&loaders=[%22fabric%22]").toURL();
+                case MODRINTH_RP -> new URI("https://api.modrinth.com/v2/project/" + SpecialButtonAction.getModrinthSlugFromUrl(TabManager.getCurrentUrl()) + "/version?game_versions=[%22" + MinecraftVersion.create().name() + "%22]").toURL();
 
                 //Reserved for future usage.
                 //noinspection UnnecessaryDefault
