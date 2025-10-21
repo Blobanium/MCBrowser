@@ -142,7 +142,6 @@ public class TabManager {
     }
 
     public static void tabControl(int keyCodeModifiers){
-        //TODO: Convert to switch once Code Climate fixes an analysis bug with switches.
         if(keyCodeModifiers == CTRL_T){
             openNewTab();
         }else if(keyCodeModifiers == CTRL_SHIFT_T && !closedTabs.isEmpty()){
