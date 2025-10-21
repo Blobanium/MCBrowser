@@ -224,7 +224,7 @@ public class BrowserScreen extends Screen {
 
     @Override
     public boolean keyPressed(KeyInput input) {
-        if (client.isCtrlPressed() && SwitchFunctions.ctrlKeyPressedSwitch(input.getKeycode(), input.modifiers())) {
+        if (client != null && client.isCtrlPressed() && SwitchFunctions.ctrlKeyPressedSwitch(input.getKeycode(), input.modifiers())) {
             return true;
         }
 
@@ -251,7 +251,7 @@ public class BrowserScreen extends Screen {
     }
 
     private void sendKeyActivityAndSetFocus(int keyCode, int scanCode, int modifiers, boolean isPress){
-        if (isPress ? !urlBox.isFocused() : ! client.isCtrlPressed() || keyCode != GLFW.GLFW_KEY_TAB) BrowserUtil.runAsyncIfEnabled(() -> currentTab.sendKeyPressRelease(keyCode, scanCode, modifiers, isPress));
+        if (isPress ? !urlBox.isFocused() : !(client != null && client.isCtrlPressed()) || keyCode != GLFW.GLFW_KEY_TAB) BrowserUtil.runAsyncIfEnabled(() -> currentTab.sendKeyPressRelease(keyCode, scanCode, modifiers, isPress));
         setFocus();
     }
 
