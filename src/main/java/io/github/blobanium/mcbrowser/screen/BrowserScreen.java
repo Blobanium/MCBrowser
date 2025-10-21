@@ -224,7 +224,7 @@ public class BrowserScreen extends Screen {
 
     @Override
     public boolean keyPressed(KeyInput input) {
-        if (client != null && client.isCtrlPressed() && SwitchFunctions.ctrlKeyPressedSwitch(input.getKeycode(), input.modifiers())) {
+        if (client != null && client.isCtrlPressed() && BrowserUtil.ctrlKeyPressedSwitch(input.getKeycode(), input.modifiers())) {
             return true;
         }
 

@@ -4,18 +4,17 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import io.github.blobanium.mcbrowser.MCBrowser;
-import io.github.blobanium.mcbrowser.util.SwitchFunctions;
+import io.github.blobanium.mcbrowser.util.TabManager;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.MinecraftVersion;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.net.URI;
+import java.net.*;
 import java.util.concurrent.CompletableFuture;
 
 public class SpecialButtonAction {
@@ -32,12 +31,12 @@ public class SpecialButtonAction {
     }
 
     private static void downloadModrinth(SpecialButtonActions action) {
-        MCBrowser.sendToastMessage(Text.translatable("mcbrowser.download.toast.started"), SwitchFunctions.SpecialButtonActionSwitches.getTranslation(START_DL_DESCRIPTION, action));
+        MCBrowser.sendToastMessage(Text.translatable("mcbrowser.download.toast.started"), SpecialButtonActionSwitches.getTranslation(START_DL_DESCRIPTION, action));
 
         CompletableFuture.runAsync(() -> {
             try {
                 //Get the file from modrinth's API
-                URL url = SwitchFunctions.SpecialButtonActionSwitches.getTargetURL(action);
+                URL url = SpecialButtonActionSwitches.getTargetURL(action);
                 HttpURLConnection http = (HttpURLConnection) url.openConnection();
                 http.setRequestMethod("GET");
                 http.connect();
@@ -54,9 +53,9 @@ public class SpecialButtonAction {
 
                 //get file
                 URL downloadURL = new URI(file.get("url").getAsString()).toURL();
-                FileUtils.copyURLToFile(downloadURL, new File(FabricLoader.getInstance().getGameDir().toFile(), SwitchFunctions.SpecialButtonActionSwitches.getTargetDirectory(action) + cleanseFileUrl(downloadURL.getFile())));
+                FileUtils.copyURLToFile(downloadURL, new File(FabricLoader.getInstance().getGameDir().toFile(), SpecialButtonActionSwitches.getTargetDirectory(action) + cleanseFileUrl(downloadURL.getFile())));
 
-                MCBrowser.sendToastMessage(Text.translatable("mcbrowser.download.toast.complete"), SwitchFunctions.SpecialButtonActionSwitches.getTranslation(END_DL_DESCRIPTION, action));
+                MCBrowser.sendToastMessage(Text.translatable("mcbrowser.download.toast.complete"), SpecialButtonActionSwitches.getTranslation(END_DL_DESCRIPTION, action));
             } catch (IOException | URISyntaxException e) {
                 MCBrowser.sendToastMessage(Text.translatable("mcbrowser.download.toast.failed"), Text.translatable("mcbrowser.download.toast.failed.description"));
                 MCBrowser.LOGGER.error("Failed to download file", e);
@@ -74,5 +73,45 @@ public class SpecialButtonAction {
         String string = url.replace("https://modrinth.com/", "");
         string = string.substring(string.indexOf("/") + 1);
         return string.split("/")[0];
+    }
+
+    public static class SpecialButtonActionSwitches{
+
+        public static MutableText getTranslation(byte type, SpecialButtonActions action) {
+            return switch (action) {
+                case MODRINTH_MOD -> switch (type) {
+                    case START_DL_DESCRIPTION -> Text.translatable("mcbrowser.download.toast.started.description.mod");
+                    case END_DL_DESCRIPTION -> Text.translatable("mcbrowser.download.toast.complete.description.mod");
+                    default -> throw new IllegalStateException("Unexpected type value: " + type);
+                };
+                case MODRINTH_RP -> switch (type) {
+                    case START_DL_DESCRIPTION -> Text.translatable("mcbrowser.download.toast.started.description.rp");
+                    case END_DL_DESCRIPTION -> Text.translatable("mcbrowser.download.toast.complete.description.rp");
+                    default -> throw new IllegalStateException("Unexpected type value: " + type);
+                };
+
+                //Reserved for future usage.
+                //noinspection UnnecessaryDefault
+                default -> throw new IllegalStateException("Unexpected action value: " + action);
+            };
+        }
+
+        public static URL getTargetURL(SpecialButtonActions action) throws MalformedURLException, URISyntaxException {
+            return switch (action) {
+                case MODRINTH_MOD -> new URI("https://api.modrinth.com/v2/project/" + getModrinthSlugFromUrl(TabManager.getCurrentUrl()) + "/version?game_versions=[%22" + MinecraftVersion.create().name() + "%22]&loaders=[%22fabric%22]").toURL();
+                case MODRINTH_RP -> new URI("https://api.modrinth.com/v2/project/" + getModrinthSlugFromUrl(TabManager.getCurrentUrl()) + "/version?game_versions=[%22" + MinecraftVersion.create().name() + "%22]").toURL();
+
+                //Reserved for future usage.
+                //noinspection UnnecessaryDefault
+                default -> throw new IllegalStateException("Unexpected action value: " + action);
+            };
+        }
+
+        public static String getTargetDirectory(SpecialButtonActions action) {
+            return switch (action) {
+                case MODRINTH_MOD -> "mods/";
+                case MODRINTH_RP -> "resourcepacks/";
+            };
+        }
     }
 }

@@ -139,6 +139,27 @@ public class BrowserUtil {
         }
     }
 
+    public static boolean ctrlKeyPressedSwitch(int keyCode, int modifiers){
+        switch (keyCode) {
+            case GLFW.GLFW_KEY_TAB:
+            case GLFW.GLFW_KEY_T:
+                // Tab Functions
+                TabManager.tabControl(keyCode + modifiers);
+                instance.setFocus();
+                return true;
+            case GLFW.GLFW_KEY_EQUAL:
+                instance.zoomControl(ZoomActions.INCREASE);
+                return true;
+            case GLFW.GLFW_KEY_MINUS:
+                instance.zoomControl(ZoomActions.DECREASE);
+                return true;
+            case GLFW.GLFW_KEY_0:
+                instance.zoomControl(ZoomActions.RESET);
+                return true;
+        }
+        return false;
+    }
+
     public static class Keybinds{
         public static final int CTRL_T = GLFW.GLFW_MOD_CONTROL + GLFW.GLFW_KEY_T;
         public static final int CTRL_SHIFT_T = GLFW.GLFW_MOD_CONTROL + GLFW.GLFW_MOD_SHIFT + GLFW.GLFW_KEY_T;
