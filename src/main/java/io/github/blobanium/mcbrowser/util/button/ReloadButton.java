@@ -1,6 +1,5 @@
 package io.github.blobanium.mcbrowser.util.button;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.blobanium.mcbrowser.util.BrowserUtil;
 import io.github.blobanium.mcbrowser.util.TabManager;
 import net.minecraft.client.MinecraftClient;
@@ -11,7 +10,6 @@ import net.minecraft.client.gui.screen.ButtonTextures;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.PressableWidget;
 import net.minecraft.client.input.AbstractInput;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
@@ -47,11 +45,7 @@ public class ReloadButton extends PressableWidget {
     protected void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
         Identifier texture = TEXTURES.get(this.isInteractable(), this.isFocused());
         MinecraftClient minecraftClient = MinecraftClient.getInstance();
-        // RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-        // RenderSystem.enableBlend();
-        // RenderSystem.enableDepthTest();
         context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, texture, this.getX(), this.getY(), this.getWidth(), this.getHeight());
-        // RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         drawScrollableText(context, minecraftClient.textRenderer, Text.of(TabManager.getCurrentTab().isLoading() ? "❌" : "⟳"), this.getX() + 2, this.getY(), this.getX() + this.getWidth() - 2, this.getY() + this.getHeight(), 16777215 | MathHelper.ceil(this.alpha * 255.0F) << 24);
     }
 

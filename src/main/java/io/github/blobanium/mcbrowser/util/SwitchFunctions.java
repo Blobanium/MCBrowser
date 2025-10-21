@@ -19,9 +19,12 @@ import java.net.URI;
  * There exists an issue where code climate quality fails to properly rate a file. Making it look like it got a perfect rating, but in reality the code is really sloppy.
  * Code Climate is a third party application blobanium uses to make sure code is as clean as possible.
  * This file serves as a temporary workaround for this issue.
+ *
+ * NOTE: as of 10/21/2025 code climate changed to qlty with a lot of changes as this bug has been fixed.
  */
-public class SwitchFunctions {
 
+@Deprecated
+public class SwitchFunctions {
     public static boolean ctrlKeyPressedSwitch(int keyCode, int modifiers){
         switch (keyCode) {
             case GLFW.GLFW_KEY_TAB:
