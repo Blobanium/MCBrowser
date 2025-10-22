@@ -224,14 +224,10 @@ public class BrowserScreen extends Screen {
 
     @Override
     public boolean keyPressed(KeyInput input) {
-        if (client != null && client.isCtrlPressed() && BrowserUtil.ctrlKeyPressedSwitch(input.getKeycode(), input.modifiers())) {
-            return true;
-        }
-
         sendKeyActivityAndSetFocus(input.getKeycode(), input.scancode(), input.modifiers(), true);
 
-        // Prevent the enter key if buttons aren’t focused
-        if (Arrays.stream(uiElements).noneMatch(ClickableWidget::isFocused) && input.getKeycode() == GLFW.GLFW_KEY_ENTER) {
+        // Ctrl and Enter Checks
+        if ((client != null && client.isCtrlPressed() && BrowserUtil.ctrlKeyPressedSwitch(input.getKeycode(), input.modifiers())) || (Arrays.stream(uiElements).noneMatch(ClickableWidget::isFocused) && input.getKeycode() == GLFW.GLFW_KEY_ENTER)) {
             return true;
         }
 
