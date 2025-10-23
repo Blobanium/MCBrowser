@@ -27,6 +27,8 @@
   "text.autoconfig.mcbrowser.option.allowDownloads.@Tooltip": "Allows downloading files to your computer using MCBrowser",
   "text.autoconfig.mcbrowser.option.customSwitches": "Custom Chromium Switches",
   "text.autoconfig.mcbrowser.option.customSwitches.@Tooltip": "Use Custom Chromium Switches with MCBrowser \n \n§cWARNING:§f Do not paste anything here if someone told you to. Doing so may compromise privacy and security and give bad actors access to your computer!" ,
+  "text.autoconfig.mcbrowser.option.openExternalApplications": "Allow MCBrowser to launch programs from websites",
+  "text.autoconfig.mcbrowser.option.openExternalApplications.@Tooltip": "Allows to open external applications such as Roblox or Zoom \n \n§cWARNING:§f Leaving this setting on may present a potential security risk. Only turn this setting on if you need to run said application." ,
   "mcbrowser.download.toast.started": "Download Started",
   "mcbrowser.download.toast.complete": "Download Completed!",
   "mcbrowser.download.toast.failed": "Download Failed",
@@ -39,5 +41,7 @@
   "mcbrowser.download.toast.complete.description.rp": "Resource Pack can be turned on in Resource Packs Settings",
   "mcbrowser.download.toast.failed.description": "Check your logs for more info",
   "mcbrowser.download.toast.disabled.description": "\nPlease enable 'Allow downloads' in the mod's settings to start downloading files.",
+  "mcbrowser.toast.externalApplicationsDisabled": "Opening programs from websites is disabled.",
+  "mcbrowser.toast.externalApplicationsDisabled.description": "To enable, go to the MCBrowser Config.",
   "mcbrowser.zoom.percent": "Zoom level: %d%%"
 }

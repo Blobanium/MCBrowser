@@ -13,12 +13,16 @@ import org.cef.browser.CefFrame;
 import org.cef.callback.CefBeforeDownloadCallback;
 import org.cef.callback.CefDownloadItem;
 import org.cef.callback.CefDownloadItemCallback;
+import org.cef.network.CefRequest;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Pseudo;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+import java.net.URI;
+import java.net.URISyntaxException;
 
 
 @Pseudo
@@ -69,4 +73,19 @@ public class CefClientMixin {
         }
     }
 
+    @Inject(at = @At("HEAD"), method = "onBeforeBrowse", remap = false)
+    public void onLoadEnd(CefBrowser browser, CefFrame frame, CefRequest request, boolean user_gesture, boolean is_redirect, CallbackInfoReturnable<Boolean> cir){
+        if(!request.getURL().startsWith("http")){
+            if(MCBrowser.getConfig().openExternalApplications) {
+                try {
+                    MCBrowser.LOGGER.info("attempting to launch application with request URL: " + request.getURL());
+                    BrowserUtil.openExternally(new URI(request.getURL()));
+                } catch (URISyntaxException e) {
+                    throw new RuntimeException(e);
+                }
+            }else{
+                MCBrowser.sendToastMessage(Text.translatable("mcbrowser.toast.externalApplicationsDisabled"), Text.translatable("mcbrowser.toast.externalApplicationsDisabled.description"));
+            }
+        }
+    }
 }

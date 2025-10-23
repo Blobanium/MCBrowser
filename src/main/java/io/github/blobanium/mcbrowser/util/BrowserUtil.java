@@ -113,11 +113,15 @@ public class BrowserUtil {
     //Button related Methods
     public static void openInBrowser(){
         try {
-            openInExternalBrowser = true;
-            Util.getOperatingSystem().open(new URI(TabManager.getCurrentUrl()));
+            openExternally(new URI(TabManager.getCurrentUrl()));
         } catch (URISyntaxException e) {
             MCBrowser.LOGGER.fatal("Unable to open Browser", e);
         }
+    }
+
+    public static void openExternally(URI uri){
+        openInExternalBrowser = true;
+        Util.getOperatingSystem().open(uri);
     }
 
     public static void homeButtonAction(){

@@ -49,4 +49,8 @@ public class BrowserAutoConfig implements ConfigData {
     @ConfigEntry.Gui.Tooltip
     @ConfigEntry.Gui.RequiresRestart
     public String customSwitches = "";
+
+    @ConfigEntry.Category("privacyandsafety")
+    @ConfigEntry.Gui.Tooltip
+    public boolean openExternalApplications = false;
 }
