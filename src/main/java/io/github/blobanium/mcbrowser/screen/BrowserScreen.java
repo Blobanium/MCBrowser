@@ -272,7 +272,7 @@ public class BrowserScreen extends Screen {
     }
 
     private void resizeBrowser() {
-        if (width > 100 && height > 100) for (TabHolder tab : TabManager.tabs) tab.getBrowser().resize(BrowserUtil.scaleX(width, BD_OFFSET), BrowserUtil.scaleY(height, BD_OFFSET));
+        if (width > 100 && height > 100) for (TabHolder tab : TabManager.tabs) if (tab.getBrowser() != null) tab.getBrowser().resize(BrowserUtil.scaleX(width, BD_OFFSET), BrowserUtil.scaleY(height, BD_OFFSET));
         if (this.urlBox != null) urlBox.setWidth(BrowserUtil.getUrlBoxWidth(width, BD_OFFSET));
         if (this.specialButton != null) specialButton.setPosition(BD_OFFSET, height - BD_OFFSET + 5);
         if (this.openInBrowserButton != null) openInBrowserButton.setPosition(width - 200, height - BD_OFFSET + 5);
