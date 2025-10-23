@@ -103,7 +103,7 @@ public class TabManager {
 
     public static void setTitleForTab(int identifier, String title){
         for(TabHolder tab: tabs){
-            if(identifier == tab.getBrowser().getIdentifier()){
+            if(tab.getBrowser() != null && identifier == tab.getBrowser().getIdentifier()){
                 tab.setTitle(title);
             }
         }
