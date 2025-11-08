@@ -254,7 +254,9 @@ public class BrowserScreen extends Screen {
     @Override
     public boolean charTyped(CharInput input) {
         if(input.codepoint() == (char) 0) return false;
-        BrowserUtil.runAsyncIfEnabled(() -> currentTab.sendKeyTyped((char) input.codepoint(), input.modifiers()));
+        if(!urlBox.isFocused()) {
+            BrowserUtil.runAsyncIfEnabled(() -> currentTab.sendKeyTyped((char) input.codepoint(), input.modifiers()));
+        }
         setFocus();
         return super.charTyped(input);
     }
