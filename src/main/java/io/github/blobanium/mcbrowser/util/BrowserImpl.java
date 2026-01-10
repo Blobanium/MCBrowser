@@ -20,7 +20,13 @@ public class BrowserImpl extends MCEFBrowser {
     //Improves performance by limiting each getURL call to one tick for each instance.
     @Override
     public String getURL() {
-        return BrowserCaches.urlCache.getOrDefault(this.getIdentifier(), super.getURL());
+        if (!BrowserCaches.urlCache.containsKey(this.getIdentifier())){
+            String url = super.getURL();
+            BrowserCaches.urlCache.put(this.getIdentifier(), url);
+            return url;
+        }else{
+            return BrowserCaches.urlCache.get(this.getIdentifier());
+        }
     }
 
     @Override
