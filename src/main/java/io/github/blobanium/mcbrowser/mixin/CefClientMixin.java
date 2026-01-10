@@ -74,7 +74,7 @@ public class CefClientMixin {
     }
 
     @Inject(at = @At("HEAD"), method = "onBeforeBrowse", remap = false)
-    public void onLoadEnd(CefBrowser browser, CefFrame frame, CefRequest request, boolean user_gesture, boolean is_redirect, CallbackInfoReturnable<Boolean> cir){
+    public void onBeforeBrowse(CefBrowser browser, CefFrame frame, CefRequest request, boolean user_gesture, boolean is_redirect, CallbackInfoReturnable<Boolean> cir){
         if(!request.getURL().startsWith("http")){
             if(MCBrowser.getConfig().openExternalApplications) {
                 try {
