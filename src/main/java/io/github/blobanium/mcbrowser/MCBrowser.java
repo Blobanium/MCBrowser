@@ -51,6 +51,12 @@ public class MCBrowser implements ClientModInitializer {
                             })
                     ))));
         }
+
+        ClientCommandRegistrationCallback.EVENT.register((commandDispatcher, commandRegistryAccess) -> commandDispatcher.register(ClientCommandManager.literal("wiki")
+                .executes(commandContext -> {
+                    TabManager.openNewTab(BrowserFeatureUtil.prediffyURL("https://minecraft.wiki/"));
+                    return 0;
+                })));
     }
 
     private static final MinecraftClient minecraft = MinecraftClient.getInstance();
