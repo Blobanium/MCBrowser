@@ -43,5 +43,6 @@
   "mcbrowser.download.toast.disabled.description": "\nPlease enable 'Allow downloads' in the mod's settings to start downloading files.",
   "mcbrowser.toast.externalApplicationsDisabled": "Opening programs from websites is disabled.",
   "mcbrowser.toast.externalApplicationsDisabled.description": "To enable, go to the MCBrowser Config.",
-  "mcbrowser.zoom.percent": "Zoom level: %d%%"
+  "mcbrowser.zoom.percent": "Zoom level: %d%%",
+  "mcbrowser.toast.loadError": "Failed to load %s"
 }

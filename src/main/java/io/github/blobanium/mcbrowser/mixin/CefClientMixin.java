@@ -13,6 +13,7 @@ import org.cef.browser.CefFrame;
 import org.cef.callback.CefBeforeDownloadCallback;
 import org.cef.callback.CefDownloadItem;
 import org.cef.callback.CefDownloadItemCallback;
+import org.cef.handler.CefLoadHandler;
 import org.cef.network.CefRequest;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Pseudo;
@@ -87,5 +88,10 @@ public class CefClientMixin {
                 MCBrowser.sendToastMessage(Text.translatable("mcbrowser.toast.externalApplicationsDisabled"), Text.translatable("mcbrowser.toast.externalApplicationsDisabled.description"));
             }
         }
+    }
+
+    @Inject(at = @At("HEAD"), method = "onLoadError", remap = false)
+    public void onLoadError(CefBrowser browser, CefFrame frame, CefLoadHandler.ErrorCode errorCode, String errorText, String failedUrl, CallbackInfo ci){
+        MCBrowser.sendToastMessage(Text.translatable("mcbrowser.toast.loadError", failedUrl), Text.of(errorText));
     }
 }
