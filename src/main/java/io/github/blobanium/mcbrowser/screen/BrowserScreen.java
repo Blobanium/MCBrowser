@@ -6,7 +6,6 @@ import io.github.blobanium.mcbrowser.feature.specialbutton.*;
 import io.github.blobanium.mcbrowser.util.*;
 import io.github.blobanium.mcbrowser.util.button.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.*;
@@ -19,35 +18,28 @@ import org.lwjgl.glfw.GLFW;
 
 public class BrowserScreen extends Screen {
     public static final int BD_OFFSET = 50;
-    //Previously BROWSER_DRAW_OFFSET
 
-    //Ui
+    // URL and core navigation
     public TextFieldWidget urlBox;
-    public ButtonWidget forwardButton;
-    public ButtonWidget backButton;
-    public ReloadButton reloadButton;
-    private PressableWidget[] navigationButtons;
-    private ClickableWidget[] uiElements;
-    private ClickableWidget[] zoomElements;
-    public ArrayList<TabButton> tabButtons = new ArrayList<>();
-    private NewTabButton newTabButton = null;
-
     public ButtonWidget specialButton;
-
     private ButtonWidget openInBrowserButton;
-
-    public TextWidget zoomDetails;
-    public ButtonWidget zoomInButton;
-    public ButtonWidget zoomOutButton;
-
 
     private int previousLimit;
     private boolean isFpsLowered = false;
 
     public BrowserImpl currentTab = TabManager.getCurrentTab();
 
+    // Centralized UI manager
+    private BrowserUIManager uiManager;
+
+    public ArrayList<TabButton> tabButtons = new ArrayList<>();
+
     public BrowserScreen(Text title) {
         super(title);
+    }
+
+    public void addWidget(ClickableWidget widget) {
+        addSelectableChild(widget);
     }
 
     public void removeTab(int index) {
@@ -86,16 +78,27 @@ public class BrowserScreen extends Screen {
 
         MinecraftClient client = MinecraftClient.getInstance();
         BrowserAutoConfig config = MCBrowser.getConfig();
-        if(config.limitBrowserFramerate && client.options.getMaxFps().getValue() > config.browserFPS){
-               previousLimit = client.options.getMaxFps().getValue();
-               client.getInactivityFpsLimiter().setMaxFps(config.browserFPS);
-               isFpsLowered = true;
+        if (config.limitBrowserFramerate && client.options.getMaxFps().getValue() > config.browserFPS) {
+            previousLimit = client.options.getMaxFps().getValue();
+            client.getInactivityFpsLimiter().setMaxFps(config.browserFPS);
+            isFpsLowered = true;
         }
 
         BrowserUtil.instance = this;
         BrowserUtil.tooltipText = null;
 
-        newTabButton = new NewTabButton(BD_OFFSET, BD_OFFSET - 40, 15, 15, Text.of("+"));
+        // Initialize UI manager
+        uiManager = new BrowserUIManager(this, width, height);
+        uiManager.initializeAllWidgets();
+
+        // Cache UI elements for direct access
+        urlBox = uiManager.getUrlBox();
+        specialButton = uiManager.getSpecialButton();
+        openInBrowserButton = uiManager.getOpenInBrowserButton();
+
+        // Register widgets as selectable children
+        uiManager.registerWidgetsAsChildren(this);
+
         for (TabHolder tab : TabManager.tabs) {
             int index = TabManager.tabs.indexOf(tab);
             TabButton tabButton = new TabButton(BD_OFFSET, BD_OFFSET - 40, 100, 15, index);
@@ -103,36 +106,13 @@ public class BrowserScreen extends Screen {
         }
         for (TabButton tabButton : tabButtons) addSelectableChild(tabButton);
         updateTabSize();
-        initElements();
         updateWidgets();
-    }
-
-    public void initElements() {
-        urlBox = BrowserUtil.initUrlBox(BD_OFFSET, width);
-
-        backButton = BrowserUtil.initButton(Text.of("◀"), button -> currentTab.goBack(), BD_OFFSET, 1);
-        forwardButton = BrowserUtil.initButton(Text.of("▶"), button -> currentTab.goForward(), BD_OFFSET + 20, 1);
-        reloadButton = new ReloadButton(BD_OFFSET + 40, BD_OFFSET - 20, 15, 15);
-        ButtonWidget homeButton = BrowserUtil.initButton(Text.of("⌂"), button -> BrowserUtil.homeButtonAction(), BD_OFFSET + 60, 1);
-        specialButton = ButtonWidget.builder(Text.of(""), button -> SpecialButtonHelper.onPress(TabManager.getCurrentUrl())).dimensions(BD_OFFSET, height - BD_OFFSET + 5, 150, 15).build();
-        openInBrowserButton = ButtonWidget.builder(Text.of("Open In External Browser"), button -> BrowserUtil.openInBrowser()).dimensions(width - 200, height - BD_OFFSET + 5, 150, 15).build();
-        zoomDetails = new TextWidget(BrowserUtil.getZoomLevelText(currentTab.getZoomLevel()), MinecraftClient.getInstance().textRenderer);
-        zoomDetails.setPosition(width-50-zoomDetails.getWidth(), BD_OFFSET - 49);
-        zoomInButton = BrowserUtil.initButton(Text.of("+"), button -> zoomControl(BrowserUtil.ZoomActions.INCREASE), width - 65, 2);
-        zoomOutButton = BrowserUtil.initButton(Text.of("-"), button -> zoomControl(BrowserUtil.ZoomActions.DECREASE), width - 85, 2);
-
-        navigationButtons = new PressableWidget[]{forwardButton, backButton, reloadButton, homeButton};
-        zoomElements = new ClickableWidget[]{zoomInButton, zoomOutButton, zoomDetails};
-        uiElements = new ClickableWidget[]{forwardButton, backButton, reloadButton, homeButton, urlBox, specialButton, openInBrowserButton, newTabButton, zoomDetails, zoomInButton, zoomOutButton};
-        for (ClickableWidget widget : uiElements) addSelectableChild(widget);
     }
 
     public void updateWidgets() {
         urlBox.setText(currentTab.getURL());
         urlBox.setCursorToStart(false);
-        backButton.active = currentTab.canGoBack();
-        forwardButton.active = currentTab.canGoForward();
-        reloadButton.setMessage(Text.of(currentTab.isLoading() ? "❌" : "⟳"));
+        uiManager.updateNavigationButtons(currentTab);
         SpecialButtonActions action = SpecialButtonActions.getFromUrlConstantValue(TabManager.getCurrentUrl());
         if (action != null) specialButton.setMessage(action.getButtonText());
         currentTab.resize(BrowserUtil.scaleX(width, BD_OFFSET), BrowserUtil.scaleY(height, BD_OFFSET));
@@ -145,18 +125,22 @@ public class BrowserScreen extends Screen {
         super.resize(minecraft, i, j);
         resizeBrowser();
         updateWidgets();
-        for (TabButton tabButton : tabButtons) { remove(tabButton); }
+        for (TabButton tabButton : tabButtons) {
+            remove(tabButton);
+        }
         tabButtons = tempList;
-        for (TabButton tabButton : tabButtons) { addSelectableChild(tabButton); }
+        for (TabButton tabButton : tabButtons) {
+            addSelectableChild(tabButton);
+        }
         updateTabSize();
-        for (ClickableWidget widget : uiElements) if (!children().contains(widget)) addSelectableChild(widget);
+        uiManager.reregisterWidgetsAsChildren(this);
     }
 
     @Override
     public void close() {
         BrowserUtil.instance = null;
         for (TabButton tabButton : tabButtons) tabButton.resetIco();
-        if(isFpsLowered) MinecraftClient.getInstance().getInactivityFpsLimiter().setMaxFps(previousLimit);
+        if (isFpsLowered) MinecraftClient.getInstance().getInactivityFpsLimiter().setMaxFps(previousLimit);
         super.close();
     }
 
@@ -171,25 +155,13 @@ public class BrowserScreen extends Screen {
         }
         renderWidgets(context, mouseX, mouseY, delta);
 
-        if (BrowserUtil.tooltipText != null && BrowserUtil.tooltipText.getBytes().length != 0){
+        if (BrowserUtil.tooltipText != null && BrowserUtil.tooltipText.getBytes().length != 0) {
             context.drawTooltip(MinecraftClient.getInstance().textRenderer, Text.of(BrowserUtil.tooltipText), mouseX, mouseY);
         }
     }
 
-    private void renderWidgets(DrawContext context, int mouseX, int mouseY, float delta){
-        urlBox.renderWidget(context, mouseX, mouseY, delta);
-        for (PressableWidget button : navigationButtons) button.render(context, mouseX, mouseY, delta);
-        if (SpecialButtonHelper.isOnCompatableSite(TabManager.getCurrentUrl())) specialButton.render(context, mouseX, mouseY, delta);
-        for (TabButton tabButton : tabButtons) tabButton.render(context, mouseX, mouseY, delta);
-        for (ClickableWidget zoom :zoomElements) if (BrowserUtil.ZoomActions.shouldRenderZoomElements()) {
-            if (zoom.isMouseOver(mouseX, mouseY)) BrowserUtil.ZoomActions.resetLastTimeCalled();
-            zoom.active = true;
-            zoom.render(context, mouseX, mouseY, delta);
-        }else{
-            zoom.active = false;
-        }
-        newTabButton.render(context, mouseX, mouseY, delta);
-        openInBrowserButton.render(context, mouseX, mouseY, delta);
+    private void renderWidgets(DrawContext context, int mouseX, int mouseY, float delta) {
+        uiManager.renderAllWidgets(context, mouseX, mouseY, delta);
     }
 
     @Override
@@ -226,12 +198,10 @@ public class BrowserScreen extends Screen {
     public boolean keyPressed(KeyInput input) {
         sendKeyActivityAndSetFocus(input.getKeycode(), input.scancode(), input.modifiers(), true);
 
-        // Ctrl and Enter Checks
-        if ((client != null && client.isCtrlPressed() && BrowserUtil.ctrlKeyPressedSwitch(input.getKeycode(), input.modifiers())) || (Arrays.stream(uiElements).noneMatch(ClickableWidget::isFocused) && input.getKeycode() == GLFW.GLFW_KEY_ENTER)) {
+        if ((client != null && client.isCtrlPressed() && BrowserUtil.ctrlKeyPressedSwitch(input.getKeycode(), input.modifiers())) || (uiManager.isAnyUIElementFocused() && input.getKeycode() == GLFW.GLFW_KEY_ENTER)) {
             return true;
         }
 
-        // Close screen on Esc key
         if (input.getKeycode() == 256 && this.shouldCloseOnEsc()) {
             this.close();
             return true;
@@ -246,51 +216,62 @@ public class BrowserScreen extends Screen {
         return super.keyReleased(input);
     }
 
-    private void sendKeyActivityAndSetFocus(int keyCode, int scanCode, int modifiers, boolean isPress){
-        if (isPress ? !urlBox.isFocused() : !(client != null && client.isCtrlPressed()) || keyCode != GLFW.GLFW_KEY_TAB) BrowserUtil.runAsyncIfEnabled(() -> currentTab.sendKeyPressRelease(keyCode, scanCode, modifiers, isPress));
+    private void sendKeyActivityAndSetFocus(int keyCode, int scanCode, int modifiers, boolean isPress) {
+        if (isPress ? !urlBox.isFocused() : !(client != null && client.isCtrlPressed()) || keyCode != GLFW.GLFW_KEY_TAB) {
+            BrowserUtil.runAsyncIfEnabled(() -> currentTab.sendKeyPressRelease(keyCode, scanCode, modifiers, isPress));
+        }
         setFocus();
     }
 
     @Override
     public boolean charTyped(CharInput input) {
-        if(input.codepoint() == (char) 0) return false;
-        if(!urlBox.isFocused()) {
+        if (input.codepoint() == (char) 0) return false;
+        if (!urlBox.isFocused()) {
             BrowserUtil.runAsyncIfEnabled(() -> currentTab.sendKeyTyped((char) input.codepoint(), input.modifiers()));
         }
         setFocus();
         return super.charTyped(input);
     }
 
-
-    //Multi Override Util Methods
     public void setFocus() {
         boolean browserFocus = true;
-        for (ClickableWidget widget : uiElements) {
+        for (ClickableWidget widget : uiManager.getAllUIElements()) {
             boolean mouseOver = widget.isMouseOver(BrowserUtil.lastMouseX, BrowserUtil.lastMouseY);
             widget.setFocused(mouseOver);
-            if(mouseOver) browserFocus = false;
+            if (mouseOver) browserFocus = false;
         }
         currentTab.setFocus(browserFocus);
     }
 
     private void resizeBrowser() {
-        if (width > 100 && height > 100) for (TabHolder tab : TabManager.tabs) if (tab.getBrowser() != null) tab.getBrowser().resize(BrowserUtil.scaleX(width, BD_OFFSET), BrowserUtil.scaleY(height, BD_OFFSET));
-        if (this.urlBox != null) urlBox.setWidth(BrowserUtil.getUrlBoxWidth(width, BD_OFFSET));
-        if (this.specialButton != null) specialButton.setPosition(BD_OFFSET, height - BD_OFFSET + 5);
-        if (this.openInBrowserButton != null) openInBrowserButton.setPosition(width - 200, height - BD_OFFSET + 5);
+        if (width > 100 && height > 100) {
+            for (TabHolder tab : TabManager.tabs) {
+                if (tab.getBrowser() != null) {
+                    tab.getBrowser().resize(BrowserUtil.scaleX(width, BD_OFFSET), BrowserUtil.scaleY(height, BD_OFFSET));
+                }
+            }
+        }
+        uiManager.resizeWidgets(width, height);
     }
 
     private void mouseButtonControlImpl(Click click, boolean isDouble, boolean isClick) {
-        if (click.x() > BD_OFFSET && click.x() < this.width - BD_OFFSET && click.y() > BD_OFFSET && click.y() < this.height - BD_OFFSET) currentTab.mouseButtonControl(click, isDouble, isClick);
+        if (click.x() > BD_OFFSET && click.x() < this.width - BD_OFFSET && click.y() > BD_OFFSET && click.y() < this.height - BD_OFFSET) {
+            currentTab.mouseButtonControl(click, isDouble, isClick);
+        }
         setFocus();
     }
 
-    public void zoomControl(byte zoomAction){
-        if(zoomAction == BrowserUtil.ZoomActions.INCREASE) currentTab.setZoomLevel(currentTab.getZoomLevel() + MCBrowser.getConfig().zoomScalingFactor);
-        else if(zoomAction == BrowserUtil.ZoomActions.DECREASE) currentTab.setZoomLevel(currentTab.getZoomLevel() - MCBrowser.getConfig().zoomScalingFactor);
-        else if(zoomAction == BrowserUtil.ZoomActions.RESET) currentTab.setZoomLevel(0.0);
-        else throw new IllegalArgumentException("Invalid zoom action value: " + zoomAction);
-        zoomDetails.setMessage(BrowserUtil.getZoomLevelText(currentTab.getZoomLevel()));
+    public void zoomControl(byte zoomAction) {
+        if (zoomAction == BrowserUtil.ZoomActions.INCREASE) {
+            currentTab.setZoomLevel(currentTab.getZoomLevel() + MCBrowser.getConfig().zoomScalingFactor);
+        } else if (zoomAction == BrowserUtil.ZoomActions.DECREASE) {
+            currentTab.setZoomLevel(currentTab.getZoomLevel() - MCBrowser.getConfig().zoomScalingFactor);
+        } else if (zoomAction == BrowserUtil.ZoomActions.RESET) {
+            currentTab.setZoomLevel(0.0);
+        } else {
+            throw new IllegalArgumentException("Invalid zoom action value: " + zoomAction);
+        }
+        uiManager.updateZoomDisplay(currentTab.getZoomLevel());
         BrowserUtil.ZoomActions.resetLastTimeCalled();
     }
 }
