@@ -35,7 +35,7 @@ public class BrowserImpl extends MCEFBrowser {
     }
 
     public void render(DrawContext context, int x, int y, int width, int height) {
-        Identifier textureLocation = getTextureLocation();
+        Identifier textureLocation = this.getTextureIdentifier();
 
         if (isTextureReady()) {
             context.drawTexture(RenderPipelines.GUI_TEXTURED, textureLocation, x, y, 0F, 0F, width, height, width, height, ColorHelper.getWhite(1F));

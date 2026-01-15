@@ -20,7 +20,7 @@ public class ReloadButton extends PressableWidget {
     );
 
     public ReloadButton(int x, int y, int width, int height) {
-        super(x, y, height, width, null);
+        super(x, y, height, width, Text.empty());
     }
 
     @Override
@@ -33,20 +33,13 @@ public class ReloadButton extends PressableWidget {
         //Required for Implementation
     }
 
-    /**
-     * Renders the widget on the screen.
-     *
-     * @param context the draw context
-     * @param mouseX  the X coordinate of the mouse
-     * @param mouseY  the Y coordinate of the mouse
-     * @param delta   the time in ticks between the previous and current render
-     */
     @Override
-    protected void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
+    protected void drawIcon(DrawContext context, int x, int y, float delta) {
         Identifier texture = TEXTURES.get(this.isInteractable(), this.isFocused());
         MinecraftClient minecraftClient = MinecraftClient.getInstance();
         context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, texture, this.getX(), this.getY(), this.getWidth(), this.getHeight());
-        drawScrollableText(context, minecraftClient.textRenderer, Text.of(TabManager.getCurrentTab().isLoading() ? "❌" : "⟳"), this.getX() + 2, this.getY(), this.getX() + this.getWidth() - 2, this.getY() + this.getHeight(), 16777215 | MathHelper.ceil(this.alpha * 255.0F) << 24);
+        int color = 16777215 | MathHelper.ceil(this.alpha * 255.0F) << 24;
+        context.drawCenteredTextWithShadow(minecraftClient.textRenderer, Text.of(TabManager.getCurrentTab().isLoading() ? "❌" : "⟳"), this.getX() + this.getWidth() / 2, this.getY() + (this.getHeight() - 8) / 2, color);
     }
 
     @Override
