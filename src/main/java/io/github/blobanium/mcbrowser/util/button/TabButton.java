@@ -32,7 +32,7 @@ public class TabButton extends PressableWidget {
     final int startX;
 
     public TabButton(int startX, int y, int width, int height, int tab) {
-        super(0, y, width, height, null);
+        super(0, y, width, height, Text.empty());
         this.startX = startX;
         this.tab = tab;
     }
@@ -57,11 +57,10 @@ public class TabButton extends PressableWidget {
         //Required For Implementation
     }
 
-    private final boolean selected = TabManager.activeTab == tab;
-    private final boolean tooSmall = this.getWidth() < this.getHeight() * 3;
-
     @Override
-    public void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
+    protected void drawIcon(DrawContext context, int x, int y, float delta) {
+        boolean selected = TabManager.activeTab == tab;
+        boolean tooSmall = this.getWidth() < this.getHeight() * 3;
         Identifier texture = TEXTURES.get(this.isInteractable(), this.isFocused());
 
         if (this.getX() > BrowserUtil.instance.width - BrowserScreen.BD_OFFSET - 35) { return; }
@@ -69,7 +68,10 @@ public class TabButton extends PressableWidget {
         String name = TabManager.tabs.get(tab).getTitle();
         if (name == null || name.isEmpty()) { name = "Loading..."; }
         TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
-        drawScrollableText(context, textRenderer, Text.of(name), this.getX() + 2 + 15, this.getY(), this.getX() + this.getWidth() - (!tooSmall || selected ? 17 : 2), this.getY() + this.getHeight(), 16777215 | MathHelper.ceil(this.alpha * 255.0F) << 24);
+        int color = 16777215 | MathHelper.ceil(this.alpha * 255.0F) << 24;
+        int textWidth = this.getX() + this.getWidth() - (!tooSmall || selected ? 17 : 2) - (this.getX() + 2 + 15);
+        String displayName = textRenderer.trimToWidth(name, textWidth);
+        context.drawText(textRenderer, displayName, this.getX() + 2 + 15, this.getY() + (this.getHeight() - 8) / 2, color, true);
 
         context.fill(this.getX(), this.getY(), this.getX() + this.getHeight(), this.getY() + this.getHeight(), 0x00FFFFFF);
         renderIco(context);
@@ -157,6 +159,9 @@ public class TabButton extends PressableWidget {
             close();
             return true;
         }
+
+        boolean selected = TabManager.activeTab == tab;
+        boolean tooSmall = this.getWidth() < this.getHeight() * 3;
 
         if (tooSmall && !selected) {
             open();

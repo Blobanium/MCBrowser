@@ -128,6 +128,7 @@ public class BrowserScreen extends Screen {
     }
 
     public void updateWidgets() {
+        if (urlBox == null) return; // Screen not fully initialized yet
         urlBox.setText(currentTab.getURL());
         urlBox.setCursorToStart(false);
         backButton.active = currentTab.canGoBack();
@@ -138,11 +139,10 @@ public class BrowserScreen extends Screen {
         currentTab.resize(BrowserUtil.scaleX(width, BD_OFFSET), BrowserUtil.scaleY(height, BD_OFFSET));
     }
 
-    @Override
     public void resize(MinecraftClient minecraft, int i, int j) {
         ArrayList<TabButton> tempList = new ArrayList<>(tabButtons);
         tabButtons.clear();
-        super.resize(minecraft, i, j);
+        super.resize(i, j);
         resizeBrowser();
         updateWidgets();
         for (TabButton tabButton : tabButtons) { remove(tabButton); }
@@ -177,6 +177,7 @@ public class BrowserScreen extends Screen {
     }
 
     private void renderWidgets(DrawContext context, int mouseX, int mouseY, float delta){
+        if (urlBox == null) return; // Screen not fully initialized yet
         urlBox.renderWidget(context, mouseX, mouseY, delta);
         for (PressableWidget button : navigationButtons) button.render(context, mouseX, mouseY, delta);
         if (SpecialButtonHelper.isOnCompatableSite(TabManager.getCurrentUrl())) specialButton.render(context, mouseX, mouseY, delta);
@@ -247,7 +248,7 @@ public class BrowserScreen extends Screen {
     }
 
     private void sendKeyActivityAndSetFocus(int keyCode, int scanCode, int modifiers, boolean isPress){
-        if (isPress ? !urlBox.isFocused() : !(client != null && client.isCtrlPressed()) || keyCode != GLFW.GLFW_KEY_TAB) BrowserUtil.runAsyncIfEnabled(() -> currentTab.sendKeyPressRelease(keyCode, scanCode, modifiers, isPress));
+        if (isPress ? !urlBox.isFocused() : !(client != null && client.isCtrlPressed()) || keyCode != GLFW.GLFW_KEY_LEFT_CONTROL) BrowserUtil.runAsyncIfEnabled(() -> currentTab.sendKeyPressRelease(keyCode, scanCode, modifiers, isPress));
         setFocus();
     }
 

@@ -33,6 +33,11 @@ public class NewTabButton extends PressableWidget {
     }
 
     @Override
+    protected void drawIcon(net.minecraft.client.gui.DrawContext context, int x, int y, float delta) {
+        // Draw the default button with the "+" text
+    }
+
+    @Override
     public boolean mouseClicked(Click click, boolean doubled) {
         if (this.isSelected()){
             if (click.button() == 2) {
