@@ -14,27 +14,18 @@
   "icon": "assets/mcbrowser/icon.png",
   "environment": "client",
   "entrypoints": {
-    "client": [
-      "io.github.blobanium.mcbrowser.MCBrowser"
-    ],
-    "modmenu": [
-      "io.github.blobanium.mcbrowser.config.ModMenuIntegration"
-    ]
+    "client": ["io.github.blobanium.mcbrowser.MCBrowser"],
+    "modmenu": ["io.github.blobanium.mcbrowser.config.ModMenuIntegration"]
   },
-  "mixins": [
-    "mcbrowser.mixins.json"
-  ],
+  "mixins": ["mcbrowser.mixins.json"],
   "suggests": {
-    "modmenu":"*"
-  },
-  "recommends": {
-    "mcef": ">=2.1.6-1.21.10"
+    "modmenu": "*"
   },
   "depends": {
     "fabricloader": ">=${loader_version}",
-    "minecraft": "1.21.10",
-    "mcef": ">=2.1.6-1.21.10",
-    "cloth-config": "20.*.*",
+    "minecraft": "${minecraft_version}",
+    "mcef": ">=2.1.9-1.21.11",
+    "cloth-config": "21.11.*",
     "fabric": "*"
   },
   "conflicts": {
