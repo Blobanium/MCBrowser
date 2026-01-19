@@ -92,6 +92,17 @@ public class CefClientMixin {
 
     @Inject(at = @At("HEAD"), method = "onLoadError", remap = false)
     public void onLoadError(CefBrowser browser, CefFrame frame, CefLoadHandler.ErrorCode errorCode, String errorText, String failedUrl, CallbackInfo ci){
-        MCBrowser.sendToastMessage(Text.translatable("mcbrowser.toast.loadError", failedUrl), Text.of(errorText));
+        String cleansedURL = null;
+
+        try {
+            cleansedURL = new URI(failedUrl).getHost();
+        } catch (URISyntaxException e) {
+            MCBrowser.LOGGER.error("Failed to create URI from failed URL: " + failedUrl, e);
+            cleansedURL = failedUrl;
+        }
+
+        if(errorCode != CefLoadHandler.ErrorCode.ERR_ABORTED){
+            MCBrowser.sendToastMessage(Text.translatable("mcbrowser.toast.loadError", cleansedURL), Text.of(errorText));
+        }
     }
 }
